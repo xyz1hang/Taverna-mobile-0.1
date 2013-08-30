@@ -1,0 +1,16 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:yourapp="http://schemas.android.com/apk/res-auto" >
+
+    <item
+        android:id="@+id/runList_run_stop"
+        android:icon="@drawable/stop_action_icon_light"
+        android:title="@string/delete_run_menu"
+        android:showAsAction="always"/>
+    
+    <item
+        android:id="@+id/runList_run_delete"
+        android:icon="@drawable/content_remove"
+        android:title="@string/delete_run_menu"
+        android:showAsAction="always"/>
+
+</menu>

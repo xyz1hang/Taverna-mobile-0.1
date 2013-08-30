@@ -1,0 +1,102 @@
+<resources>
+    <string name="app_name">Taverna Mobile</string>
+    
+    <!-- runList menu titles -->
+    <string name="delete_all_runs_menu">Delete all runs</string>
+    <string name="delete_run_menu">Delete run</string>
+    <!-- main panel menu titles -->
+    <string name="search_results_menu">Search again</string>
+    <string name="menu_settings">Settings</string>
+    <string name="myExp_login_menu_title">Log in to myExperiment</string>
+    
+    <string name="authority">cs.man.ac.uk.tavernamobile</string>
+    
+    <string name="main_activity_title">TavernaMobile</string>
+    <string name="arrow_down_image">arrow_down</string>
+    <string name="looking_for_workflows">Looking for workflows ?</string>
+    <string name="search_for_it">Search for workflows</string>
+    <string name="search_hints">e.g gene annotation</string>
+    <string name="powered_by">Powered by</string>
+    <string name="powered_by_cont">Taverna</string>
+    <string name="search_image_button_description">search_action</string>
+    <string name="myExperiment_logo_description">myExperiment_logo</string>
+    
+    <string name="title_section3">Runs</string>
+    <string name="title_section2">Workflows</string>
+    <string name="title_section1">Explore</string>
+    
+    <!-- Explore fragments Strings -->
+     <string name="sort_text">Sort by :</string>
+   	<string name="order_radio_button_text">Ascending order</string>
+    <string-array name="wfExpo_sort_criteria">
+        <item>Creation time</item>
+        <item>Update time</item>
+        <item>Title</item>
+        <item>Name</item>
+    </string-array>
+    <!-- expo single row strings -->
+    <string name="wfexpo_sr_created_on">Created on:</string>
+    <string name="wfexpo_sr_last_update">Last update:</string>
+    <string name="wfexpo_sr_credit">Credit:</string>
+    <string name="wfexpo_sr_type">Type:</string>
+    <string name="wfexpo_sr_rating">Rating:</string>
+    <string name="wfexpo_sr_view_button">view</string>
+    <string name="wfexpo_sr_download_button">download</string>
+    <string name="wfexpo_sr_mediam_wf_thumbnail">Mediam Workflow thumbnail</string>
+   
+    
+  	<!-- Workflow Details fragments Strings -->
+    <string name="workflow_detail_title_section1">Preview</string>
+    <string name="workflow_detail_title_section2">Description</string>
+    <string name="workflow_detail_title_section3">License</string>
+    
+    <string name="wfpreview_default_created_at">loading data</string>
+    <string name="wfpreview_image_contentDescription">workflow preview image</string>
+    
+    <string name="input_detail_title_section1">Input Value</string>
+    <string name="input_detail_title_section2">Description and Sample value</string>
+    
+    <string name="test_button_name">Start Test</string>
+    
+    <string name="SplashScreenImageDescription">Taverna</string>
+    <string name="Default_avatar">Default user avatar</string>
+    <string name="Workflow_frag_default_message">No saved workflow</string>
+    
+    <!-- Taverna Server Login page -->
+    <string name="Taverna_Server_login_title">Login to Taverna Server : </string>
+    <string name="LoginUserNameText">Username : </string>
+    <string name="LoginPassWordText">Password : </string>
+    <string name="ServerText">Server : </string>
+    <string name="LoginButtonLabel">Login</string>
+    
+    <!-- myExperiment Login page -->
+    <string name="myExperiment_login_title">Login to </string>
+    
+    <!-- Workflow Detail description -->
+    <string name="workflow_premission_1">You can: </string>
+    <string name="workflow_premission_2">this workflow</string>
+    <string name="workflow_launch_button_label">Launch</string>
+    
+    <!-- Monitor Screen -->
+    <string name="MonitorScreen_Username">User : </string>
+    <string name="MonitorScreen_CurrentState">Current State : </string>
+    <string name="MonitorScreen_StartTime">Stared at : </string>
+    <string name="MonitorScreen_EndTime">Finished at : </string>
+    <string name="MonitorScreen_RunningTime">Running Time : </string>
+    <string name="MonitorScreen_DefaultMessage">Reading data&#8230;</string>
+    
+    <string name="List_Footer_Text">Loading &#8230;</string>
+    
+    <!-- dialog text -->
+    <string name="netrual_dialog_button_text">OK</string>
+    <string name="dialog_button_option1_default_text">OK</string>
+    <string name="dialog_button_option2_default_text">Cancel</string>
+    
+    <string name="crash_toast_text">Ooooops ! I crashed, but a report has been sent to my developer to help fix the issue !</string>
+    <string name="crash_dialog_title">CrashTest has crashed</string>
+    <string name="crash_dialog_text">An unexpected error occurred forcing the
+    application to stop. Please help us fix this by sending us error data,
+    all you have to do is click OK.</string>
+    <string name="crash_dialog_comment_prompt">You might add your comments about the problem below:</string>
+    <string name="crash_dialog_ok_toast">Thank you !</string>
+</resources>

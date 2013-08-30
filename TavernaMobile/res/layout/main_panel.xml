@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/mainViewPager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/gradient2"
+        tools:context=".MainActivity" >
+
+        <!--
+    This title strip will display the currently visible page title, as well as the page
+    titles for adjacent pages.
+        -->
+
+        <android.support.v4.view.PagerTitleStrip
+            android:id="@+id/pager_title_strip"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top"
+            android:background="@color/SteelBlue"
+            android:paddingBottom="4dp"
+            android:paddingTop="4dp"
+            android:textColor="#fff" >
+        </android.support.v4.view.PagerTitleStrip>
+    </android.support.v4.view.ViewPager>
+
+    <TextView
+        android:id="@+id/PoweredBy"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="false"
+        android:layout_gravity="bottom|right"
+        android:layout_toLeftOf="@+id/PoweredByCont"
+        android:background="#D0808080"
+        android:drawablePadding="10dp"
+        android:drawableRight="@drawable/myexperiment_logo"
+        android:gravity="center_vertical"
+        android:padding="5dp"
+        android:text="@string/powered_by"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textColor="@android:color/white"
+        android:textStyle="bold|italic" />
+    
+   	<TextView
+   	    android:id="@+id/PoweredByCont"
+   	    android:layout_width="wrap_content"
+   	    android:layout_height="wrap_content"
+   	    android:layout_alignParentBottom="true"
+   	    android:layout_alignParentRight="true"
+   	    android:layout_gravity="bottom|right"
+   	    android:background="#D0808080"
+   	    android:drawableLeft="@drawable/taverna_wheel_logo_small"
+   	    android:drawablePadding="5dp"
+   	    android:gravity="center_vertical"
+   	    android:padding="5dp"
+   	    android:text="@string/powered_by_cont"
+   	    android:textAppearance="?android:attr/textAppearanceSmall"
+   	    android:textColor="@android:color/white"
+   	    android:textStyle="bold|italic" />
+
+</RelativeLayout>

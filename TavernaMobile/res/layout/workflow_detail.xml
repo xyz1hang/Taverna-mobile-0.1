@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/workflowDetailRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/gradient1"
+    android:orientation="vertical" >
+    
+    <TextView
+        android:id="@+id/wfdMyExperimentLoginState"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|right"
+        android:layout_margin="5dp"
+        android:drawableLeft="@drawable/myexperiment_logo_small"
+        android:drawablePadding="5dp"
+        android:gravity="center"
+        android:paddingRight="10dp"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textColor="@color/SteelBlue"
+        android:textStyle="bold"
+        android:visibility="visible" />
+
+    <LinearLayout
+        android:id="@+id/wfDetailsTopLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:background="@drawable/drop_shadow_container"
+        android:baselineAligned="false"
+        android:orientation="horizontal" >
+
+        <LinearLayout
+            android:id="@+id/wfDetailUserlayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left|center"
+            android:layout_margin="10dp"
+            android:layout_weight="1"
+            android:orientation="vertical" >
+
+            <!--
+                 <ImageView
+                android:id="@+id/avatarImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:contentDescription="@string/Default_avatar"
+                android:src="@drawable/avatar" />
+            -->
+
+            <TextView
+                android:id="@+id/uploaderName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:drawablePadding="5dp"
+                android:drawableTop="@drawable/default_avatar_img"
+                android:gravity="center"
+                android:textColor="@color/Black"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/wfDetailsTitleLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="3"
+            android:gravity="center"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/workflowTitle"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_margin="10dp"
+                android:layout_weight="3"
+                android:gravity="center"
+                android:text="Medium Text"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@color/Black" />
+            
+             <View
+                style="@style/Divider"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_gravity="center"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp" />
+             
+             <TextView
+                 android:id="@+id/workflowVersion"
+                 android:layout_width="wrap_content"
+                 android:layout_height="0dp"
+                 android:layout_gravity="right"
+                 android:layout_margin="10dp"
+                 android:layout_weight="1"
+                 android:gravity="center"
+                 android:text="Medium Text"
+                 android:textAppearance="?android:attr/textAppearanceSmall"
+                 android:textColor="@color/Black" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/wfDetailsPagerLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="vertical" >
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/workflowDetailsViewPager"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_gravity="left"
+            android:layout_marginLeft="25dp"
+            android:layout_weight="10" >
+
+            <android.support.v4.view.PagerTitleStrip
+                android:id="@+id/pagerTabStrip"
+                android:layout_width="fill_parent"
+                android:layout_height="30dp"
+                android:layout_gravity="top"
+                android:textColor="#fff" >
+            </android.support.v4.view.PagerTitleStrip>
+        </android.support.v4.view.ViewPager>
+
+        <Button
+            android:id="@+id/workflowlaunchButton"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_gravity="center"
+            android:layout_margin="5dp"
+            android:layout_weight="1"
+            android:text="@string/workflow_launch_button_label"
+            android:textColor="@color/Black" />
+
+    </LinearLayout>
+
+</LinearLayout>

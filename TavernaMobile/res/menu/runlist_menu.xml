@@ -1,0 +1,10 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:yourapp="http://schemas.android.com/apk/res-auto" >
+
+    <item
+        android:id="@+id/runList_menu"
+        android:icon="@drawable/content_remove"
+        android:title="@string/delete_all_runs_menu"
+        android:showAsAction="never"/>
+
+</menu>
