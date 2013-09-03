@@ -12,17 +12,34 @@
         android:layout_height="0dip"
         android:layout_gravity="center"
         android:layout_margin="5dp"
-        android:layout_weight="30"
+        android:layout_weight="10"
         android:baselineAlignBottom="true"
         android:contentDescription="@string/wfpreview_image_contentDescription" />
 
     <TextView
+        android:id="@+id/wfDetail_preview_not_available_text"
+        android:layout_width="fill_parent"
+        android:layout_height="0dip"
+        android:layout_gravity="center"
+        android:layout_weight="10"
+        android:gravity="center"
+        android:padding="10dp"
+        android:text="@string/wfDetail_preview_not_available_text"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="@color/Gray"
+        android:textStyle="italic"
+        android:visibility="gone" />
+
+    <TextView
         android:id="@+id/created_at"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_gravity="left"
         android:layout_margin="10dp"
+        android:layout_weight="1"
         android:text="@string/wfpreview_default_created_at"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textColor="#000000" />
-</LinearLayout>
+        android:textColor="#000000"
+        android:textStyle="italic" />
+
+</LinearLayout>

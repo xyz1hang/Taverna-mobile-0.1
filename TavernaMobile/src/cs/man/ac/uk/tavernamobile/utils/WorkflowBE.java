@@ -15,6 +15,8 @@ public class WorkflowBE {
 	private String Workflow_URI;
 	private String RunID;
 	private List<String> privileges;
+	private String FirstLaunched;
+	private String LastLaunched;
 
 	public String getTitle() {
 		return Title;
@@ -63,5 +65,17 @@ public class WorkflowBE {
 	}
 	public void setPrivileges(List<String> privileges) {
 		this.privileges = privileges;
+	}
+	public String getFirstLaunched() {
+		return FirstLaunched;
+	}
+	public void setFirstLaunched(String firstLaunched) {
+		FirstLaunched = firstLaunched;
+	}
+	public String getLastLaunched() {
+		return LastLaunched;
+	}
+	public void setLastLaunched(String lastLaunched) {
+		LastLaunched = lastLaunched;
 	}
 }

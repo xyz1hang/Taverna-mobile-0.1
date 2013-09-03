@@ -101,11 +101,6 @@ public class WorkflowDetail extends FragmentActivity implements
 			workflow = (Workflow) mCache.get("workflow");
 			license = (License) mCache.get("license");
 			uploader = (User) mCache.get("uploader");
-
-			// if "workflow" is null at this point, 
-			// this must NOT be the first time
-			// the activity is launched, so the avatar image must be in cache
-			avatarBitmap = imageCache.get(uploader.getAvatar().getResource());
 		}
 		// if it is not in Cache
 		else if (workflow == null) {
@@ -128,30 +123,31 @@ public class WorkflowDetail extends FragmentActivity implements
 				// saved instance state, inform user 
 				// to try start the activity again, 
 				// rather than crash the application
-				MessageHelper
-						.showMessageDialog(
-								currentActivity,
-								"No workflow data found,"
-										+ "please try again.\n(The message will be dismissed in 4 seconds)");
-
+				MessageHelper.showMessageDialog(
+						currentActivity,
+						"No workflow data found,"
+						+ "please try again.\n(The message will be dismissed in 4 seconds)");
+				
 				new Handler().postDelayed(
-						new Runnable() {
-							public void run() {
-								currentActivity.finish();
-							}
-						}, 
-						4000);
+					new Runnable() {
+						public void run() {
+							currentActivity.finish();
+						}
+					}, 
+					4000);
 				return;
 		}
 
+		/** "workflow" should never be null at this point **/
 		title.setText(workflow.getTitle());
 		version.setText("Version "+workflow.getVersion());
-		// loading extra details e.g license uploader etc. (networking task)
-		if (license != null && uploader != null && avatarBitmap != null) {
-			onTaskComplete();
-		} else {
+		// any of the following is null we retrieve data from the server
+		if (license == null || uploader == null || avatarBitmap == null) {
 			BackgroundTaskHandler handler = new BackgroundTaskHandler();
 			handler.StartBackgroundTask(this, this, "Loading workflow data...");
+		}else{
+			// load avatar image from cache
+			avatarBitmap = imageCache.get(uploader.getAvatar().getResource());
 		}
 
 		launch.setOnClickListener(new android.view.View.OnClickListener() {
@@ -167,8 +163,7 @@ public class WorkflowDetail extends FragmentActivity implements
 				workflowEntity.setVersion(workflow.getVersion());
 				workflowEntity.setWorkflow_URI(workflow.getContent_uri());
 				workflowEntity.setUploaderName(workflow.getUploader().getValue());
-				workflowEntity.setAvator(Bitmap.createScaledBitmap(
-						avatarBitmap, 100, 100, true));
+				workflowEntity.setAvator(Bitmap.createScaledBitmap(avatarBitmap, 100, 100, true));
 
 				List<String> privilegesStrings = new ArrayList<String>();
 				List<Privilege> privileges = workflow.getPrivileges();
@@ -200,40 +195,33 @@ public class WorkflowDetail extends FragmentActivity implements
 		
 		myExperimentLoginText = (TextView) findViewById(R.id.wfdMyExperimentLoginState);
 		myExperimentLoginText.setOnClickListener(new android.view.View.OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						User user = TavernaAndroid.getMyEUserLoggedin();
-						if (user != null) {
-							MessageHelper.showOptionsDialog(currentActivity,
-									"Do you wish to log out ?", 
-									"Attention",
-									new CallbackTask() {
+				@Override
+				public void onClick(View v) {
+					User user = TavernaAndroid.getMyEUserLoggedin();
+					if (user != null) {
+						MessageHelper.showOptionsDialog(currentActivity,
+								"Do you wish to log out ?", 
+								"Attention",
+								new CallbackTask() {
+									@Override
+									public Object onTaskInProgress(Object... param) {
+										// Clear user logged-in and cookie
+										TavernaAndroid.setMyEUserLoggedin(null);
+										TavernaAndroid.setMyExperimentSessionCookies(null);
+										refreshLoginState();
+										return null;
+									}
 
-										@Override
-										public Object onTaskInProgress(
-												Object... param) {
-											// Clear user logged-in and cookie
-											TavernaAndroid.setMyEUserLoggedin(null);
-											TavernaAndroid.setMyExperimentSessionCookies(null);
-											refreshLoginState();
-											return null;
-										}
-
-										@Override
-										public Object onTaskComplete(
-												Object... result) {
-											// TODO Auto-generated method stub
-											return null;
-										}
-									}, null);
-						}
-						else{
-							Intent gotoMyexperimentLogin = new Intent(
-									currentActivity, MyExperimentLogin.class);
-							currentActivity.startActivity(gotoMyexperimentLogin);
-						}
+									@Override
+									public Object onTaskComplete(Object... result) {return null;}
+								}, null);
+					}else{
+						Intent gotoMyexperimentLogin = new Intent(
+								currentActivity, MyExperimentLogin.class);
+						currentActivity.startActivity(gotoMyexperimentLogin);
 					}
-				});
+				}
+			});
 	}
 
 	@Override

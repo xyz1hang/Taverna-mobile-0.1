@@ -50,7 +50,7 @@ import cs.man.ac.uk.tavernamobile.utils.WorkflowBE;
 public class RunsFragment extends Fragment {
 
 	private FragmentActivity parentActivity;
-	protected Object mActionMode;
+	protected ActionMode mActionMode;
 
 	private int wfDetailLoaderID = 3;
 	private int Activity_Starter_Code = 3;
@@ -155,6 +155,14 @@ public class RunsFragment extends Fragment {
 		return super.onOptionsItemSelected(item);
 	}
 	
+	@Override
+	public void onPause() {
+		if(mActionMode != null){
+			mActionMode.finish();
+		}
+		super.onPause();
+	}
+
 	private void prepareListData() {
 		// check for network connection
 		if(!systemStateChecker.isNetworkConnected()){
@@ -547,8 +555,11 @@ public class RunsFragment extends Fragment {
 
 					@Override
 					public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-						if(mActionMode == null){
+						// start the action mode when there are selected runs
+						if(mActionMode == null && selectedRunIds.size() < 1){
 							mActionMode = parentActivity.startActionMode(mActionModeCallback);
+						}else if(selectedRunIds.size() < 1){
+							mActionMode.finish();
 						}
 
 						if(isChecked){
@@ -563,9 +574,8 @@ public class RunsFragment extends Fragment {
 				});
 				
 				convertView.setOnLongClickListener(new OnLongClickListener(){
-
 					@Override
-					public boolean onLongClick(View view) {// Start the CAB using the ActionMode.Callback defined above
+					public boolean onLongClick(View view) {
 				        mActionMode = parentActivity.startActionMode(mActionModeCallback);
 						return true;
 					}

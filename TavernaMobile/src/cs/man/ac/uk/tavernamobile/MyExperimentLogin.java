@@ -34,6 +34,8 @@ public class MyExperimentLogin extends Activity implements
 
 		currentActivity = this;
 		requestHandler = new HttpRequestHandler(this);
+		
+		this.overridePendingTransition(R.anim.push_left_in, 0);
 
 		// UI components
 		ActionBar actionBar = getActionBar();

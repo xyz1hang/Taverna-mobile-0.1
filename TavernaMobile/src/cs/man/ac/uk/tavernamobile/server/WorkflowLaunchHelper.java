@@ -2,12 +2,15 @@ package cs.man.ac.uk.tavernamobile.server;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TimeZone;
 
 import uk.org.taverna.server.client.InputPort;
 import android.app.Activity;
@@ -78,8 +81,6 @@ public class WorkflowLaunchHelper {
 		}
 		
 		// preparing for checking workflow existence
-		// by querying database and then launch the workflow
-		// after the checking is finished
 		String[] projection = new String[] {
 				DataProviderConstants.WorkflowTitle,
 				DataProviderConstants.WorkflowUri,
@@ -325,12 +326,18 @@ public class WorkflowLaunchHelper {
 					inputPorts = pair.getValue();
 				}
 
-				// prepare data to be inserted into database tables
+				// prepare data to be inserted into the "RunID, WorkflowID" tables
+				/** Run ID **/
 				ContentValues args = new ContentValues();
 				args.put(DataProviderConstants.Run_Id, runID);
 				
+				/** Workflow ID **/
+				// If this run creation is immediately follow an insert
+				// we can reuse the returned(affected) row ID instead of query
 				if(insertedRowID != null){
-					// insert run ID into the reference table
+					// if there was an insert of workflow record
+					// it is consider to be the first time the workflow was launched
+					recordLaunchTime(true);
 					int wfId = Integer.parseInt(insertedRowID);
 					args.put(DataProviderConstants.WF_ID, wfId);
 				}
@@ -339,20 +346,59 @@ public class WorkflowLaunchHelper {
 				// belongs to and insert it into the workflowID_runID table 
 				// along with the run id
 				else{
-					String subQuery = "(select WF_ID from launchHistory"+
-							  "where Workflow_Title=\""+workflowEntity.getTitle()+ "\" AND"+
-							  "Version = \""+workflowEntity.getVersion()+"\" AND"+
-							  "Uploader_Name = \""+workflowEntity.getUploaderName()+"\")";
+					// record latest launch time
+					recordLaunchTime(false);
+					String subQuery = "(SELECT WF_ID FROM launchHistory"+
+						  "WHERE Workflow_Title=\""+workflowEntity.getTitle()+ "\" AND"+
+							    "Version=\""+workflowEntity.getVersion()+"\" AND"+
+							    "Uploader_Name=\""+workflowEntity.getUploaderName()+"\")";
 					args.put(DataProviderConstants.WF_ID, subQuery);
 				}
 				
+				/** INSERT **/
 				currentActivity.getContentResolver().insert(
 						DataProviderConstants.RUN_TABLE_CONTENTURI, args);
 
 				prepareInputs(inputPorts);
 			}
 
+			// reset the inserted ID once 
+			insertedRowID = null;
 			return null;
+		}
+
+		// method that inserts launch time into database 
+		private void recordLaunchTime(boolean firstTime) {
+			/*SimpleDateFormat dateFormat = 
+			new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()); 
+			Date date = new Date();
+			ContentValues values = new ContentValues(); 
+			values.put(DataProviderConstants.LastLaunch, dateFormat.format(date));*/
+			
+			DateFormat df = DateFormat.getDateTimeInstance();
+			df.setTimeZone(TimeZone.getTimeZone("GMT"));
+			String gmtTime = df.format(new Date());
+			
+			ContentValues values = new ContentValues(); 
+			if(firstTime){
+				values.put(DataProviderConstants.FirstLaunch, gmtTime);
+				values.put(DataProviderConstants.LastLaunch, gmtTime);
+			}else{
+				values.put(DataProviderConstants.LastLaunch, gmtTime);
+			}
+			String selection = 
+					   DataProviderConstants.WorkflowTitle + " = ? AND "
+					 + DataProviderConstants.Version + " = ? AND "
+					 + DataProviderConstants.UploaderName + " = ?";
+			String[] selectionArgs = new String[] {
+					workflowEntity.getTitle(), 
+					workflowEntity.getVersion(), 
+					workflowEntity.getUploaderName()};
+			
+			currentActivity.getContentResolver().update(
+					DataProviderConstants.WF_TABLE_CONTENTURI, 
+					values, 
+					selection, selectionArgs);
 		}
 	}
 
@@ -375,8 +421,7 @@ public class WorkflowLaunchHelper {
 
 	private ArrayList<String> extractInputName(Map<String, InputPort> inputPorts) {
 		ArrayList<String> inputNames = new ArrayList<String>();
-		Iterator<Entry<String, InputPort>> it = inputPorts.entrySet()
-				.iterator();
+		Iterator<Entry<String, InputPort>> it = inputPorts.entrySet().iterator();
 		while (it.hasNext()) {
 			Map.Entry<String, InputPort> pair = it.next();
 			inputNames.add(pair.getKey());

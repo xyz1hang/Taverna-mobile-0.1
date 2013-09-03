@@ -28,7 +28,8 @@ public class DatabaseLoader implements LoaderManager.LoaderCallbacks<Cursor> {
 		
 		CursorLoader loader = new CursorLoader(currentActivity,
 				tableUri, 
-				projection, selection,
+				projection, 
+				selection,
 				selectionArgs, null);
 		return loader;
 	}

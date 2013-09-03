@@ -30,8 +30,9 @@ import uk.org.taverna.server.client.connection.UserCredentials;
 import android.app.Activity;
 import android.util.Log;
 import android.widget.Toast;
-import cs.man.ac.uk.tavernamobile.utils.CallbackTask;
+import cs.man.ac.uk.tavernamobile.dataaccess.DataProviderConstants;
 import cs.man.ac.uk.tavernamobile.utils.BackgroundTaskHandler;
+import cs.man.ac.uk.tavernamobile.utils.CallbackTask;
 import cs.man.ac.uk.tavernamobile.utils.TavernaAndroid;
 
 public class WorkflowRunManager
@@ -816,7 +817,7 @@ public class WorkflowRunManager
 	 * a "mode" parameter has to be passed into the Execute method
 	 * 
 	 * mode 0 - clean up the run (most recent) whose outputs has been retrieved
-	 * mode 1 - delete a specific (set of) run. A Run object has to be passed in
+	 * mode 1 - delete a specific/set of run. A Run object has to be passed in
 	 * 			in this mode
 	 * mode 2 - delete all Runs of current Server user
 	 * 
@@ -842,46 +843,70 @@ public class WorkflowRunManager
 				Run run = ta.getWorkflowRunLaunched();
 				if(run != null){
 					try {
-						return run.delete();
+						boolean deleteOutcome = run.delete();
+						// delete database record
+						currentActivity.getContentResolver().delete(
+								DataProviderConstants.RUN_TABLE_CONTENTURI, 
+								DataProviderConstants.Run_Id + "= ?", 
+								new String[] {run.getIdentifier()});
+						
+						return deleteOutcome;
+						
 					} catch (NetworkConnectionException e) {
-						return "Connection problem reading data from server";
+						return e.getMessage();
 					}
 				}
 				break;
 			case 1:
 				ArrayList<String> idsOfRunsToDelete = (ArrayList<String>) params[2];
-				Run runToDelete;
+				Run runToDelete = null;
 				String state = null;
 				if(idsOfRunsToDelete == null){
 					throw new IllegalArgumentException(
 							"Run ID has to be passed in as the third parameter,"
 								+" when in deletion mode 1");
 				}
-				for(String id: idsOfRunsToDelete){
-					try {
+				
+				// flag indicated whether all delete has been successful
+				boolean succeed = false;
+				// Initialize the where args to be used in delete
+				// while iterating over the array list
+				String[] whereArgs = new String[idsOfRunsToDelete.size()];
+				try {
+					for(int i = 0; i<idsOfRunsToDelete.size(); i++){
+						String id = idsOfRunsToDelete.get(i);
 						runToDelete = ta.getServer().getRun(id, ta.getDefaultUser());
 						state = getRunState(runToDelete.getStatus());
-					} catch (NetworkConnectionException e1) {
-						return "Connection problem reading data from server";
-					}
-	
-					//Run runToDelete = (Run) params[2];
-					if(state != STATE_DELETED && idsOfRunsToDelete != null){
-						try {
-							return runToDelete.delete();
-						} catch (NetworkConnectionException e) {
-							return "Connection problem reading data from server";
+						
+						//Run runToDelete = (Run) params[2];
+						if(state != STATE_DELETED && idsOfRunsToDelete != null){
+								succeed = runToDelete.delete();
 						}
+						// build the where args for database DELETE
+						whereArgs[i] = id;
 					}
+					// delete records from database
+					currentActivity.getContentResolver().delete(
+							DataProviderConstants.RUN_TABLE_CONTENTURI, 
+							DataProviderConstants.Run_Id + "= ?",
+							whereArgs);
+				}catch (NetworkConnectionException e) {
+					succeed = false;
+					return e.getMessage();
 				}
-				return false;
+				
+				return succeed;
 			case 2:
 				try{
 					ta.getServer().deleteAllRuns(ta.getDefaultUser());
+					// delete all records from database
+					currentActivity.getContentResolver().delete(
+							DataProviderConstants.RUN_TABLE_CONTENTURI, 
+							null, null);
 					return true;
 				}
 				catch(NetworkConnectionException e){
-					e.printStackTrace();
+					return e.getMessage();
 				}
 			}
 			return false;

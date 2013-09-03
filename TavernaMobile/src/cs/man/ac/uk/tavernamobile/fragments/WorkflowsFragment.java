@@ -7,6 +7,9 @@ import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -15,7 +18,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -34,9 +36,7 @@ public class WorkflowsFragment extends Fragment {
 	private MainActivity parentActivity;
 	private int Activity_Starter_Code;
 
-	private String selectedTitle = null;
-	private String selectedWfVersion = null;
-	private String selectedWfUploaderName = null;
+	private WorkflowBE selectedWorkflow;
 
 	private LinearLayout root;
 	private ListView savedWfList;
@@ -61,12 +61,9 @@ public class WorkflowsFragment extends Fragment {
 				container, false);
 
 		fragWfDesc = (TextView) wfFragmentsView.findViewById(R.id.fragWfDesc);
-		defaultTextView = (TextView) wfFragmentsView
-				.findViewById(R.id.workflow_frag_default_textview);
-		root = (LinearLayout) wfFragmentsView
-				.findViewById(R.id.savedWorkflowListRoot);
-		savedWfList = (ListView) wfFragmentsView
-				.findViewById(R.id.savedWorkflowList);
+		defaultTextView = (TextView) wfFragmentsView.findViewById(R.id.workflow_frag_default_textview);
+		root = (LinearLayout) wfFragmentsView.findViewById(R.id.savedWorkflowListRoot);
+		savedWfList = (ListView) wfFragmentsView.findViewById(R.id.savedWorkflowList);
 
 		return wfFragmentsView;
 	}
@@ -82,6 +79,7 @@ public class WorkflowsFragment extends Fragment {
 	@Override
 	public void onStart() {
 		super.onStart();
+		// load launch history data
 		prepareData();
 	}
 
@@ -162,43 +160,16 @@ public class WorkflowsFragment extends Fragment {
 		}
 	}*/
 
-	private void showLaunchDialog(String message) {
-		MessageHelper.showOptionsDialog(parentActivity, message, "Attention",
-				new CallbackTask() {
-					@Override
-					public Object onTaskInProgress(Object... param) {
-						// check Internet
-						SystemStatesChecker sysChecker = new SystemStatesChecker(parentActivity);
-						if (!sysChecker.isNetworkConnected()) {
-							return null;
-						}
-						reRun();
-						return null;
-					}
-
-					@Override
-					public Object onTaskComplete(Object... result) { return null; }
-				}, null);
-	}
-
-	private void reRun() {
-		WorkflowBE workflowEntity = new WorkflowBE();
-		workflowEntity.setTitle(selectedTitle);
-		workflowEntity.setVersion(selectedWfVersion);
-		workflowEntity.setUploaderName(selectedWfUploaderName);
-
-		WorkflowLaunchHelper launchHelper = new WorkflowLaunchHelper(
-				parentActivity, workflowEntity, Activity_Starter_Code);
-		launchHelper.launch();
-	}
-
 	private void prepareData() {
 
 		String[] projection = new String[] {
 				DataProviderConstants.WorkflowTitle,
 				DataProviderConstants.Version,
 				DataProviderConstants.UploaderName,
-				DataProviderConstants.Avatar};
+				DataProviderConstants.Avatar,
+				DataProviderConstants.WorkflowUri,
+				DataProviderConstants.LastLaunch,
+				DataProviderConstants.FirstLaunch};
 
 		Bundle loaderArgs = new Bundle();
 		loaderArgs.putStringArray("projection", projection);
@@ -208,18 +179,13 @@ public class WorkflowsFragment extends Fragment {
 		getLoaderManager().restartLoader(
 				loaderId,
 				loaderArgs,
-				new DatabaseLoader(parentActivity,
-						new SavedWorkflowDataLoadingListener()));
+				new DatabaseLoader(parentActivity, new SavedWorkflowDataLoadingListener()));
 	}
 
 	// class to handle data loading results
-	private class SavedWorkflowDataLoadingListener implements
-			CallbackTask {
-
+	private class SavedWorkflowDataLoadingListener implements CallbackTask {
 		@Override
-		public Object onTaskInProgress(Object... param) {
-			return null;
-		}
+		public Object onTaskInProgress(Object... param) { return null; }
 
 		@Override
 		public Object onTaskComplete(Object... result) {
@@ -231,10 +197,7 @@ public class WorkflowsFragment extends Fragment {
 
 			Cursor allRecords = (Cursor) result[0];
 
-			// have to move the cursor to point to the
-			// first row for every query after the first one (same content loader?)
-			if (allRecords.moveToFirst()) {
-				do {
+			while (allRecords.moveToNext()){
 					String title = allRecords
 							.getString(allRecords
 									.getColumnIndexOrThrow(DataProviderConstants.WorkflowTitle));
@@ -244,14 +207,19 @@ public class WorkflowsFragment extends Fragment {
 					String username = allRecords
 							.getString(allRecords
 									.getColumnIndexOrThrow(DataProviderConstants.UploaderName));
-					/*String wfuri = allRecords
+					String wfuri = allRecords
 							.getString(allRecords
-									.getColumnIndexOrThrow(DataProviderConstants.WorkflowUri));*/
+									.getColumnIndexOrThrow(DataProviderConstants.WorkflowUri));
+					String lastLaunch = allRecords
+							.getString(allRecords
+									.getColumnIndexOrThrow(DataProviderConstants.LastLaunch));
+					String firstLaunch = allRecords
+							.getString(allRecords
+									.getColumnIndexOrThrow(DataProviderConstants.FirstLaunch));
 					byte[] avatorData = allRecords
 							.getBlob(allRecords
 									.getColumnIndexOrThrow(DataProviderConstants.Avatar));
-					Bitmap avatorBitmap = BitmapFactory.decodeByteArray(
-							avatorData, 0, avatorData.length);
+					Bitmap avatorBitmap = BitmapFactory.decodeByteArray(avatorData, 0, avatorData.length);
 					/*String runID = allRecords
 							.getString(allRecords
 									.getColumnIndexOrThrow(DataProviderConstants.Run_Id));*/
@@ -261,12 +229,13 @@ public class WorkflowsFragment extends Fragment {
 					savedWorkflow.setUploaderName(username);
 					savedWorkflow.setVersion(version);
 					savedWorkflow.setAvator(avatorBitmap);
-					//savedWorkflow.setWorkflow_URI(wfuri);
+					savedWorkflow.setWorkflow_URI(wfuri);
+					savedWorkflow.setFirstLaunched(firstLaunch);
+					savedWorkflow.setLastLaunched(lastLaunch);
 					//savedWorkflow.setRunID(runID);
 
 					savedWorkflows.add(savedWorkflow);
-				} while (allRecords.moveToNext());
-			}
+			}// end of while moveToNext
 
 			// refresh the list
 			if (savedWorkflows != null && savedWorkflows.size() > 0) {
@@ -274,11 +243,9 @@ public class WorkflowsFragment extends Fragment {
 				defaultTextView.setVisibility(8);
 				int count = savedWorkflows.size();
 				if (count > 1) {
-					fragWfDesc.setText("There are " + count
-							+ " saved workflows : ");
+					fragWfDesc.setText("There are " + count + " saved workflows : ");
 				} else {
-					fragWfDesc.setText("There is " + count
-							+ " saved workflow : ");
+					fragWfDesc.setText("There is " + count + " saved workflow : ");
 				}
 				fragWfDesc.setPadding(5, 0, 0, 0);
 				fragWfDesc.setTextSize(14);
@@ -290,16 +257,13 @@ public class WorkflowsFragment extends Fragment {
 
 			savedWfList.setOnItemClickListener(new OnItemClickListener() {
 
-				public void onItemClick(AdapterView<?> parent, View arg1,
-						int itemIndex, long arg3) {
+				public void onItemClick(AdapterView<?> parent, View arg1, int itemIndex, long arg3) {
 
-					final WorkflowBE workflowEntity = savedWorkflows.get(itemIndex);
-					selectedTitle = workflowEntity.getTitle();
-					selectedWfVersion = workflowEntity.getVersion();
-					selectedWfUploaderName = workflowEntity.getUploaderName();
+					selectedWorkflow = savedWorkflows.get(itemIndex);
 					
 					showLaunchDialog("Do you want to launch this workflow ?");
-					/*MessageHelper.showOptionsDialog(parentActivity, "Do you want to launch this workflow ?", null, new CallbackTask(){
+					/*MessageHelper.showOptionsDialog(parentActivity, 
+					 * "Do you want to launch this workflow ?", null, new CallbackTask(){
 
 						@Override
 						public Object onTaskInProgress(Object... param) {
@@ -317,7 +281,6 @@ public class WorkflowsFragment extends Fragment {
 
 						@Override
 						public Object onTaskComplete(Object... result) {
-							// TODO Auto-generated method stub
 							return null;
 						}
 						
@@ -346,6 +309,28 @@ public class WorkflowsFragment extends Fragment {
 			return null;
 		}
 	}
+	
+	private void showLaunchDialog(String message) {
+		MessageHelper.showOptionsDialog(parentActivity, message, "Attention",
+				new CallbackTask() {
+					@Override
+					public Object onTaskInProgress(Object... param) {
+						// check Internet
+						SystemStatesChecker sysChecker = new SystemStatesChecker(parentActivity);
+						if (!sysChecker.isNetworkConnected()) {
+							return null;
+						}
+						// re-run
+						WorkflowLaunchHelper launchHelper = new WorkflowLaunchHelper(
+								parentActivity, selectedWorkflow, Activity_Starter_Code);
+						launchHelper.launch();
+						return null;
+					}
+
+					@Override
+					public Object onTaskComplete(Object... result) { return null; }
+				}, null);
+	}
 
 	private class SavedWorkflowListAdapter extends ArrayAdapter<WorkflowBE> {
 
@@ -371,33 +356,38 @@ public class WorkflowsFragment extends Fragment {
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
 
-			View row = null;
-
 			if (convertView == null) {
-				LayoutInflater inflater = (LayoutInflater) getContext()
-						.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-				row = inflater.inflate(R.layout.main_workflows_single_row,
-						parent, false);
-			} else {
-				row = convertView;
-			}
-
-			ImageView avatar = (ImageView) row
-					.findViewById(R.id.savedAvatarImage);
-			TextView title = (TextView) row
-					.findViewById(R.id.savedWorkflowTitle);
-			TextView userName = (TextView) row
-					.findViewById(R.id.savedUploaderName);
-			TextView version = (TextView) row.findViewById(R.id.savedWfVersion);
-
+				LayoutInflater inflater = 
+						(LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+				convertView = inflater.inflate(R.layout.main_workflows_single_row,parent, false);
+			} 
+			
 			WorkflowBE object = getItem(position);
-
-			avatar.setImageBitmap(object.getAvator());
-			title.setText(object.getTitle());
+			
+			TextView title = (TextView) convertView.findViewById(R.id.savedWorkflowTitle);
+			TextView userName = (TextView) convertView.findViewById(R.id.savedUploaderName);
+			TextView version = (TextView) convertView.findViewById(R.id.savedWfVersion);
+			TextView firstLaunch = (TextView) convertView.findViewById(R.id.savedWfFirstLaunchValue);
+			TextView lastLaunch = (TextView) convertView.findViewById(R.id.savedWfLastLaunchValue);
+			
+			// TODO: currently scaled to 100 x 100
+			Drawable avatarDrawable = new BitmapDrawable(getResources(),
+					Bitmap.createScaledBitmap(object.getAvator(), 100, 100, true));
+			/*Rect outRect = new Rect();
+			userName.getDrawingRect(outRect);
+			// resize the Rect
+			//outRect.inset(-10, 10);
+			avatarDrawable.setBounds(outRect);
+			userName.setCompoundDrawables(null, avatarDrawable, null, null);*/
+			userName.setCompoundDrawablesWithIntrinsicBounds(null, avatarDrawable, null, null);
 			userName.setText(object.getUploaderName());
+			
+			title.setText(object.getTitle());
 			version.setText("version: " + object.getVersion());
+			firstLaunch.setText(object.getFirstLaunched());
+			lastLaunch.setText(object.getLastLaunched());
 
-			return row;
+			return convertView;
 		}
 	}
 }

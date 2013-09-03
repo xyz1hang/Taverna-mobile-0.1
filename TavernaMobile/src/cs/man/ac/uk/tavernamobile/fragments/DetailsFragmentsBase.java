@@ -55,6 +55,7 @@ public class DetailsFragmentsBase extends Fragment {
 
 	protected void setupImage(ImageView target, Drawable image) {
 		if (image != null) {
+			target.setVisibility(0);
 			target.setImageDrawable(image);
 		}
 	}

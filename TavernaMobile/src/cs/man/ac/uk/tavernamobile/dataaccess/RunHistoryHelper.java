@@ -38,6 +38,8 @@ public class RunHistoryHelper extends ContentProvider {
             DataProviderConstants.Version + " " + TEXT_TYPE + ", " +
             DataProviderConstants.UploaderName + " " + TEXT_TYPE + ", " +
             //DataProviderConstants.Run_Id + " " + TEXT_TYPE + ", " +
+            DataProviderConstants.LastLaunch + " " + TEXT_TYPE + ", " +
+            DataProviderConstants.FirstLaunch + " " + TEXT_TYPE + ", " +
             DataProviderConstants.Avatar + " " + BLOB_TYPE +
             ")";
 	
@@ -48,8 +50,8 @@ public class RunHistoryHelper extends ContentProvider {
             DataProviderConstants.Run_Id + " " + TEXT_TYPE + ", " +
             DataProviderConstants.WF_ID + " " + TEXT_TYPE + ", " +
             FOREIGN_KEY_TYPE + "(" + DataProviderConstants.WF_ID + ") " + 
-            REFERENCES_TYPE + DataProviderConstants.WF_TABLE_NAME + "(" + DataProviderConstants.WF_ID + ")" +
-            ")";
+            REFERENCES_TYPE + DataProviderConstants.WF_TABLE_NAME + 
+            "(" + DataProviderConstants.WF_ID + ")" + ")";
 	
 	private static final int WF_TABLE = 1;
     private static final int RUN_TABLE = 2;
@@ -472,12 +474,10 @@ public class RunHistoryHelper extends ContentProvider {
 	}
 
 	@Override
-	public int update(Uri uri, ContentValues values, String selection,
-			String[] selectionArgs) {
+	public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
 
 		int match = sURIMatcher.match(uri);
 		SQLiteDatabase db = mDbHelper.getWritableDatabase();
-		
 		
 		switch (match)
         {
@@ -520,8 +520,43 @@ public class RunHistoryHelper extends ContentProvider {
 	}
 	
 	@Override
-	public int delete(Uri arg0, String arg1, String[] arg2) {
-		// TODO Auto-generated method stub
+	public int delete(Uri uri, String selection, String[] selectionArgs) {
+		int match = sURIMatcher.match(uri);
+		SQLiteDatabase db = mDbHelper.getWritableDatabase();
+		switch (match)
+        {
+        	case WF_TABLE:
+		        // Updates the table
+		        int numOfRows = db.delete(
+		        		DataProviderConstants.WF_TABLE_NAME,
+		                selection,
+		                selectionArgs);
+		
+		        // If the delete succeeded, notify the change and 
+		        // return the number of updated rows.
+		        if (numOfRows != 0) {
+		            // getContext().getContentResolver().notifyChange(uri, null);
+		            return numOfRows;
+		        } else {
+		            throw new SQLiteException("Delete error:" + uri);
+		        }
+            
+		    case RUN_TABLE:
+		    	// Updates the table
+		        int numOfRows1 = db.delete(
+		        		DataProviderConstants.WF_RUN_TABLE_NAME,
+		                selection,
+		                selectionArgs);
+		
+		        // If the delete succeeded, notify the change and 
+		        // return the number of updated rows.
+		        if (numOfRows1 != 0) {
+		            // getContext().getContentResolver().notifyChange(uri, null);
+		            return numOfRows1;
+		        } else {
+		            throw new SQLiteException("Delete error:" + uri);
+		        }
+        }
 		return 0;
 	}
 

@@ -117,9 +117,9 @@
                 android:layout_height="wrap_content" >
 
                 <TextView
+                    android:id="@+id/wfExpoSingleRowCreditText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="5dp"
                     android:layout_marginRight="5dp"
                     android:gravity="center_vertical"
                     android:text="@string/wfexpo_sr_credit"
@@ -137,87 +137,91 @@
                     android:textSize="12sp" />
             </LinearLayout>
 
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left|center_vertical"
+                android:layout_marginBottom="5dp"
+                android:orientation="horizontal" >
+
+                <TextView
+                    android:id="@+id/wfExpoSingleRowRatingText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="5dp"
+                    android:gravity="center_vertical"
+                    android:text="@string/wfexpo_sr_rating"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textColor="@color/Black"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/wfExpoRatingText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:textColor="@color/Black"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
             <ImageView
                 android:id="@+id/wfExpoThumbnail"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:contentDescription="@string/wfexpo_sr_mediam_wf_thumbnail"
-                android:src="@android:color/transparent" />
+                android:contentDescription="@string/wfexpo_sr_mediam_wf_thumbnail" />
+
+            <TextView
+                android:id="@+id/thumbnail_not_available_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:padding="10dp"
+                android:text="@string/thumbnail_not_available_text"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@color/Gray"
+                android:textStyle="italic"
+                android:visibility="gone" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="left|center_vertical"
                 android:layout_marginBottom="5dp"
-                android:layout_marginRight="10dp"
-                android:layout_marginTop="5dp"
+                android:gravity="center"
                 android:orientation="horizontal" >
 
-                <LinearLayout
-                    android:layout_width="0dp"
+                <TextView
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_weight="1"
-                    android:orientation="horizontal" >
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginRight="5dp"
+                    android:gravity="center_vertical"
+                    android:text="@string/wfexpo_sr_type"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textColor="@color/Black"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginRight="5dp"
-                        android:gravity="center_vertical"
-                        android:text="@string/wfexpo_sr_type"
-                        android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:textColor="@color/Black"
-                        android:textSize="12sp"
-                        android:textStyle="bold" />
+                <TextView
+                    android:id="@+id/wfExpoTypeText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left|center_vertical"
+                    android:gravity="center_vertical"
+                    android:textColor="@color/Black"
+                    android:textSize="12sp" />
+            </LinearLayout>
 
-                    <TextView
-                        android:id="@+id/wfExpoTypeText"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="left|center_vertical"
-                        android:layout_marginRight="5dp"
-                        android:gravity="center_vertical"
-                        android:textColor="@color/Black"
-                        android:textSize="12sp" />
-
-                </LinearLayout>
-
-                <View
+            <!--
+                     <View
                     style="@style/Divider"
                     android:layout_width="1dp"
                     android:layout_height="match_parent"
                     android:layout_gravity="center" />
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_weight="1"
-                    android:orientation="horizontal" >
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="5dp"
-                        android:layout_marginRight="5dp"
-                        android:gravity="center_vertical"
-                        android:text="@string/wfexpo_sr_rating"
-                        android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:textColor="@color/Black"
-                        android:textSize="12sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/wfExpoRatingText"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:textColor="@color/Black"
-                        android:textSize="12sp" />
-                </LinearLayout>
-            </LinearLayout>
+            -->
         </LinearLayout>
     </LinearLayout>
 
@@ -225,9 +229,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:dividerPadding="10dp"
-        android:orientation="horizontal"
-        android:showDividers="middle">
+        android:orientation="horizontal" >
 
         <Button
             android:id="@+id/wfExpo_view_button"
@@ -261,7 +263,6 @@
             android:textColor="@color/Black"
             android:textSize="12sp"
             android:textStyle="bold" />
-
     </LinearLayout>
 
 </LinearLayout>

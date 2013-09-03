@@ -13,6 +13,8 @@ public class DataProviderConstants {
 	public static final String WorkflowFileName = "Workflow_FileName";
 	public static final String Avatar = "Avatar";
 	public static final String UploaderName = "Uploader_Name";
+	public static final String LastLaunch = "Last_Launch";
+	public static final String FirstLaunch = "First_Launch";
 	public static final String Run_Id = "Run_ID";
 
 	// database related constants

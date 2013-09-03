@@ -1,5 +1,6 @@
 package cs.man.ac.uk.tavernamobile.utils;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -19,25 +20,25 @@ public class ImageRetriever {
 
 	public Bitmap retrieveAvatarImage(String imageUri) {
 
-		Drawable image = null;
-		InputStream is = null;
-		String inputurl = imageUri;
+		Bitmap bitmap = null;
 		try {
-			URL url = new URL(inputurl);
+			URL url = new URL(imageUri);
 			Object content = url.getContent();
-			is = (InputStream) content;
-			image = Drawable.createFromStream(is, "src");
+			InputStream is = (InputStream) content;
+			Drawable image = Drawable.createFromStream(is, "src");
+			
+			bitmap = ((BitmapDrawable) image).getBitmap();
+			// cache the image
+			imageCache.put(imageUri, bitmap);
+			TavernaAndroid.setmMemoryCache(imageCache);
 			
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
+		} catch(FileNotFoundException e){
+			// swallow - image not available notice should be shown
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
-		Bitmap bitmap = ((BitmapDrawable) image).getBitmap();
-		// cache the image
-		imageCache.put(imageUri, bitmap);
-		TavernaAndroid.setmMemoryCache(imageCache);
 		
 		return bitmap;
 	}

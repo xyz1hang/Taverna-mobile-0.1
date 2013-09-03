@@ -57,7 +57,7 @@ public class Workflow extends ElementBase implements Serializable {
 	@ElementList(required = false)
 	protected List<Rating> ratings;
 	
-	@ElementList(inline = true, required = false, entry = "user")
+	@ElementList(required = false, entry = "user")
 	protected List<Credit> credits;
 	
 	@ElementList(required = false)

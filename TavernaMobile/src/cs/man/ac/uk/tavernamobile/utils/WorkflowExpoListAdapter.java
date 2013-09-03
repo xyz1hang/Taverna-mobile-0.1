@@ -38,6 +38,7 @@ public class WorkflowExpoListAdapter extends BaseAdapter {
 	private Activity mContext;
 	
 	private android.support.v4.util.LruCache<String, Bitmap> imageCache;
+	private TextView thumbnailNotAvailableView;
 	
 	public int animationStartPosition;
 	
@@ -89,19 +90,21 @@ public class WorkflowExpoListAdapter extends BaseAdapter {
 		TextView titleView = (TextView) convertView.findViewById(R.id.wfExpoTitleVersion);
 		TextView createdView = (TextView) convertView.findViewById(R.id.wfExpoCreated);
 		TextView updatedView = (TextView) convertView.findViewById(R.id.wfExpoUpdateText);
-		TextView creditView = (TextView) convertView.findViewById(R.id.wfExpoCreditText);
 		ImageView thumbnailView = (ImageView) convertView.findViewById(R.id.wfExpoThumbnail);
 		TextView typeView = (TextView) convertView.findViewById(R.id.wfExpoTypeText);
-		TextView ratingView = (TextView) convertView.findViewById(R.id.wfExpoRatingText);
 		Button viewButton = (Button) convertView.findViewById(R.id.wfExpo_view_button);
 		Button downloadButton = (Button) convertView.findViewById(R.id.wfExpo_download_button);
+		TextView creditValue = (TextView) convertView.findViewById(R.id.wfExpoCreditText);
+		TextView ratingValue = (TextView) convertView.findViewById(R.id.wfExpoRatingText);
+		
+		thumbnailNotAvailableView = 
+				(TextView) convertView.findViewById(R.id.thumbnail_not_available_text);
 		
 		// get the data
 		final Workflow expo = getItem(position);
 		
 		// set up view button listener
 		viewButton.setOnClickListener(new OnClickListener(){
-
 			@Override
 			public void onClick(View v) {
 
@@ -109,7 +112,6 @@ public class WorkflowExpoListAdapter extends BaseAdapter {
 				intent.putExtra("workflow_details", expo);
 				mContext.startActivity(intent);
 			}
-			
 		});
 
 		// set up download button listener
@@ -182,20 +184,25 @@ public class WorkflowExpoListAdapter extends BaseAdapter {
 			for(Credit c : credits){
 				creditText += c.getValue() + " ";
 			}
-			creditView.setText(creditText);
+			creditValue.setText(creditText);
+		}else{
+			creditValue.setText("not available");
 		}
 
 		List<Rating> ratings = expo.getRatings();
+		String averageString = null;
+		double average = 0.0;
+		int numOfRatings = 0;
 		if(ratings != null && ratings.size() > 0){
-			double average = 0.0; 
 			int sum = 0;
 			for(Rating r : ratings){
 				sum += Integer.parseInt(r.getValue());
 			}
 			average = sum / ratings.size();
-			String average2 = String.format(Locale.getDefault(), "%.1f", average);
-			ratingView.setText(average2 + " / 5");
+			numOfRatings = ratings.size();
 		}
+		averageString = String.format(Locale.getDefault(), "%.1f", average);
+		ratingValue.setText(averageString + " / 5 ("+numOfRatings+") ratings");
 		
 		//String thumbnailUri = expo.getThumbnail();
 		//String desctiption = expo.getDescription();
@@ -263,8 +270,6 @@ public class WorkflowExpoListAdapter extends BaseAdapter {
 			}
 			else if(imageHolder instanceof ImageView){
 				Bitmap wfImage = new ImageRetriever().retrieveAvatarImage(resourceURI);
-				// cache the wfThumbnail by its URI
-				// imageCacheKey = resourceURI;
 				return wfImage;
 			}
 			
@@ -272,21 +277,27 @@ public class WorkflowExpoListAdapter extends BaseAdapter {
 		}
 
 		@Override
-		public Object onTaskComplete(Object... result) {
-			if(!(result[0] instanceof Bitmap)){
-				return null;
-			}
-
-			Bitmap avatarBitmap = (Bitmap) result[0];
-			
+		public Object onTaskComplete(Object... result) {			
 			if(imageHolder instanceof TextView){
+				if(!(result[0] instanceof Bitmap)){
+					return null;
+				}
+				Bitmap bitmapImage = (Bitmap) result[0];
 				TextView holder = (TextView) imageHolder;
-				Drawable avatarDrawable = new BitmapDrawable(mContext.getResources(), avatarBitmap);
+				Drawable avatarDrawable = new BitmapDrawable(mContext.getResources(), bitmapImage);
 				holder.setCompoundDrawablesWithIntrinsicBounds(null, avatarDrawable, null, null);
 			}
 			else if(imageHolder instanceof ImageView){
-				ImageView holder = (ImageView) imageHolder;
-				holder.setImageBitmap(avatarBitmap);
+				if (result[0] instanceof Bitmap){
+					thumbnailNotAvailableView.setVisibility(8);
+					Bitmap bitmapImage = (Bitmap) result[0];
+					ImageView holder = (ImageView) imageHolder;
+					holder.setVisibility(0);
+					holder.setImageBitmap(bitmapImage);
+				}else{
+					imageHolder.setVisibility(8);
+					thumbnailNotAvailableView.setVisibility(0);
+				}
 			}
 			
 			// cache the avatar in memory

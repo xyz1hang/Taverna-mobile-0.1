@@ -1,17 +1,8 @@
 <resources>
     <string name="app_name">Taverna Mobile</string>
-    
-    <!-- runList menu titles -->
-    <string name="delete_all_runs_menu">Delete all runs</string>
-    <string name="delete_run_menu">Delete run</string>
-    <!-- main panel menu titles -->
-    <string name="search_results_menu">Search again</string>
-    <string name="menu_settings">Settings</string>
-    <string name="myExp_login_menu_title">Log in to myExperiment</string>
-    
     <string name="authority">cs.man.ac.uk.tavernamobile</string>
-    
     <string name="main_activity_title">TavernaMobile</string>
+    
     <string name="arrow_down_image">arrow_down</string>
     <string name="looking_for_workflows">Looking for workflows ?</string>
     <string name="search_for_it">Search for workflows</string>
@@ -25,7 +16,7 @@
     <string name="title_section2">Workflows</string>
     <string name="title_section1">Explore</string>
     
-    <!-- Explore fragments Strings -->
+    <!-- Main screen Explore fragments Strings -->
      <string name="sort_text">Sort by :</string>
    	<string name="order_radio_button_text">Ascending order</string>
     <string-array name="wfExpo_sort_criteria">
@@ -43,15 +34,26 @@
     <string name="wfexpo_sr_view_button">view</string>
     <string name="wfexpo_sr_download_button">download</string>
     <string name="wfexpo_sr_mediam_wf_thumbnail">Mediam Workflow thumbnail</string>
+    <string name="thumbnail_not_available_text">Thumbnail not available</string>
    
+    <!-- Main screen RunList menu titles -->
+    <string name="delete_all_runs_menu">Delete all runs</string>
+    <string name="delete_run_menu">Delete run</string>
+    <!-- main panel menu titles -->
+    <string name="search_results_menu">Search again</string>
+    <string name="menu_settings">Settings</string>
+    <string name="myExp_login_menu_title">Log in to myExperiment</string>
+    <!-- Main screen Workflows fragments String  -->
+    <string name="Last_Launch_Text">Last Launch: </string>
+    <string name="First_Launch_Text">First Launch: </string>
     
   	<!-- Workflow Details fragments Strings -->
     <string name="workflow_detail_title_section1">Preview</string>
     <string name="workflow_detail_title_section2">Description</string>
     <string name="workflow_detail_title_section3">License</string>
-    
     <string name="wfpreview_default_created_at">loading data</string>
     <string name="wfpreview_image_contentDescription">workflow preview image</string>
+    <string name="wfDetail_preview_not_available_text">Preview not available</string>
     
     <string name="input_detail_title_section1">Input Value</string>
     <string name="input_detail_title_section2">Description and Sample value</string>

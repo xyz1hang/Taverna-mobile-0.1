@@ -17,8 +17,7 @@ public class BackgroundTaskHandler {
 		mBackgroundTask.cancel(mayInterrupt);
 	}
 	
-	public class BackgroundTask extends
-			android.os.AsyncTask<Object, Void, Object> {
+	public class BackgroundTask extends android.os.AsyncTask<Object, Void, Object> {
 		private Context currentContext;
 		private android.app.ProgressDialog dialog;
 		private CallbackTask taskListener;
@@ -45,15 +44,7 @@ public class BackgroundTaskHandler {
 		@Override
 		protected Object doInBackground(Object... params) {
 			if (taskListener != null) {
-				Object results = null;
-				try {
-					results = taskListener.onTaskInProgress(params);
-				} catch (Exception e) {
-					// TODO: consume quietly or throw ?
-					e.printStackTrace();
-				}
-
-				return results;
+				return taskListener.onTaskInProgress(params);
 			}
 
 			return null;
@@ -65,12 +56,7 @@ public class BackgroundTaskHandler {
 			dialog.dismiss();
 
 			if (taskListener != null) {
-				try {
-					taskListener.onTaskComplete(result);
-				} catch (Exception e) {
-					// TODO: consume quietly or throw ?
-					e.printStackTrace();
-				}
+				taskListener.onTaskComplete(result);
 			}
 		}
 	}
