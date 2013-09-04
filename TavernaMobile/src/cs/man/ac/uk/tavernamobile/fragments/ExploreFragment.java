@@ -21,23 +21,19 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
-import android.widget.TextView;
-import cs.man.ac.uk.tavernamobile.MyExperimentLogin;
 import cs.man.ac.uk.tavernamobile.R;
 import cs.man.ac.uk.tavernamobile.SearchResultScreen;
-import cs.man.ac.uk.tavernamobile.datamodels.User;
 import cs.man.ac.uk.tavernamobile.datamodels.Workflow;
 import cs.man.ac.uk.tavernamobile.myexperiment.WorkflowsLoader;
 import cs.man.ac.uk.tavernamobile.utils.CallbackTask;
 import cs.man.ac.uk.tavernamobile.utils.ListViewOnScrollTaskHandler;
 import cs.man.ac.uk.tavernamobile.utils.MessageHelper;
-import cs.man.ac.uk.tavernamobile.utils.TavernaAndroid;
 import cs.man.ac.uk.tavernamobile.utils.WorkflowExpoListAdapter;
 
 public class ExploreFragment extends Fragment implements CallbackTask {
 
 	private Activity parentActivity;
-	private TextView myExperimentLoginText;
+	//private TextView myExperimentLoginText;
 	private View footerView;
 	private ListView expoList;
 	private ProgressBar loadingProBar;
@@ -147,7 +143,7 @@ public class ExploreFragment extends Fragment implements CallbackTask {
 					}
 				});
 		
-		myExperimentLoginText = (TextView) getActivity().findViewById(R.id.myExperimentLoginState);
+		/*myExperimentLoginText = (TextView) getActivity().findViewById(R.id.myExperimentLoginState);
 		myExperimentLoginText.setOnClickListener(new android.view.View.OnClickListener() {
 					@Override
 					public void onClick(View v) {
@@ -182,7 +178,7 @@ public class ExploreFragment extends Fragment implements CallbackTask {
 							parentActivity.startActivity(gotoMyexperimentLogin);
 						}
 					}
-				});
+				});*/
 	}
 
 	@Override
@@ -192,11 +188,11 @@ public class ExploreFragment extends Fragment implements CallbackTask {
 	}
 
 	private void refreshLoginState() {
-		User userLoggedin = TavernaAndroid.getMyEUserLoggedin();
+		/*User userLoggedin = TavernaAndroid.getMyEUserLoggedin();
 		String userName = null;
 		if (userLoggedin != null) {
 			userName = userLoggedin.getName();
-			/*Bitmap avatarBitmap = 
+			Bitmap avatarBitmap = 
 			 	TavernaAndroid.getmMemoryCache().get(userLoggedin.getAvatar().getResource());
 			if(avatarBitmap != null){
 				Drawable avatarDrawable = new BitmapDrawable(getResources(),
@@ -207,11 +203,11 @@ public class ExploreFragment extends Fragment implements CallbackTask {
 				//outRect.inset(-10, 10);
 				avatarDrawable.setBounds(outRect);
 				myExperimentLoginText.setCompoundDrawables(avatarDrawable, null, null, null);
-			}*/
+			}
 			myExperimentLoginText.setText("Logged in as: "+ userName);
 		}else{
 			myExperimentLoginText.setText("Log in to myExperiment");
-		}
+		}*/
 	}
 	
 	private void refreshTheList() {

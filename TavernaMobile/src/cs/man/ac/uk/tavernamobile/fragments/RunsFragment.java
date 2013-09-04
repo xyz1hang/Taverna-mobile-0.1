@@ -459,7 +459,8 @@ public class RunsFragment extends Fragment {
 		@Override
 		public int getChildrenCount(int groupPosition) {
 			int size = childElements.size() <= groupPosition ? 
-					0 : childElements.get(runGroups[groupPosition]).size();
+					0 : childElements.get(runGroups[groupPosition]) == null? 
+							0: childElements.get(runGroups[groupPosition]).size();
 			return size;
 		}
 

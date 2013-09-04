@@ -3,44 +3,30 @@ package cs.man.ac.uk.tavernamobile;
 import java.util.ArrayList;
 import java.util.Locale;
 
-import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
-
 import android.app.ActionBar;
-import android.app.Activity;
-import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.Rect;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemSelectedListener;
-import android.widget.BaseAdapter;
-import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
-import cs.man.ac.uk.tavernamobile.datamodels.User;
+
+import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
+
 import cs.man.ac.uk.tavernamobile.fragments.ExploreFragment;
 import cs.man.ac.uk.tavernamobile.fragments.RunsFragment;
 import cs.man.ac.uk.tavernamobile.fragments.WorkflowsFragment;
-import cs.man.ac.uk.tavernamobile.utils.CallbackTask;
-import cs.man.ac.uk.tavernamobile.utils.MessageHelper;
-import cs.man.ac.uk.tavernamobile.utils.TavernaAndroid;
 
 public class MainActivity extends FragmentActivity {
-
+	
+	private boolean backHit;
+	//private BaseAdapter mSpinnerAdapter;
+	
 	/**
 	 * The {@link android.support.v4.view.PagerAdapter} that will provide fragments for each of the
 	 * sections. We use a {@link android.support.v4.app.FragmentPagerAdapter} derivative, which will
@@ -48,40 +34,50 @@ public class MainActivity extends FragmentActivity {
 	 * to switch to a {@link android.support.v4.app.FragmentStatePagerAdapter}.
 	 */
 	SectionsPagerAdapter mSectionsPagerAdapter;
-
+	
 	/**
 	 * The {@link ViewPager} that will host the section contents.
 	 */
 	ViewPager mViewPager;
-	
-	private boolean backHit;
-	private Activity currentActivity;
-	
-	private BaseAdapter mSpinnerAdapter;
+
+	// root layout for child fragments to access
+	private static ViewGroup parentContainer;
+	private SlidingMenu slidingMenu;
+
+	public SlidingMenu getMenu() {
+		return slidingMenu;
+	}
+
+	public static ViewGroup getParentContainer() {
+		return parentContainer;
+	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main_panel);
-		currentActivity = this;
+		
+		parentContainer = (ViewGroup) findViewById(R.id.main_panel_root);
 		
 		// configure the SlidingMenu
-        SlidingMenu menu = new SlidingMenu(this);
-        menu.setMode(SlidingMenu.LEFT);
-        menu.setTouchModeAbove(SlidingMenu.TOUCHMODE_MARGIN);
-        menu.setShadowWidthRes(R.dimen.shadow_width);
-        menu.setShadowDrawable(R.drawable.shadow);
-        menu.setBehindOffsetRes(R.dimen.slidingmenu_offset);
-        menu.setFadeDegree(0.35f);
-        menu.attachToActivity(this, SlidingMenu.SLIDING_CONTENT);
-        menu.setMenu(R.layout.sliding_menu);
+        slidingMenu = new SlidingMenu(this);
+        slidingMenu.setMode(SlidingMenu.LEFT);
+        slidingMenu.setTouchModeAbove(SlidingMenu.TOUCHMODE_MARGIN);
+        slidingMenu.setShadowWidthRes(R.dimen.shadow_width);
+        slidingMenu.setShadowDrawable(R.drawable.shadow);
+        slidingMenu.setBehindOffsetRes(R.dimen.slidingmenu_offset);
+        slidingMenu.setFadeDegree(0.35f);
+        slidingMenu.attachToActivity(this, SlidingMenu.SLIDING_CONTENT);
+        slidingMenu.setMenu(R.layout.sliding_menu);
+        
+        this.overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
 		
 		// UI components
 		ActionBar actionBar = getActionBar();
 		actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#D02E2E2E")));
 		actionBar.setDisplayShowTitleEnabled(true);
-		mSpinnerAdapter = new ActionBarAdapter();
-				
+		//mSpinnerAdapter = new ActionBarAdapter();
+		
 		// Section adapter that will return a fragment for every sections
 	    mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 				
@@ -98,11 +94,17 @@ public class MainActivity extends FragmentActivity {
 		mViewPager.setAdapter(mSectionsPagerAdapter);
 		mViewPager.setOffscreenPageLimit(1);
 	    mViewPager.setCurrentItem(0);
-	    
+		
+		/*FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+		ft.setCustomAnimations(R.anim.push_left_in, R.anim.push_left_out);
+		Fragment newFragment = new MainFragment();
+		ft.addToBackStack("mainFragment");
+		ft.replace(R.id.main_panel_root, newFragment).commit();*/
+
 	    backHit = false;
 	}
 	
-	@Override
+	/*@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.main_panel_menu, menu);
 		
@@ -149,20 +151,22 @@ public class MainActivity extends FragmentActivity {
 		});
 		
 		return true;
-	}
+	}*/
 	
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-		    case R.id.main_panel_login_menu:
+			case R.id.main_panel_setting_menu:
+				break;
+		    /*case R.id.main_panel_login_menu:
 		    	User user = TavernaAndroid.getMyEUserLoggedin();
 		    	if(user != null){
 		    		Intent gotoMyexperimentLogin = new Intent(
 							currentActivity, MyExperimentLogin.class);
 			    	currentActivity.startActivity(gotoMyexperimentLogin);
 		    	}
-		    	break;
+		    	break;*/
 		    default:
 		    	break;
 		}
@@ -171,7 +175,8 @@ public class MainActivity extends FragmentActivity {
 
 	@Override
 	protected void onStart() {
-		mSpinnerAdapter.notifyDataSetChanged();
+		//mSpinnerAdapter.notifyDataSetChanged();
+		slidingMenu.setSlidingEnabled(true);
 		super.onStart();
 	}
 	
@@ -187,7 +192,7 @@ public class MainActivity extends FragmentActivity {
 		backHit = true;
 	    return;
 	}
-
+	
 	/**
 	 * A {@link FragmentPagerAdapter} that returns a fragment corresponding to one of the primary
 	 * sections of the app.
@@ -218,18 +223,17 @@ public class MainActivity extends FragmentActivity {
 		@Override
 		public CharSequence getPageTitle(int position) {
 			Locale locale = getApplicationContext().getResources().getConfiguration().locale;
-			switch (position) 
-			{
-			case 0: return getString(R.string.title_section1).toUpperCase(locale);
-			case 1: return getString(R.string.title_section2).toUpperCase(locale);
-			case 2: return getString(R.string.title_section3).toUpperCase(locale);
+			switch (position) {
+				case 0: return getString(R.string.title_section1).toUpperCase(locale);
+				case 1: return getString(R.string.title_section2).toUpperCase(locale);
+				case 2: return getString(R.string.title_section3).toUpperCase(locale);
 			}
 			return null;
 		}
 	}
 	
 	// action bar spinner data adapter
-	private class ActionBarAdapter extends BaseAdapter {
+	/*private class ActionBarAdapter extends BaseAdapter {
 		// just a place holder
 		private String[] data = {" "};
 		private User user;
@@ -295,5 +299,5 @@ public class MainActivity extends FragmentActivity {
 
 			return convertView;
 		}
-	}
+	}*/
 }

@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:id="@+id/main_panel_root"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_gravity="center"
+    android:gravity="center" >
 
     <android.support.v4.view.ViewPager
         android:id="@+id/mainViewPager"
@@ -28,39 +31,39 @@
         </android.support.v4.view.PagerTitleStrip>
     </android.support.v4.view.ViewPager>
 
-    <TextView
-        android:id="@+id/PoweredBy"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="false"
-        android:layout_gravity="bottom|right"
-        android:layout_toLeftOf="@+id/PoweredByCont"
-        android:background="#D0808080"
-        android:drawablePadding="10dp"
-        android:drawableRight="@drawable/myexperiment_logo"
-        android:gravity="center_vertical"
-        android:padding="5dp"
-        android:text="@string/powered_by"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:textColor="@android:color/white"
-        android:textStyle="bold|italic" />
-    
-   	<TextView
-   	    android:id="@+id/PoweredByCont"
-   	    android:layout_width="wrap_content"
-   	    android:layout_height="wrap_content"
-   	    android:layout_alignParentBottom="true"
-   	    android:layout_alignParentRight="true"
-   	    android:layout_gravity="bottom|right"
-   	    android:background="#D0808080"
-   	    android:drawableLeft="@drawable/taverna_wheel_logo_small"
-   	    android:drawablePadding="5dp"
-   	    android:gravity="center_vertical"
-   	    android:padding="5dp"
-   	    android:text="@string/powered_by_cont"
-   	    android:textAppearance="?android:attr/textAppearanceSmall"
-   	    android:textColor="@android:color/white"
-   	    android:textStyle="bold|italic" />
+        android:layout_gravity="bottom|right" >
 
-</RelativeLayout>
+        <TextView
+            android:id="@+id/PoweredBy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#D0808080"
+            android:drawablePadding="10dp"
+            android:drawableRight="@drawable/myexperiment_logo"
+            android:gravity="center_vertical"
+            android:padding="5dp"
+            android:text="@string/powered_by"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="@android:color/white"
+            android:textStyle="bold|italic" />
+
+        <TextView
+            android:id="@+id/PoweredByCont"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#D0808080"
+            android:drawableLeft="@drawable/taverna_wheel_logo_small"
+            android:drawablePadding="5dp"
+            android:gravity="center_vertical"
+            android:padding="5dp"
+            android:text="@string/powered_by_cont"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="@android:color/white"
+            android:textStyle="bold|italic" />
+
+    </LinearLayout>
+
+</FrameLayout>

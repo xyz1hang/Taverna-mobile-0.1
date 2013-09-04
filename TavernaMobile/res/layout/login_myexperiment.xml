@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_gravity="center"
     android:background="@drawable/gradient1"
     android:gravity="center"
-    android:orientation="vertical" >
+    android:orientation="vertical"
+    android:padding="10dp" >
 
     <TextView
         android:layout_width="wrap_content"
@@ -13,7 +15,8 @@
         android:drawableRight="@drawable/myexperiment_logo"
         android:text="@string/myExperiment_login_title"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textColor="@color/AliceBlue" />
+        android:textColor="@color/AliceBlue"
+        android:textStyle="bold" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -41,11 +44,12 @@
             android:layout_height="wrap_content"
             android:layout_weight="2"
             android:ems="10"
-            android:inputType="textMultiLine"
-            android:nextFocusDown="@+id/myeloginPasswordValue" 
-            android:singleLine="true"/>
-
+            android:imeOptions="actionNext"
+            android:inputType="text"
+            android:nextFocusDown="@+id/myeloginPasswordValue"
+            android:singleLine="true" />
     </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -70,20 +74,37 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="2"
-            android:ems="10"
             android:inputType="textPassword"
-            android:nextFocusForward="@+id/myeloginButton" 
-            android:singleLine="true">
-
+            android:nextFocusDown="@+id/myeloginButton"
+            android:singleLine="true" >
         </EditText>
     </LinearLayout>
 
-    <Button
-        android:id="@+id/myeloginButton"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        style="?android:attr/buttonBarButtonStyle"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="10dp"
-        android:text="@string/LoginButtonLabel" />
+        android:layout_marginBottom="30dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginTop="10dp" >
+
+        <Button
+            android:id="@+id/myeloginButton"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="10dp"
+            android:text="@string/LoginButtonLabel" />
+
+        <Button
+            android:id="@+id/myeloginBackButton"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="@string/BackButtonLabel" />
+    </LinearLayout>
 
 </LinearLayout>

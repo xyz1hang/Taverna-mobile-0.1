@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Locale;
 
 import android.app.ActionBar;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
@@ -31,16 +30,15 @@ import cs.man.ac.uk.tavernamobile.fragments.DetailsLicenseFragment;
 import cs.man.ac.uk.tavernamobile.fragments.DetailsPreviewFragment;
 import cs.man.ac.uk.tavernamobile.myexperiment.HttpRequestHandler;
 import cs.man.ac.uk.tavernamobile.server.WorkflowLaunchHelper;
-import cs.man.ac.uk.tavernamobile.utils.CallbackTask;
 import cs.man.ac.uk.tavernamobile.utils.BackgroundTaskHandler;
+import cs.man.ac.uk.tavernamobile.utils.CallbackTask;
 import cs.man.ac.uk.tavernamobile.utils.ImageRetriever;
 import cs.man.ac.uk.tavernamobile.utils.MessageHelper;
 import cs.man.ac.uk.tavernamobile.utils.SystemStatesChecker;
 import cs.man.ac.uk.tavernamobile.utils.TavernaAndroid;
 import cs.man.ac.uk.tavernamobile.utils.WorkflowBE;
 
-public class WorkflowDetail extends FragmentActivity implements
-		CallbackTask {
+public class WorkflowDetail extends FragmentActivity implements CallbackTask {
 
 	MyPagerAdapter mSectionsPagerAdapter;
 	ViewPager mViewPager;
@@ -53,7 +51,7 @@ public class WorkflowDetail extends FragmentActivity implements
 
 	// UI components and data of current screen
 	// private ImageView avatar;
-	private TextView myExperimentLoginText;
+	//private TextView myExperimentLoginText;
 	private TextView title;
 	private TextView userName;
 	private Bitmap avatarBitmap;
@@ -193,7 +191,7 @@ public class WorkflowDetail extends FragmentActivity implements
 		mViewPager.setOffscreenPageLimit(2);
 		mViewPager.setCurrentItem(0);
 		
-		myExperimentLoginText = (TextView) findViewById(R.id.wfdMyExperimentLoginState);
+		/*myExperimentLoginText = (TextView) findViewById(R.id.wfdMyExperimentLoginState);
 		myExperimentLoginText.setOnClickListener(new android.view.View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
@@ -221,7 +219,7 @@ public class WorkflowDetail extends FragmentActivity implements
 						currentActivity.startActivity(gotoMyexperimentLogin);
 					}
 				}
-			});
+			});*/
 	}
 
 	@Override
@@ -231,11 +229,11 @@ public class WorkflowDetail extends FragmentActivity implements
 	}
 
 	private void refreshLoginState() {
-		User userLoggedin = TavernaAndroid.getMyEUserLoggedin();
+		/*User userLoggedin = TavernaAndroid.getMyEUserLoggedin();
 		String userName = null;
 		if (userLoggedin != null) {
 			userName = userLoggedin.getName();
-			/*Bitmap avatarBitmap = TavernaAndroid.getmMemoryCache().get(userLoggedin.getAvatar().getResource());
+			Bitmap avatarBitmap = TavernaAndroid.getmMemoryCache().get(userLoggedin.getAvatar().getResource());
 			if(avatarBitmap != null){
 				Drawable avatarDrawable = new BitmapDrawable(getResources(),
 						Bitmap.createBitmap(avatarBitmap));
@@ -245,11 +243,11 @@ public class WorkflowDetail extends FragmentActivity implements
 				//outRect.inset(-10, 10);
 				avatarDrawable.setBounds(outRect);
 				myExperimentLoginText.setCompoundDrawables(avatarDrawable, null, null, null);
-			}*/
+			}
 			myExperimentLoginText.setText("Logged in as: "+ userName);
 		}else{
 			myExperimentLoginText.setText("Log in to myExperiment");
-		}
+		}*/
 	}
 
 	// load workflow data in background

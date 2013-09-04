@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <PreferenceCategory android:title="@string/Launch_history_limit" >
+        <EditTextPreference
+            android:key="launcHistoryLimit"
+            android:summary="@string/max_num_records_summary"
+            android:title="@string/max_num_records" />
+    </PreferenceCategory>
+    
+    <PreferenceCategory android:title="@string/Monitoring_setting" >
+        <ListPreference
+            android:entries="@array/refreshFrequency"
+            android:entryValues="@array/refreshFrequencyValues"
+            android:key="runStateRefreshFrequency"
+            android:summary="@string/run_refresh_rate_setting_summary"
+            android:title="@string/run_refresh_rate_setting" />
+    </PreferenceCategory>
+
+</PreferenceScreen>

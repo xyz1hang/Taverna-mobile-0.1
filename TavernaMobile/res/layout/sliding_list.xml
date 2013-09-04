@@ -7,21 +7,31 @@
         android:id="@+id/myExperimentLoginState"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="5dp"
+        android:layout_margin="20dp"
+        android:background="@drawable/general_selector"
         android:drawableLeft="@drawable/myexperiment_logo_small"
         android:drawablePadding="5dp"
         android:gravity="center"
-        android:paddingRight="10dp"
+        android:padding="10dp"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:textColor="@android:color/holo_blue_light"
+        android:textColor="@color/Gray"
         android:textStyle="bold"
         android:visibility="visible" />
 
     <ListView
         android:id="@+id/tobe_added_list"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_below="@+id/myExperimentLoginState"
+        android:paddingLeft="@dimen/list_padding"
+        android:paddingRight="@dimen/list_padding" />
+    
+    <ListView
+        android:id="@+id/sliding_menu_setting_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_below="@+id/tobe_added_list"
         android:paddingLeft="@dimen/list_padding"
         android:paddingRight="@dimen/list_padding" />
 

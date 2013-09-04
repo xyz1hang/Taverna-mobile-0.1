@@ -38,7 +38,7 @@
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden|adjustPan" >
         </activity>
-        <activity
+        <activity android:name="SettingsActivity"></activity><activity
             android:name="MyExperimentLogin"
             android:configChanges="orientation|keyboardHidden"
             android:noHistory="true"
@@ -90,6 +90,7 @@
             android:name="cs.man.ac.uk.tavernamobile.dataaccess.RunHistoryHelper"
             android:authorities="@string/authority"
             android:exported="false"/>
+        
     </application>
 
 </manifest>

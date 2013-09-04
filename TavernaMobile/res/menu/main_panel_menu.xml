@@ -1,11 +1,16 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:yourapp="http://schemas.android.com/apk/res-auto" >
 
-    <item
+    <!-- <item
         android:id="@+id/main_panel_login_menu"
         android:actionLayout="@layout/login_actionbar"
         android:icon="@drawable/myexperiment_logo_small"
         android:showAsAction="never"
-        android:title="@string/myExp_login_menu_title"/>
+        android:title="@string/myExp_login_menu_title"/> -->
+    
+    <item
+        android:id="@+id/main_panel_setting_menu"
+        android:showAsAction="never"
+        android:title="@string/menu_settings"/>
 
 </menu>

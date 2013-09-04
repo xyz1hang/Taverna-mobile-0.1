@@ -132,9 +132,11 @@
                     android:id="@+id/wfExpoCreditText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginRight="5dp"
                     android:gravity="center_vertical"
                     android:textColor="@color/Black"
                     android:textSize="12sp" />
+
             </LinearLayout>
 
             <LinearLayout

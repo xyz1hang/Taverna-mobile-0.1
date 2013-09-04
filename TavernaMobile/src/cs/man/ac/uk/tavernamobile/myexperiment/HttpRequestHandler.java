@@ -52,7 +52,8 @@ public class HttpRequestHandler {
 		return os.toByteArray();
 	}
 
-	public Object Post(String uri, Object data, String contentType) throws NetworkConnectionException {
+	public Object Post(String uri, Object data, String contentType) 
+			throws NetworkConnectionException {
 		Object serverResponse = null;
 
 		HttpClient httpClient = new DefaultHttpClient();
@@ -138,7 +139,7 @@ public class HttpRequestHandler {
 		} catch (IOException e){
 			throw new NetworkConnectionException(e.getMessage(), e);
 		} catch (Exception e) {
-			throw new NetworkConnectionException(e.getMessage(), e);
+			return e.getMessage();
 		} finally {
 			HttpClientUtils.closeQuietly(getResponse);
 			HttpClientUtils.closeQuietly(httpClient);
