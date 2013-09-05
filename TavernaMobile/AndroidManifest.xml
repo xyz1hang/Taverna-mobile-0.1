@@ -38,7 +38,9 @@
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden|adjustPan" >
         </activity>
-        <activity android:name="SettingsActivity"></activity><activity
+        <activity android:name="SettingsActivity" >
+        </activity>
+        <activity
             android:name="MyExperimentLogin"
             android:configChanges="orientation|keyboardHidden"
             android:noHistory="true"
@@ -53,9 +55,8 @@
             android:windowSoftInputMode="stateHidden|adjustPan" />
         <activity
             android:name="SearchResultScreen"
-            android:configChanges="orientation|keyboardHidden"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden|adjustPan" />
+            android:configChanges="orientation"
+            android:screenOrientation="portrait" />
         <activity
             android:name="WorkflowDetail"
             android:configChanges="orientation|keyboardHidden"
@@ -89,8 +90,7 @@
         <provider
             android:name="cs.man.ac.uk.tavernamobile.dataaccess.RunHistoryHelper"
             android:authorities="@string/authority"
-            android:exported="false"/>
-        
+            android:exported="false" />
     </application>
 
 </manifest>

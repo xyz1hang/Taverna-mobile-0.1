@@ -93,8 +93,12 @@
     <string name="Launch_history_limit">Launch History Limit</string>
     <string name="max_num_records">Maximun Number Of Records</string>
     <string name="max_num_records_summary">
-        Set maximun number of Launch history records per workflow
+        Maximun number of Launch history records per workflow
     </string>
+    <string name="max_num_records_default_value">20</string>
+    <string name="max_num_records_dialog_message">
+		Set the maximun number of Launch history records of one workflow
+	</string>
     
     <string name="Monitoring_setting">Monitoring Setting</string>
     <string name="run_refresh_rate_setting">Run state refresh rate</string>
@@ -108,11 +112,16 @@
         <item name="5">5 seconds</item>
     </string-array>
     <string-array name="refreshFrequencyValues">
-         <item name="0.5">500</item>
+        <item name="0.5">500</item>
         <item name="1">1000</item>
         <item name="2">2000</item>
         <item name="5">5000</item>
     </string-array>
+    <string name="Run_Lists_mode_setting">Other</string>
+    <string name="Live_run_list_mode_setting">Live Run List Mode</string>
+    <string name="Run_Lists_mode_setting_summary">
+        Turn the live mode of Runs list on
+    </string>
     
     <!-- dialog text -->
     <string name="netrual_dialog_button_text">OK</string>

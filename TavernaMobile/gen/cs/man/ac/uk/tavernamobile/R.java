@@ -487,13 +487,14 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
     public static final class id {
         public static final int PoweredBy=0x7f06003f;
         public static final int PoweredByCont=0x7f060040;
-        public static final int SlashScreenText=0x7f060086;
+        public static final int SlashScreenText=0x7f060087;
         public static final int both=0x7f060008;
         public static final int cancelButton=0x7f06001c;
         public static final int cancelRunButton=0x7f06006e;
         public static final int chooseServer=0x7f060033;
-        public static final int created_at=0x7f06009b;
+        public static final int created_at=0x7f06009c;
         public static final int disabled=0x7f060005;
+        public static final int exploreSearchButton=0x7f06003c;
         public static final int fileSelectButton=0x7f060021;
         public static final int file_picker_image=0x7f060016;
         public static final int file_picker_text=0x7f060017;
@@ -511,8 +512,8 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int input_wfNumber=0x7f060019;
         public static final int input_wfTitle=0x7f060018;
         public static final int left=0x7f060000;
-        public static final int licenseDetailWebView=0x7f060098;
-        public static final int licenseTitle=0x7f060097;
+        public static final int licenseDetailWebView=0x7f060099;
+        public static final int licenseTitle=0x7f060098;
         public static final int listfooterProgressBar=0x7f060023;
         public static final int listfooterTextView=0x7f060024;
         public static final int loggedInUserName=0x7f060026;
@@ -524,7 +525,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int loginUsernameValue=0x7f06002f;
         public static final int mainViewPager=0x7f06003d;
         public static final int main_panel_root=0x7f060041;
-        public static final int main_panel_setting_menu=0x7f0600a9;
+        public static final int main_panel_setting_menu=0x7f0600aa;
         public static final int manualOnly=0x7f060009;
         public static final int margin=0x7f060002;
         public static final int monitorCurrentState=0x7f060064;
@@ -539,7 +540,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int monitorUsernameValue=0x7f060063;
         public static final int monitorWfTitle=0x7f060061;
         public static final int myExpLoginSpinner=0x7f060025;
-        public static final int myExperimentLoginState=0x7f060036;
+        public static final int myExperimentLoginState=0x7f060080;
         public static final int myeloginBackButton=0x7f06002c;
         public static final int myeloginButton=0x7f06002b;
         public static final int myeloginPassword=0x7f06002a;
@@ -554,7 +555,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int outputValueText=0x7f060059;
         public static final int output_text=0x7f060054;
         public static final int output_wfTitle=0x7f060053;
-        public static final int pagerTabStrip=0x7f060091;
+        public static final int pagerTabStrip=0x7f060092;
         public static final int pager_title_strip=0x7f06003e;
         public static final int pullDownFromTop=0x7f06000a;
         public static final int pullFromEnd=0x7f060007;
@@ -568,15 +569,15 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int returnButton=0x7f060057;
         public static final int right=0x7f060001;
         public static final int rotate=0x7f06000c;
-        public static final int row_title=0x7f060084;
+        public static final int row_title=0x7f060085;
         public static final int runButton=0x7f06001b;
         public static final int runDeleteButton=0x7f060056;
         public static final int runEndStatLayout=0x7f060069;
         public static final int runGroupHeaderTextView=0x7f060047;
-        public static final int runList_menu=0x7f0600ac;
+        public static final int runList_menu=0x7f0600ad;
         public static final int runList_run_checkbox=0x7f060046;
-        public static final int runList_run_delete=0x7f0600ab;
-        public static final int runList_run_stop=0x7f0600aa;
+        public static final int runList_run_delete=0x7f0600ac;
+        public static final int runList_run_stop=0x7f0600ab;
         public static final int runMonitorOutputButton=0x7f06006f;
         public static final int runProgressBar=0x7f060068;
         public static final int runsList=0x7f060043;
@@ -599,48 +600,48 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int searchResultList=0x7f060079;
         public static final int searchResultSortLayout=0x7f060074;
         public static final int searchResultsTopLayout=0x7f060072;
-        public static final int search_results_search=0x7f0600ad;
+        public static final int search_results_search=0x7f0600ae;
         public static final int selectedFileName=0x7f060022;
         public static final int selected_view=0x7f060004;
         public static final int serverListSpinner=0x7f060034;
-        public static final int sliding_menu_fragment=0x7f060082;
-        public static final int sliding_menu_list_name=0x7f060083;
-        public static final int sliding_menu_setting_list=0x7f060081;
-        public static final int slidingmenumain=0x7f060085;
-        public static final int sortByText=0x7f060038;
+        public static final int sliding_menu_fragment=0x7f060083;
+        public static final int sliding_menu_list_name=0x7f060084;
+        public static final int sliding_menu_setting_list=0x7f060082;
+        public static final int slidingmenumain=0x7f060086;
+        public static final int sortByText=0x7f060037;
         public static final int theImageRoot=0x7f06007e;
-        public static final int thumbnail_not_available_text=0x7f0600a5;
-        public static final int tobe_added_list=0x7f060080;
+        public static final int thumbnail_not_available_text=0x7f0600a6;
+        public static final int tobe_added_list=0x7f060081;
         public static final int twooptionsdialog_message=0x7f060013;
         public static final int twooptionsdialog_option1_button=0x7f060014;
         public static final int twooptionsdialog_option2_button=0x7f060015;
-        public static final int uploaderName=0x7f06008b;
+        public static final int uploaderName=0x7f06008c;
         public static final int webview=0x7f06000f;
-        public static final int wfDetailUserlayout=0x7f06008a;
-        public static final int wfDetail_preview_not_available_text=0x7f06009a;
-        public static final int wfDetailsPagerLayout=0x7f06008f;
-        public static final int wfDetailsTitleLayout=0x7f06008c;
-        public static final int wfDetailsTopLayout=0x7f060089;
-        public static final int wfExpoCreated=0x7f06009e;
-        public static final int wfExpoCreditText=0x7f0600a1;
-        public static final int wfExpoCriteriaLinearLayout=0x7f060037;
-        public static final int wfExpoLoadingProgressBar=0x7f06003c;
-        public static final int wfExpoRatingText=0x7f0600a3;
-        public static final int wfExpoSingleRowCreditText=0x7f0600a0;
-        public static final int wfExpoSingleRowRatingText=0x7f0600a2;
-        public static final int wfExpoSortOrderRadioButton=0x7f06003a;
-        public static final int wfExpoSortSpinner=0x7f060039;
-        public static final int wfExpoThumbnail=0x7f0600a4;
-        public static final int wfExpoTitleVersion=0x7f06009d;
+        public static final int wfDetailUserlayout=0x7f06008b;
+        public static final int wfDetail_preview_not_available_text=0x7f06009b;
+        public static final int wfDetailsPagerLayout=0x7f060090;
+        public static final int wfDetailsTitleLayout=0x7f06008d;
+        public static final int wfDetailsTopLayout=0x7f06008a;
+        public static final int wfExpoCreated=0x7f06009f;
+        public static final int wfExpoCreditText=0x7f0600a2;
+        public static final int wfExpoCriteriaLinearLayout=0x7f060036;
+        public static final int wfExpoLoadingProgressBar=0x7f06003b;
+        public static final int wfExpoRatingText=0x7f0600a4;
+        public static final int wfExpoSingleRowCreditText=0x7f0600a1;
+        public static final int wfExpoSingleRowRatingText=0x7f0600a3;
+        public static final int wfExpoSortOrderRadioButton=0x7f060039;
+        public static final int wfExpoSortSpinner=0x7f060038;
+        public static final int wfExpoThumbnail=0x7f0600a5;
+        public static final int wfExpoTitleVersion=0x7f06009e;
         public static final int wfExpoToolsLayout=0x7f060035;
-        public static final int wfExpoTypeText=0x7f0600a6;
-        public static final int wfExpoUpdateText=0x7f06009f;
-        public static final int wfExpoUploaderName=0x7f06009c;
-        public static final int wfExpo_download_button=0x7f0600a8;
-        public static final int wfExpo_view_button=0x7f0600a7;
-        public static final int wfPermission=0x7f060094;
-        public static final int wfPermission1=0x7f060096;
-        public static final int wfPermissionValue=0x7f060095;
+        public static final int wfExpoTypeText=0x7f0600a7;
+        public static final int wfExpoUpdateText=0x7f0600a0;
+        public static final int wfExpoUploaderName=0x7f06009d;
+        public static final int wfExpo_download_button=0x7f0600a9;
+        public static final int wfExpo_view_button=0x7f0600a8;
+        public static final int wfPermission=0x7f060095;
+        public static final int wfPermission1=0x7f060097;
+        public static final int wfPermissionValue=0x7f060096;
         public static final int wfSearchCriteriaLayout=0x7f060075;
         public static final int wfSearchProgressBar=0x7f06007a;
         public static final int wfSearchSortByText=0x7f060076;
@@ -649,16 +650,16 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int wfTitle=0x7f06007c;
         public static final int wfUploader=0x7f06007b;
         public static final int wfVersion=0x7f06007d;
-        public static final int wfdMyExperimentLoginState=0x7f060088;
-        public static final int workflowDescHolder=0x7f060093;
-        public static final int workflowDetailRoot=0x7f060087;
-        public static final int workflowDetailsViewPager=0x7f060090;
-        public static final int workflowExpoList=0x7f06003b;
-        public static final int workflowPreview=0x7f060099;
-        public static final int workflowTitle=0x7f06008d;
-        public static final int workflowVersion=0x7f06008e;
+        public static final int wfdMyExperimentLoginState=0x7f060089;
+        public static final int workflowDescHolder=0x7f060094;
+        public static final int workflowDetailRoot=0x7f060088;
+        public static final int workflowDetailsViewPager=0x7f060091;
+        public static final int workflowExpoList=0x7f06003a;
+        public static final int workflowPreview=0x7f06009a;
+        public static final int workflowTitle=0x7f06008e;
+        public static final int workflowVersion=0x7f06008f;
         public static final int workflow_frag_default_textview=0x7f06004b;
-        public static final int workflowlaunchButton=0x7f060092;
+        public static final int workflowlaunchButton=0x7f060093;
     }
     public static final class integer {
         public static final int num_cols=0x7f0a0000;
@@ -722,6 +723,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
          */
         public static final int Launch_history_limit=0x7f080041;
         public static final int List_Footer_Text=0x7f08002e;
+        public static final int Live_run_list_mode_setting=0x7f08004a;
         public static final int LoginButtonLabel=0x7f080035;
         public static final int LoginPassWordText=0x7f080033;
         public static final int LoginUserNameText=0x7f080032;
@@ -733,7 +735,9 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         /**  Monitor Screen 
          */
         public static final int MonitorScreen_Username=0x7f08003b;
-        public static final int Monitoring_setting=0x7f080044;
+        public static final int Monitoring_setting=0x7f080046;
+        public static final int Run_Lists_mode_setting=0x7f080049;
+        public static final int Run_Lists_mode_setting_summary=0x7f08004b;
         public static final int ServerText=0x7f080034;
         public static final int SplashScreenImageDescription=0x7f08002d;
         /**  Taverna Server Login page 
@@ -742,21 +746,23 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int Workflow_frag_default_message=0x7f080022;
         public static final int app_name=0x7f080006;
         public static final int authority=0x7f080007;
-        public static final int crash_dialog_comment_prompt=0x7f08004d;
-        public static final int crash_dialog_ok_toast=0x7f08004e;
-        public static final int crash_dialog_text=0x7f08004c;
-        public static final int crash_dialog_title=0x7f08004b;
-        public static final int crash_toast_text=0x7f08004a;
+        public static final int crash_dialog_comment_prompt=0x7f080052;
+        public static final int crash_dialog_ok_toast=0x7f080053;
+        public static final int crash_dialog_text=0x7f080051;
+        public static final int crash_dialog_title=0x7f080050;
+        public static final int crash_toast_text=0x7f08004f;
         /**  Main screen RunList menu titles 
          */
         public static final int delete_all_runs_menu=0x7f08001b;
         public static final int delete_run_menu=0x7f08001c;
-        public static final int dialog_button_option1_default_text=0x7f080048;
-        public static final int dialog_button_option2_default_text=0x7f080049;
+        public static final int dialog_button_option1_default_text=0x7f08004d;
+        public static final int dialog_button_option2_default_text=0x7f08004e;
         public static final int input_detail_title_section1=0x7f08002f;
         public static final int input_detail_title_section2=0x7f080030;
         public static final int main_activity_title=0x7f080008;
         public static final int max_num_records=0x7f080042;
+        public static final int max_num_records_default_value=0x7f080044;
+        public static final int max_num_records_dialog_message=0x7f080045;
         public static final int max_num_records_summary=0x7f080043;
         public static final int menu_settings=0x7f08001e;
         public static final int myExp_login_menu_title=0x7f08001f;
@@ -766,7 +772,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int myExperiment_logo_description=0x7f08002c;
         /**  dialog text 
          */
-        public static final int netrual_dialog_button_text=0x7f080047;
+        public static final int netrual_dialog_button_text=0x7f08004c;
         public static final int order_radio_button_text=0x7f080011;
         /**  Main screen 
          */
@@ -781,8 +787,8 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int pull_to_refresh_pull_label=0x7f080000;
         public static final int pull_to_refresh_refreshing_label=0x7f080002;
         public static final int pull_to_refresh_release_label=0x7f080001;
-        public static final int run_refresh_rate_setting=0x7f080045;
-        public static final int run_refresh_rate_setting_summary=0x7f080046;
+        public static final int run_refresh_rate_setting=0x7f080047;
+        public static final int run_refresh_rate_setting_summary=0x7f080048;
         /**  Search screen 
          */
         public static final int search_for_it=0x7f080029;

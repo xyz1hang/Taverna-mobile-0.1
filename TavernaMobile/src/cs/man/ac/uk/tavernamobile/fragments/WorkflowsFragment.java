@@ -24,11 +24,11 @@ import cs.man.ac.uk.tavernamobile.MainActivity;
 import cs.man.ac.uk.tavernamobile.R;
 import cs.man.ac.uk.tavernamobile.dataaccess.DataProviderConstants;
 import cs.man.ac.uk.tavernamobile.dataaccess.DatabaseLoader;
+import cs.man.ac.uk.tavernamobile.datamodels.WorkflowBE;
 import cs.man.ac.uk.tavernamobile.server.WorkflowLaunchHelper;
 import cs.man.ac.uk.tavernamobile.utils.CallbackTask;
 import cs.man.ac.uk.tavernamobile.utils.MessageHelper;
 import cs.man.ac.uk.tavernamobile.utils.SystemStatesChecker;
-import cs.man.ac.uk.tavernamobile.utils.WorkflowBE;
 
 public class WorkflowsFragment extends Fragment {
 

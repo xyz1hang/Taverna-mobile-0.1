@@ -25,6 +25,7 @@ import cs.man.ac.uk.tavernamobile.datamodels.License;
 import cs.man.ac.uk.tavernamobile.datamodels.Privilege;
 import cs.man.ac.uk.tavernamobile.datamodels.User;
 import cs.man.ac.uk.tavernamobile.datamodels.Workflow;
+import cs.man.ac.uk.tavernamobile.datamodels.WorkflowBE;
 import cs.man.ac.uk.tavernamobile.fragments.DetailsDescriptionFragment;
 import cs.man.ac.uk.tavernamobile.fragments.DetailsLicenseFragment;
 import cs.man.ac.uk.tavernamobile.fragments.DetailsPreviewFragment;
@@ -36,7 +37,6 @@ import cs.man.ac.uk.tavernamobile.utils.ImageRetriever;
 import cs.man.ac.uk.tavernamobile.utils.MessageHelper;
 import cs.man.ac.uk.tavernamobile.utils.SystemStatesChecker;
 import cs.man.ac.uk.tavernamobile.utils.TavernaAndroid;
-import cs.man.ac.uk.tavernamobile.utils.WorkflowBE;
 
 public class WorkflowDetail extends FragmentActivity implements CallbackTask {
 

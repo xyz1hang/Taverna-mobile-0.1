@@ -54,7 +54,7 @@ public class ListViewOnScrollTaskHandler {
 						// triggers the invocation of onScroll())
 						if(reachTheEnd &&!taskInProgress && userScrolled && !disableTask) {
 							taskInProgress = true; // lock
-							loadingTask.onTaskComplete(null);
+							loadingTask.onTaskComplete();
 							userScrolled = false;
 						}
 			}

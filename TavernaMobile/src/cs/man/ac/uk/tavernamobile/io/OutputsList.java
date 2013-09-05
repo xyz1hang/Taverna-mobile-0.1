@@ -20,6 +20,7 @@ import android.widget.TextView;
 import cs.man.ac.uk.tavernamobile.MainActivity;
 import cs.man.ac.uk.tavernamobile.R;
 import cs.man.ac.uk.tavernamobile.WorkflowDetail;
+import cs.man.ac.uk.tavernamobile.datamodels.WorkflowBE;
 import cs.man.ac.uk.tavernamobile.utils.TavernaAndroid;
 
 public class OutputsList extends Activity{
@@ -46,16 +47,15 @@ public class OutputsList extends Activity{
 
 		// get data passed in
 		Bundle extras = getIntent().getExtras();
-		String wftitle = extras.getString("workflow_title");
+		WorkflowBE workflowEntity = (WorkflowBE) extras.getSerializable("workflowEntity");
 		Activity_Starter_Code = extras.getInt("activity_starter");
 		
 		// get the global outputs
 		HashMap<String, String> outputs = ta.getOutputs();
-
 		// data setup
 		prepareListData(outputs);
+		title.setText(workflowEntity.getTitle());
 		
-		title.setText(wftitle);
 		if (outputs.size() > 1){
 			text.setText("This workflow has "+ outputs.size() + " outputs : ");
 		}

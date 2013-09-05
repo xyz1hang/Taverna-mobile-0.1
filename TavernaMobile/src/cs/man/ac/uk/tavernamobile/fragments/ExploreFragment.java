@@ -16,7 +16,6 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -39,7 +38,7 @@ public class ExploreFragment extends Fragment implements CallbackTask {
 	private ProgressBar loadingProBar;
 	
 	// utilities
-	private WorkflowsLoader wfSearchLoader;
+	// private WorkflowsLoader wfSearchLoader;
 	private WorkflowsLoader wfExpoLoader;
 	private ListViewOnScrollTaskHandler onScrollTaskHandler;
 	
@@ -61,7 +60,7 @@ public class ExploreFragment extends Fragment implements CallbackTask {
 
 		parentActivity = getActivity();
 		// set up a loader for search
-		wfSearchLoader = new WorkflowsLoader(parentActivity, this);
+		// wfSearchLoader = new WorkflowsLoader(parentActivity, this);
 		
 		// UI components
 		loadingProBar = (ProgressBar)parentActivity.findViewById(R.id.wfExpoLoadingProgressBar);
@@ -82,6 +81,24 @@ public class ExploreFragment extends Fragment implements CallbackTask {
 					refreshTheList();
 				}
 				
+			}
+		});
+		
+		ImageButton searchButton = (ImageButton) parentActivity.findViewById(R.id.exploreSearchButton);
+		searchButton.setOnClickListener(new android.view.View.OnClickListener() {
+			public void onClick(android.view.View v) {
+
+				Intent goToSearchResultScreen = new Intent(parentActivity, SearchResultScreen.class);
+				parentActivity.startActivity(goToSearchResultScreen);
+				/*searchQuery = searchQueryText.getText().toString();
+				if (searchQuery.isEmpty()) {
+					MessageHelper
+							.showMessageDialog(parentActivity,
+									"Oops! You haven't told me what you would like to search !");
+				} else {
+					// start with default search sorting and order
+					wfSearchLoader.DoSearch(searchQuery, null, null, true);
+				}*/
 			}
 		});
 		
@@ -124,10 +141,8 @@ public class ExploreFragment extends Fragment implements CallbackTask {
 			public void onNothingSelected(AdapterView<?> parent) {}
 		});
 		
-		final EditText searchQueryText = (EditText) parentActivity.findViewById(R.id.searchQueryText);
-		
+		/*final EditText searchQueryText = (EditText) parentActivity.findViewById(R.id.searchQueryText);
 		ImageButton searchButton = (ImageButton) parentActivity.findViewById(R.id.searchButton);
-		
 		searchButton.setOnClickListener(new android.view.View.OnClickListener() {
 					public void onClick(android.view.View v) {
 
@@ -141,7 +156,7 @@ public class ExploreFragment extends Fragment implements CallbackTask {
 							wfSearchLoader.DoSearch(searchQuery, null, null, true);
 						}
 					}
-				});
+				});*/
 		
 		/*myExperimentLoginText = (TextView) getActivity().findViewById(R.id.myExperimentLoginState);
 		myExperimentLoginText.setOnClickListener(new android.view.View.OnClickListener() {
@@ -244,8 +259,7 @@ public class ExploreFragment extends Fragment implements CallbackTask {
 				}
 				MessageHelper.showMessageDialog(parentActivity, dialogMessage);
 			} else {
-				Intent intent = new Intent(parentActivity,
-						SearchResultScreen.class);
+				Intent intent = new Intent(parentActivity, SearchResultScreen.class);
 				Bundle extras = new Bundle();
 				extras.putSerializable("wfSearch_Result_list", workflowResults);
 				extras.putString("searchQuery", this.searchQuery);
@@ -278,11 +292,13 @@ public class ExploreFragment extends Fragment implements CallbackTask {
 			loadingProBar.setVisibility(8);
 			expoList.setVisibility(0);
 			
-			footerView = ((LayoutInflater) parentActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE))
+			footerView = 
+					((LayoutInflater) parentActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE))
 					.inflate(R.layout.list_footer_loading, null, false);
 			expoList.addFooterView(footerView);
 			
-			WorkflowExpoListAdapter resultListAdapter = new WorkflowExpoListAdapter(parentActivity, workflows);
+			WorkflowExpoListAdapter resultListAdapter = 
+					new WorkflowExpoListAdapter(parentActivity, workflows);
 			expoList.setAdapter(resultListAdapter);
 			
 			onScrollTaskHandler = new ListViewOnScrollTaskHandler(expoList, new OnScrollLoadingTask());

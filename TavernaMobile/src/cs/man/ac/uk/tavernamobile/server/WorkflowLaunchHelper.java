@@ -24,12 +24,12 @@ import android.support.v4.app.FragmentActivity;
 import android.widget.Toast;
 import cs.man.ac.uk.tavernamobile.dataaccess.DataProviderConstants;
 import cs.man.ac.uk.tavernamobile.dataaccess.DatabaseLoader;
+import cs.man.ac.uk.tavernamobile.datamodels.WorkflowBE;
 import cs.man.ac.uk.tavernamobile.io.InputsList;
 import cs.man.ac.uk.tavernamobile.myexperiment.WorkflowDownloadHelper;
 import cs.man.ac.uk.tavernamobile.utils.CallbackTask;
 import cs.man.ac.uk.tavernamobile.utils.MessageHelper;
 import cs.man.ac.uk.tavernamobile.utils.SystemStatesChecker;
-import cs.man.ac.uk.tavernamobile.utils.WorkflowBE;
 import cs.man.ac.uk.tavernamobile.utils.WorkflowFileLoader;
 
 public class WorkflowLaunchHelper {
@@ -412,7 +412,7 @@ public class WorkflowLaunchHelper {
 			extras.putStringArrayList("input_names", inputNames);
 		}
 
-		extras.putString("workflow_title", workflowEntity.getTitle());
+		extras.putSerializable("workflowEntity", workflowEntity);
 		extras.putInt("activity_starter", Activity_Starter_Code);
 		goToInputList.putExtras(extras);
 

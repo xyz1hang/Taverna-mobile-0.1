@@ -24,6 +24,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import cs.man.ac.uk.tavernamobile.R;
+import cs.man.ac.uk.tavernamobile.datamodels.WorkflowBE;
 import cs.man.ac.uk.tavernamobile.utils.MessageHelper;
 import cs.man.ac.uk.tavernamobile.utils.SystemStatesChecker;
 
@@ -35,7 +36,7 @@ public class InputsList extends Activity{
 	// data used to display
 	private ArrayList<Map<String, String>> listData = new ArrayList<Map<String, String>>();
 	private ArrayList<String> inputNames;
-	private String workflowtitle;
+	private WorkflowBE workflowEntity;
 	
 	public final static String EXTRA_FILE_PATH = "file_path";
 	private final int REQUEST_PICK_FILE = 1;
@@ -61,7 +62,7 @@ public class InputsList extends Activity{
 		actionBar.setDisplayHomeAsUpEnabled(true);
 		actionBar.setDisplayShowTitleEnabled(false);
 		
-		final Button run = (Button) findViewById(R.id.runButton);
+		final Button runButton = (Button) findViewById(R.id.runButton);
 		Button cancel = (Button) findViewById(R.id.cancelButton);
 		TextView title = (TextView) findViewById(R.id.input_wfTitle);
 		TextView number = (TextView) findViewById(R.id.input_wfNumber);
@@ -70,13 +71,13 @@ public class InputsList extends Activity{
 		// get data
 		if (savedInstanceState != null) {
 			inputNames = savedInstanceState.getStringArrayList("inputNames");
-			workflowtitle =  savedInstanceState.getString("workflow_title");
+			workflowEntity =  (WorkflowBE) savedInstanceState.getSerializable("workflowEntity");
 			Activity_Starter_Code = savedInstanceState.getInt("activity_starter");
 		}
 		else{
 			// get data passed in
 			Bundle extras = getIntent().getExtras();
-			workflowtitle = extras.getString("workflow_title");
+			workflowEntity = (WorkflowBE) extras.getSerializable("workflowEntity");
 			inputNames = extras.getStringArrayList("input_names");
 			Activity_Starter_Code = extras.getInt("activity_starter"); 
 		}
@@ -85,7 +86,7 @@ public class InputsList extends Activity{
 		}
 
 		// data setup
-		title.setText(workflowtitle);
+		title.setText(workflowEntity.getTitle());
 		if (inputNames != null && inputNames.size() > 1){
 			number.setText("This workflow has "+ inputNames.size() + " inputs : ");
 		}
@@ -100,7 +101,7 @@ public class InputsList extends Activity{
 		resultList.setAdapter(resultListAdapter);
 
 		currentActivity = this; // for access of this activity inside OnClickListner
-		run.setOnClickListener(new android.view.View.OnClickListener() {
+		runButton.setOnClickListener(new android.view.View.OnClickListener() {
 
 			public void onClick(android.view.View v) {
 				SystemStatesChecker sysChecker = new SystemStatesChecker(currentActivity);
@@ -109,27 +110,23 @@ public class InputsList extends Activity{
 				}
 
 				if(inputNames != null && inputNames.size() > 0){
+					// check inputs not null if there are any
 					String unSetInputName = inputCheck(userInputs);
 					if (unSetInputName != null){
-						MessageHelper.showMessageDialog(currentActivity, "Please set input for \"" + unSetInputName+ "\"");
-					}
-					else{
-						run.setEnabled(false);
-						startTheRun();
+						MessageHelper.showMessageDialog(currentActivity, 
+								"Please set input for \"" + unSetInputName+ "\"");
+						return;
 					}
 				}
-				else{
-					run.setEnabled(false);
-					startTheRun();
-				}				
+				runButton.setEnabled(false);
+				startTheRun();
 			}
 
 			private void startTheRun() {
-				
-				//go to monitor
+				// go to monitor and then start the run there
 				Intent goToMonitor = new Intent(currentActivity, RunMonitorScreen.class);
 				Bundle extras = new Bundle();
-				extras.putString("workflow_title", workflowtitle);
+				extras.putSerializable("workflowEntity", workflowEntity);
 				if(inputNames != null && inputNames.size() > 0){
 					extras.putSerializable("userInputs", userInputs);
 				}
@@ -141,7 +138,6 @@ public class InputsList extends Activity{
 		});
 
 		cancel.setOnClickListener(new android.view.View.OnClickListener() {
-
 			public void onClick(android.view.View v) {
 				currentActivity.finish();
 			}
@@ -157,7 +153,7 @@ public class InputsList extends Activity{
 	public void onSaveInstanceState(Bundle savedInstanceState) {
 		super.onSaveInstanceState(savedInstanceState);
 		savedInstanceState.putStringArrayList("inputNames", inputNames);
-		savedInstanceState.putString("workflow_title", workflowtitle);
+		savedInstanceState.putSerializable("workflowEntity", workflowEntity);
 		savedInstanceState.putInt("activity_starter", Activity_Starter_Code);
 	}
 
@@ -165,7 +161,8 @@ public class InputsList extends Activity{
 	public void onRestoreInstanceState(Bundle savedInstanceState) {
 		super.onRestoreInstanceState(savedInstanceState);
 		inputNames = savedInstanceState.getStringArrayList("inputNames");
-		workflowtitle =  savedInstanceState.getString("workflow_title");
+		workflowEntity =  (WorkflowBE) savedInstanceState.getSerializable("workflowEntity");
+		Activity_Starter_Code = savedInstanceState.getInt("activity_starter");
 	}
 	
 	@Override
@@ -258,13 +255,15 @@ public class InputsList extends Activity{
 		if(resultCode == RESULT_OK) {
 			switch(requestCode) {
 			case REQUEST_PICK_FILE:
-				if(data.hasExtra(FilePickerActivity.EXTRA_FILE_PATH)) {
+				if(data.hasExtra(FilePickerActivity.FILE_PATH)) {
 					// Get the file URI
-					Uri fileUri = Uri.fromFile(new File(data.getStringExtra(FilePickerActivity.EXTRA_FILE_PATH)));
+					Uri fileUri = Uri.fromFile(
+							new File(data.getStringExtra(FilePickerActivity.FILE_PATH)));
 					java.net.URI fileURI = null;
 					try {
 						fileURI = new java.net.URI(fileUri.toString());
 					} catch (URISyntaxException e) {
+						// TODO: need to handle...
 						e.printStackTrace();
 					}
 					selectedFile = new File(fileURI);
@@ -272,9 +271,10 @@ public class InputsList extends Activity{
 			}
 		}
 		if(selectedFile != null){
+			// setup data to upload
 			userInputs.put(currentInputName, selectedFile);
-			String fileName = data.getStringExtra("selectedFileName");
-
+			// setup screen display
+			String fileName = data.getStringExtra(FilePickerActivity.SELECTED_FILE_NAME);
 			HashMap<String, String> newInputNameSelFilePair = new HashMap<String, String>();
 			newInputNameSelFilePair.put(currentInputName, fileName);
 			listData.set(inputsListSelectedIndex, newInputNameSelFilePair);

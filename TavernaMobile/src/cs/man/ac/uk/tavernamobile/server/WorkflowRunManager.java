@@ -1,9 +1,13 @@
 package cs.man.ac.uk.tavernamobile.server;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -14,6 +18,7 @@ import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.text.StrBuilder;
@@ -28,9 +33,12 @@ import uk.org.taverna.server.client.Server;
 import uk.org.taverna.server.client.connection.AccessForbiddenException;
 import uk.org.taverna.server.client.connection.UserCredentials;
 import android.app.Activity;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
 import cs.man.ac.uk.tavernamobile.dataaccess.DataProviderConstants;
+import cs.man.ac.uk.tavernamobile.datamodels.WorkflowBE;
 import cs.man.ac.uk.tavernamobile.utils.BackgroundTaskHandler;
 import cs.man.ac.uk.tavernamobile.utils.CallbackTask;
 import cs.man.ac.uk.tavernamobile.utils.TavernaAndroid;
@@ -71,10 +79,14 @@ public class WorkflowRunManager
 	private String STATE_FINISHED = "Finished";
 	private String STATE_DELETED = "Deleted";
 	private String STATE_UNDEFINED = "Undefined";
+	
+	// settings
+	private SharedPreferences sharedPrefs;
 
 	public WorkflowRunManager(Activity activity){
 		currentActivity = activity;
 		ta = (TavernaAndroid) activity.getApplication();
+		sharedPrefs = PreferenceManager.getDefaultSharedPreferences(currentActivity);
 	}
 
 	public String getRunStartTime() {
@@ -97,12 +109,25 @@ public class WorkflowRunManager
 	// for newly created workflow we need to
 	// setup input and then run the workflow, all in one go
 	// in order to minimise threads interference
-	public void StartWorkflowRun(Map<String, Object> inputs, CallbackTask listener){
+	public void StartWorkflowRun(Map<String, Object> inputs, 
+			WorkflowBE workflowEntity, CallbackTask listener){
+		runListener = listener;
 		// start this thread to pull run statue first
 		// otherwise it is difficult to update statue
 		new RunProgressListenerInvoker().Execute();
+		new RunInitiator().Execute(inputs, workflowEntity);
+	}
+	
+	/**
+	 * @param workflowData
+	 * @param savedInputFileName
+	 * @param listener
+	 */
+	public void StartRunWithSavedInput(byte[] workflowData, 
+			String savedInputFileName, CallbackTask listener){
 		runListener = listener;
-		new RunInitiator().Execute(inputs);
+		new RunProgressListenerInvoker().Execute();
+		new RunWithExistingInputs().Execute(workflowData, savedInputFileName);
 	}
 
 	// only monitoring
@@ -309,7 +334,8 @@ public class WorkflowRunManager
 
 			// get input ports, if available
 			Map<String, InputPort> inputPorts = null;
-			HashMap<String, Map<String, InputPort>> idAndinputs = new HashMap<String, Map<String, InputPort>>();
+			HashMap<String, Map<String, InputPort>> idAndinputs = 
+					new HashMap<String, Map<String, InputPort>>();
 			if (runCreated != null){
 				try{
 					inputPorts = runCreated.getInputPorts();
@@ -330,6 +356,119 @@ public class WorkflowRunManager
 
 			return null;
 		}
+	}
+	
+	public class RunWithExistingInputs implements CallbackTask{
+		
+		public void Execute(Object... params){
+			BackgroundTaskHandler handler = new BackgroundTaskHandler();
+			handler.StartBackgroundTask(currentActivity, this, "Creating run...", params);
+		}
+
+		@Override
+		public Object onTaskInProgress(Object... param) {
+			byte[] workflowData = (byte []) param[0];
+			String inputsFilePath = (String) param[1];
+			if(workflowData == null || inputsFilePath == null){
+				throw new NullPointerException("neither workflowData nor inputsFilePath can be null");
+			}
+
+			Run runCreated = null;
+			try{
+				// create the run
+				runCreated = Run.create(ta.getServer(), workflowData, ta.getDefaultUser());
+				// read saved input object
+				FileInputStream fis = new FileInputStream(inputsFilePath);
+			    ObjectInputStream ois = new ObjectInputStream(fis);
+			    HashMap<String, Object> savedInputs = (HashMap<String, Object>) ois.readObject();
+			    if(savedInputs == null){
+			    	fis.close();
+			    	ois.close();
+			    	return null;
+			    }
+			    
+			    // setup(upload) input
+			    Iterator<Entry<String, Object>> it = savedInputs.entrySet().iterator();
+				while(it.hasNext()){
+					Map.Entry<String, Object> pair = it.next();
+					Object value = pair.getValue();
+					Class<?> valueType = value.getClass();
+					//String dataToWrite = null;
+					// if input is file
+					if (valueType.equals(File.class)){
+							File inputfile = (File) value;
+							// upload input to server
+							InputPort inputPort = runCreated.getInputPort(pair.getKey());
+							if(inputPort == null){
+								// if one port does not exist the port name must
+								// had been changed, hence an up to dated input data
+								// need to be supplied by creating a new run
+								fis.close();
+								ois.close();
+								return "Saved inputs data is out of date.\n"
+										+"Please supply new data by creating new run";
+							}
+							inputPort.setFile(inputfile);
+					}
+					// if input is text
+					else if (valueType.equals(String.class)){
+							String inputString = (String) value;
+							// upload input to server
+							InputPort inputPort = runCreated.getInputPort(pair.getKey());
+							if(inputPort == null){
+								// if one port does not exist the port name must
+								// had been changed, hence an up to dated input data
+								// need to be supplied by creating a new run
+								fis.close();
+								ois.close();
+								return "Saved inputs data is out of date.\n"
+										+"Please supply new data by creating new run";
+							}
+							inputPort.setValue(inputString);
+					}
+				}// end of iterating over inputs
+				// close ObjectInputStream
+				ois.close();
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (NetworkConnectionException e) {
+				return e.getMessage();
+			} catch(AccessForbiddenException e){
+				return "Access to the run of this workflow is forbidden";
+			} catch(Exception e){
+				// TODO: "log" has to be removed in release version
+				Log.e("run creation error", e.getMessage());
+				return e.getMessage();
+			}
+
+			// start the run
+			if (runCreated != null){
+				try {
+					runCreated.start();
+					if (!runCreated.isRunning()){
+						// make sure the run is started
+						waitForWorkflowRunToStart(runCreated);
+					}
+					// set run started time and statue
+					reportRunState();
+					reportRunStartTime();
+				} catch (Exception e) {
+					// TODO: "log" has to be removed in release version
+					Log.e("WorkflowRunError1", e.getMessage());
+				}
+			}
+			else{
+				// TODO: "log" has to be removed in release version
+				Log.e("WorkflowRunError2", "Workflow Run needed.");
+			}
+			return null;
+		}
+
+		@Override
+		public Object onTaskComplete(Object... result) {
+			return null;
+		}
+		
 	}
 
 	/**
@@ -380,51 +519,90 @@ public class WorkflowRunManager
 		}
 	}
 
-	// background thread to start the run
+	/**
+	 * 
+	 * Background thread to start the run
+	 * 
+	 * @author Hyde
+	 *
+	 */
 	private class RunInitiator implements CallbackTask{
 
 		private Run newlyCreatedRun = ta.getWorkflowRunLaunched();
 
 		public void Execute(Object... params){
 			runInitiationTaskHandler = new BackgroundTaskHandler();
-			runInitiationTaskHandler.StartBackgroundTask(
-					currentActivity, this, null, params);
+			runInitiationTaskHandler.StartBackgroundTask(currentActivity, this, null, params);
 		}
 
 		public Object onTaskInProgress(Object... params) {
-
 			if(params != null){
 				// set (upload) inputs
-				@SuppressWarnings("unchecked")
-				Map<String, Object> inputs = (Map<String, Object>) params[0];
+				Map<String, Object> inputs = (HashMap<String, Object>) params[0];
 				// check how many input port
-				if (inputs == null || inputs.size() < 1){
-					//Do nothing return null;
-				}
-				else{
+				if (inputs != null && inputs.size() > 0){
+					WorkflowBE workflowEntity = (WorkflowBE) params[1];
+					// prepare to save inputs in the 
+					// "Inputs/Title_verion_uploaderName" directory.
+					// Saving the input while uploading them
+					String inputsSubPath = "/TavernaAndroid/Inputs/" 
+							+ workflowEntity.getTitle().replace(" ", "") + "_" 
+							+ workflowEntity.getVersion() + "_" 
+							+ workflowEntity.getUploaderName().replace(" ", "") + "/";
+					String locationToStore = getFileSaveLocation(inputsSubPath);
+					
 					Iterator<Entry<String, Object>> it = inputs.entrySet().iterator();
 					while(it.hasNext()){
-						Map.Entry<String, Object> pair = it.next();
-						Object value = pair.getValue();
-						Class<?> valueType = value.getClass();
-						if (valueType.equals(File.class)){
-							try {
-								newlyCreatedRun.getInputPort(pair.getKey()).setFile((File) value);
-							} catch (FileNotFoundException e) {
-								e.printStackTrace();
-							} catch (NetworkConnectionException e) {
-								return "Connection problem reading data from server";
+						FileOutputStream stream = null;
+						try {
+							// save input by dateTime
+							DateFormat df = DateFormat.getDateTimeInstance();
+							df.setTimeZone(TimeZone.getTimeZone("GMT"));
+							String gmtTime = df.format(new Date());
+							stream = new FileOutputStream(locationToStore+"/"+gmtTime+".txt");
+							
+							Map.Entry<String, Object> pair = it.next();
+							Object value = pair.getValue();
+							Class<?> valueType = value.getClass();
+							//String dataToWrite = null;
+							// if input is file
+							if (valueType.equals(File.class)){
+									File inputfile = (File) value;
+									// upload input to server
+									newlyCreatedRun.getInputPort(pair.getKey()).setFile(inputfile);
+									// store input locally
+									//dataToWrite = pair.getKey()+">(File)"+inputfile.getAbsoluteFile().toString()+"\n";
 							}
-						}
-						else if (valueType.equals(String.class)){
-							try {
-								newlyCreatedRun.getInputPort(pair.getKey()).setValue((String) value);
-							} catch (NetworkConnectionException e) {
-								return "Connection problem reading data from server";
+							// if input is text
+							else if (valueType.equals(String.class)){
+									String inputString = (String) value;
+									// upload input to server
+									newlyCreatedRun.getInputPort(pair.getKey()).setValue(inputString);
+									// store input locally
+									//dataToWrite = pair.getKey()+">(Text)"+inputString+"\n";
 							}
+							/*stream.write(dataToWrite.getBytes());
+							stream.flush();
+							stream.close();*/
+							
+							ObjectOutputStream oos = new ObjectOutputStream(stream);
+							oos.writeObject(inputs);
+							oos.close();
+						} catch (FileNotFoundException e) {
+							e.printStackTrace();
+						} catch (NetworkConnectionException e) {
+							try {
+								stream.close();
+							} catch (IOException e1) {
+								// swallow
+								e1.printStackTrace();
+							}
+							return e.getMessage();
+						} catch(IOException e){
+							e.printStackTrace();	
 						}
-					}
-				}
+					}// end of iterating over inputs
+				}// end of if there are input
 			}
 
 			// start the run
@@ -458,13 +636,19 @@ public class WorkflowRunManager
 
 			// inform monitor to pull run statue
 			// since run is now started
-			runListener.onTaskInProgress();
+			runListener.onTaskInProgress(result);
 
 			return null;
 		}
 	}
 
 	private class RunProgressListenerInvoker implements CallbackTask{
+		
+		private int pollInterval;
+		
+		public RunProgressListenerInvoker(){
+			pollInterval = Integer.parseInt(sharedPrefs.getString("runStateRefreshFrequency", "500"));
+		}
 
 		public void Execute(){
 			runStatesPullingTaskHandler = new BackgroundTaskHandler();
@@ -476,6 +660,14 @@ public class WorkflowRunManager
 			// which triggers the outputHandler to run
 			reportRunState();
 			reportRunStartTime();
+			// Sleep for pre-set seconds in the 
+			// background thread before poll again
+			try {
+				Thread.sleep(pollInterval);
+			} catch (InterruptedException e) {
+				// swallow
+				e.printStackTrace();
+			}
 			return null;
 		}
 
@@ -485,19 +677,12 @@ public class WorkflowRunManager
 
 			// pull state again
 			if(!runStatue.equals("Finished")){
-				/*try {
-					// Sleep for 1 seconds
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-					// TODO: "log" has to be removed in release version
-					Log.d("sleep", "sleep failure");
-				}*/
 				this.Execute();
 			}
 			else{
 				// inform monitor to get finished time
 				// since run is now finished
-				runListener.onTaskComplete(null);
+				runListener.onTaskComplete();
 			}
 
 			return null;
@@ -625,10 +810,11 @@ public class WorkflowRunManager
 			long dataSize = portValue.getDataSize();
 			// check types
 			String contentType = portValue.getContentType();
-
-			if(contentType.equals(PORT_TEXT_TYPE)){
-
-				String locationToStore = getFileSaveLocation(currentPortName);
+			String outputsSubPath = "/TavernaAndroid/Outputs/" 
+					+ runStartTime +"/" + workflowTitle +"/" + currentPortName + "/";
+			
+			if(contentType.equals(PORT_TEXT_TYPE)){				
+				String locationToStore = getFileSaveLocation(outputsSubPath);
 				try {
 					FileOutputStream stream = new FileOutputStream(locationToStore+"/output.txt"); 
 					stream.write(data);
@@ -650,7 +836,7 @@ public class WorkflowRunManager
 			else if(contentType.equals(PORT_IMAGE_TYPE)){
 				// store image under the sub folder named
 				// after port name 
-				String locationToStore = getFileSaveLocation(currentPortName);
+				String locationToStore = getFileSaveLocation(outputsSubPath);
 				try {
 					FileOutputStream stream = new FileOutputStream(locationToStore+"/output.png"); 
 					stream.write(data);
@@ -666,7 +852,7 @@ public class WorkflowRunManager
 				// if error text is too large to fit in the screen
 				// store it 
 				if (dataSize > 4096){
-					String locationToStore = getFileSaveLocation(currentPortName);
+					String locationToStore = getFileSaveLocation(outputsSubPath);
 					try {
 						FileOutputStream stream = new FileOutputStream(locationToStore+"/error.txt"); 
 						stream.write(data);
@@ -723,40 +909,6 @@ public class WorkflowRunManager
 			// return the single data when it reached bottom
 			// only recursive return should be done here
 			return data;
-		}
-
-		// TODO: output listener
-		// method to setup location to save downloaded workflow
-		private String getFileSaveLocation(String portName) {
-
-			String storeLocation = null;
-
-			/**** store in SD card ****/
-			File root = android.os.Environment.getExternalStorageDirectory();               
-
-			//try to avoid folder name syntax error
-			//by using simpler start time as folder name
-			File dir = new File (root.getAbsolutePath() + 
-					"/TavernaAndroid/Outputs/" + runStartTime +"/" + workflowTitle +"/" + portName + "/");
-			if(dir.exists() == false) 
-			{
-				if(dir.mkdirs()){
-					storeLocation = dir.getAbsolutePath();
-					return storeLocation;
-				}
-				else{
-					Toast.makeText(
-							currentActivity,
-							"Output can't be saved to external storage",
-							Toast.LENGTH_LONG).show();
-					return null;
-				}
-			}
-
-			// if the directory does exist
-			storeLocation = dir.getAbsolutePath();
-
-			return storeLocation;
 		}
 
 		private String constructString(String result, Object object, int indent){
@@ -1016,5 +1168,36 @@ public class WorkflowRunManager
 			// ignore
 			e.printStackTrace();
 		}
+	}
+	
+	private String getFileSaveLocation(String subPath) {
+
+		String storeLocation = null;
+
+		/**** store in SD card ****/
+		File root = android.os.Environment.getExternalStorageDirectory();               
+
+		//try to avoid folder name syntax error
+		//by using simpler start time as folder name
+		File dir = new File (root.getAbsolutePath() + subPath);
+		if(dir.exists() == false) 
+		{
+			if(dir.mkdirs()){
+				storeLocation = dir.getAbsolutePath();
+				return storeLocation;
+			}
+			else{
+				Toast.makeText(
+						currentActivity,
+						"Output can't be saved to external storage",
+						Toast.LENGTH_LONG).show();
+				return null;
+			}
+		}
+
+		// if the directory does exist
+		storeLocation = dir.getAbsolutePath();
+
+		return storeLocation;
 	}
 }

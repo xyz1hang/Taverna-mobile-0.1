@@ -22,7 +22,8 @@
             android:layout_marginLeft="10dp"
             android:padding="10dp"
             android:text="test"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:visibility="gone" />
 
         <View
             style="@style/Divider"

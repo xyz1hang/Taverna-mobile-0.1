@@ -39,13 +39,13 @@ import com.handmark.pulltorefresh.library.PullToRefreshExpandableListView;
 import cs.man.ac.uk.tavernamobile.R;
 import cs.man.ac.uk.tavernamobile.dataaccess.DataProviderConstants;
 import cs.man.ac.uk.tavernamobile.dataaccess.DatabaseLoader;
+import cs.man.ac.uk.tavernamobile.datamodels.WorkflowBE;
 import cs.man.ac.uk.tavernamobile.io.RunMonitorScreen;
 import cs.man.ac.uk.tavernamobile.server.WorkflowLaunchHelper;
 import cs.man.ac.uk.tavernamobile.server.WorkflowRunManager;
 import cs.man.ac.uk.tavernamobile.utils.CallbackTask;
 import cs.man.ac.uk.tavernamobile.utils.MessageHelper;
 import cs.man.ac.uk.tavernamobile.utils.SystemStatesChecker;
-import cs.man.ac.uk.tavernamobile.utils.WorkflowBE;
 
 public class RunsFragment extends Fragment {
 
@@ -107,7 +107,8 @@ public class RunsFragment extends Fragment {
 		runManager = new WorkflowRunManager(parentActivity);
 		systemStateChecker = new SystemStatesChecker(parentActivity);
 		refreshableList = 
-				(PullToRefreshExpandableListView) parentActivity.findViewById(R.id.pull_to_refresh_listview);
+				(PullToRefreshExpandableListView) parentActivity.findViewById(
+						R.id.pull_to_refresh_listview);
 		
 		refreshableList.setOnRefreshListener(new OnRefreshListener<ExpandableListView>() {
 		    @Override
@@ -168,17 +169,17 @@ public class RunsFragment extends Fragment {
 		if(!systemStateChecker.isNetworkConnected()){
 			return;
 		}
-		// Do work to refresh the list here.
-    	runManager.getRuns(runRetrievalListener);
 		// Initialize the collection and adapters
 		childElements = new HashMap<String, HashMap<String, WorkflowBE>>();;
+		// Do work to refresh the list here.
+    	runManager.getRuns(runRetrievalListener);
+		
 		//childListAdapters = new ArrayList<ChildListAdapter>();
 	}
 
 	// class to process the result of Run List retrieval
 	// i.e get Run ID then load relevant workflow details to display
-	private class RunListRetrievingCompletionListener implements
-			CallbackTask {
+	private class RunListRetrievingCompletionListener implements CallbackTask {
 		
 		private workflowDetailLoadingListener loadingListener;
 		
@@ -395,7 +396,8 @@ public class RunsFragment extends Fragment {
 				convertView = inflater.inflate(R.layout.main_runs_child, null);
 			}
 			
-			final ChildListAdapter adapter = new ChildListAdapter(childElements.get(runGroups[groupPosition]));
+			final ChildListAdapter adapter = 
+					new ChildListAdapter(childElements.get(runGroups[groupPosition]));
 			ListView runList = (ListView) convertView.findViewById(R.id.runsList);
 			runList.setAdapter(adapter);
 			runList.setOnItemClickListener(new OnItemClickListener() {
@@ -415,7 +417,8 @@ public class RunsFragment extends Fragment {
 					
 					if (runID != null) {
 						WorkflowRunManager manager = new WorkflowRunManager(parentActivity);
-						manager.checkRunStateWithID(runID, new RunsListAdapter.RunStateChecker(workflowEntity.getTitle(), runID));
+						manager.checkRunStateWithID(runID, 
+								new RunsListAdapter.RunStateChecker(workflowEntity, runID));
 					} else {
 						// A run of this workflow has been attempted
 						// i.e it has been recorded
@@ -663,10 +666,10 @@ public class RunsFragment extends Fragment {
 		
 		private class RunStateChecker implements CallbackTask {
 
-			private String wftitle;
+			private WorkflowBE wftitle;
 			private String runId;
 
-			public RunStateChecker(String workflowTitle, String id) {
+			public RunStateChecker(WorkflowBE workflowTitle, String id) {
 				wftitle = workflowTitle;
 				runId = id;
 			}
@@ -683,7 +686,7 @@ public class RunsFragment extends Fragment {
 					Intent goToMonitor = new Intent(parentActivity,
 							RunMonitorScreen.class);
 					Bundle extras = new Bundle();
-					extras.putString("workflow_title", wftitle);
+					extras.putSerializable("workflowEntity", wftitle);
 					extras.putString("command", "MonitoringOnly");
 					goToMonitor.putExtras(extras);
 					parentActivity.startActivity(goToMonitor);
@@ -700,9 +703,9 @@ public class RunsFragment extends Fragment {
 		
 		private class GoToInputs implements CallbackTask {
 
-			private String wftitle;
+			private WorkflowBE wftitle;
 
-			public GoToInputs(String workflowTitle) {
+			public GoToInputs(WorkflowBE workflowTitle) {
 				wftitle = workflowTitle;
 			}
 
@@ -714,10 +717,9 @@ public class RunsFragment extends Fragment {
 			@Override
 			public Object onTaskComplete(Object... result) {
 				Map<String, InputPort> inputPorts = (Map<String, InputPort>) result[0];
-				WorkflowBE entity = new WorkflowBE();
-				entity.setTitle(wftitle);
+				
 				WorkflowLaunchHelper launchHelper = new WorkflowLaunchHelper(
-						parentActivity, entity, Activity_Starter_Code);
+						parentActivity, wftitle, Activity_Starter_Code);
 				launchHelper.prepareInputs(inputPorts);
 				return null;
 			}

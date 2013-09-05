@@ -9,18 +9,20 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
-import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -31,8 +33,8 @@ import android.widget.TextView;
 import cs.man.ac.uk.tavernamobile.datamodels.Workflow;
 import cs.man.ac.uk.tavernamobile.myexperiment.HttpRequestHandler;
 import cs.man.ac.uk.tavernamobile.myexperiment.WorkflowsLoader;
-import cs.man.ac.uk.tavernamobile.utils.CallbackTask;
 import cs.man.ac.uk.tavernamobile.utils.BackgroundTaskHandler;
+import cs.man.ac.uk.tavernamobile.utils.CallbackTask;
 import cs.man.ac.uk.tavernamobile.utils.ListViewOnScrollTaskHandler;
 import cs.man.ac.uk.tavernamobile.utils.MessageHelper;
 import cs.man.ac.uk.tavernamobile.utils.SearchResultListAdapter;
@@ -45,7 +47,7 @@ public class SearchResultScreen extends Activity implements CallbackTask {
 	private ListView resultList;
 	private View footerView;
 	private ProgressBar loadingProBar;
-	private TextView searchQueryQuote;
+	//private TextView searchQueryQuote;
 
 	private String searchQuery;
 	private Activity currentActivity;
@@ -63,40 +65,47 @@ public class SearchResultScreen extends Activity implements CallbackTask {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.search_result_screen);
+		
+		this.overridePendingTransition(R.anim.push_left_in, 0);
 
 		currentActivity = this;
 		// utilities object setup
 		requestHandler = new HttpRequestHandler(this);
 		iniLoadingListener = new InitialSearchResultHandler();
 		moreResultsLoadingListener = new AutoLoadMoreListener();
+		// case 1:
 		// when navigate to result screen the loading mode should be
 		// "auto-load more result" by
-		search = new WorkflowsLoader(currentActivity, moreResultsLoadingListener);
+		// search = new WorkflowsLoader(currentActivity, moreResultsLoadingListener);
+		
+		// case 2:
+		// navigate to result screen to do the search
+		search = new WorkflowsLoader(currentActivity, iniLoadingListener);
 
 		// Initialize view components
 		ActionBar actionBar = getActionBar();
 		actionBar.setDisplayHomeAsUpEnabled(true);
 		actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#D02E2E2E")));
-		actionBar.setDisplayShowTitleEnabled(false);
+		actionBar.setTitle("Search");
 		
 		loadingProBar = (ProgressBar) currentActivity.findViewById(R.id.wfSearchProgressBar);
 		// footer view to append to the list
 		footerView = ((LayoutInflater) currentActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE))
 				.inflate(R.layout.list_footer_loading, null, false);
 		
-		searchQueryQuote = (TextView) findViewById(R.id.searchQueryQuote);
+		//searchQueryQuote = (TextView) findViewById(R.id.searchQueryQuote);
 		resultList = (ListView) findViewById(R.id.searchResultList);
 
+		/** case 1: **/
 		// get data passed in
-		workflowResults = (ArrayList<Workflow>) getIntent().getSerializableExtra("wfSearch_Result_list");
-		searchQuery = getIntent().getStringExtra("searchQuery");
+		// workflowResults = (ArrayList<Workflow>) getIntent().getSerializableExtra("wfSearch_Result_list");
+		//searchQuery = getIntent().getStringExtra("searchQuery");
 		
-		/** set up view components data **/
-		searchQueryQuote.setText("Search results for : \"" + searchQuery + "\"");
+		//searchQueryQuote.setText("Search results for : \"" + searchQuery + "\"");
 		// list adapter
-		resultListAdapter = new SearchResultListAdapter(this, workflowResults);
+		/*resultListAdapter = new SearchResultListAdapter(this, workflowResults);
 		resultList.addFooterView(footerView);
-		resultList.setAdapter(resultListAdapter);
+		resultList.setAdapter(resultListAdapter);*/
 		
 		onScrollTaskHandler = new ListViewOnScrollTaskHandler(resultList, new OnScrollLoadingTask());
 		onScrollTaskHandler.setOnScrollLoading();
@@ -205,6 +214,9 @@ public class SearchResultScreen extends Activity implements CallbackTask {
 	}
 	
 	private void refreshTheList() {
+		if(searchQuery == null){
+			return;
+		}
 		resultList.setVisibility(8);
 		resultList.removeFooterView(footerView);
 		loadingProBar.setVisibility(0);
@@ -229,34 +241,52 @@ public class SearchResultScreen extends Activity implements CallbackTask {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.search_results_screen, menu);
-		LinearLayout searchView = (LinearLayout) menu.findItem(R.id.search_results_search).getActionView();
+		LinearLayout searchView = 
+				(LinearLayout) menu.findItem(R.id.search_results_search).getActionView();
 	    
 		final EditText query = (EditText)searchView.getChildAt(0);
+		query.requestFocus();
+		query.setOnEditorActionListener(
+		        new EditText.OnEditorActionListener() {
+		            @Override
+		            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+		                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+		                	search(query);
+		                    return true;
+		                }
+		                return false;
+		            }
+		        });
 		ImageButton searchButton = (ImageButton) searchView.getChildAt(1); 
 		
 		searchButton.setOnClickListener(new android.view.View.OnClickListener() {
 
 			public void onClick(android.view.View v) {
-				// hide the soft keyboard if it is shown
-				hideKeyboard();
-				// check search query and do the search
-				searchQuery = query.getText().toString();
-				if (searchQuery.isEmpty()){
-					MessageHelper.showMessageDialog(currentActivity, 
-							"Oops! You haven't told me what you would like to search !");
-				}
-				else{
-					// change to initial loading listener
-					search.registerLoadingListener(iniLoadingListener);
-					searchQueryQuote.setText("Search results for : \"" + searchQuery + "\"");
-					onScrollTaskHandler.initializeSearchState();
-					// reset page index
-					search.searchResultsPageCount = 1;
-					search.DoSearch(searchQuery, sortedBy, order, true);
-				}				
+				search(query);				
 			}
 		});
 		return true; 
+	}
+	
+	private void search(final EditText query) {
+		// hide the soft keyboard if it is shown
+		hideKeyboard();				
+		// check search query and do the search
+		searchQuery = query.getText().toString();
+		if (searchQuery.isEmpty()){
+			MessageHelper.showMessageDialog(currentActivity, 
+					"Oops! You haven't told me what you would like to search !");
+		}
+		else{
+			loadingProBar.setVisibility(0);
+			// change to initial loading listener
+			search.registerLoadingListener(iniLoadingListener);
+			// searchQueryQuote.setText("Search results for : \"" + searchQuery + "\"");
+			onScrollTaskHandler.initializeSearchState();
+			// reset page index
+			search.searchResultsPageCount = 1;
+			search.DoSearch(searchQuery, sortedBy, order, true);
+		}
 	}
 
 	@Override
@@ -337,11 +367,11 @@ public class SearchResultScreen extends Activity implements CallbackTask {
 			if(newResults!= null && newResults.size() > 0){
 				// do animation on all of them since they are all
 				// newly added items
-				resultListAdapter.animationStartPosition = 0;
 				workflowResults = new ArrayList<Workflow>();
 				workflowResults.addAll(newResults);
-
 				resultListAdapter = new SearchResultListAdapter(currentActivity, workflowResults);
+				resultListAdapter.animationStartPosition = 0;
+				
 				resultList.addFooterView(footerView);
 				resultList.setAdapter(resultListAdapter);
 			}

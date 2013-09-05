@@ -26,7 +26,8 @@ import android.widget.TextView;
 
 public class FilePickerActivity extends ListActivity {
 	
-	public final static String EXTRA_FILE_PATH = "file_path";
+	public final static String FILE_PATH = "file_path";
+	public final static String SELECTED_FILE_NAME = "selectedFileName";
 	private static String INITIAL_DIRECTORY;// = "/mnt/sdcard/";
 	
 	protected File mDirectory;
@@ -68,13 +69,7 @@ public class FilePickerActivity extends ListActivity {
 	
 	@Override
 	public void onBackPressed() {
-		if(mDirectory.getParentFile() != null) {
-			// Go to parent directory
-			mDirectory = mDirectory.getParentFile();
-			refreshFilesList();
-			return;
-		}
-		
+		finish();
 		super.onBackPressed();
 	}
 	
@@ -86,12 +81,13 @@ public class FilePickerActivity extends ListActivity {
 		if(newFile.isFile()) {
 			// Set result
 			Intent extra = new Intent();
-			extra.putExtra(EXTRA_FILE_PATH, newFile.getAbsolutePath());
-			extra.putExtra("selectedFileName", newFile.getName());
+			extra.putExtra(FILE_PATH, newFile.getAbsolutePath());
+			extra.putExtra(SELECTED_FILE_NAME, newFile.getName());
 			setResult(RESULT_OK, extra);
 			// close the activity
 			finish();
 		} else {
+			// if it is directory
 			mDirectory = newFile;
 			// Update the files list
 			refreshFilesList();
@@ -102,7 +98,11 @@ public class FilePickerActivity extends ListActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case android.R.id.home:
-			finish();
+			if(mDirectory.getParentFile() != null) {
+				// Go to parent directory
+				mDirectory = mDirectory.getParentFile();
+				refreshFilesList();
+			}
 		default:
 			return super.onOptionsItemSelected(item);
 		}
@@ -120,20 +120,15 @@ public class FilePickerActivity extends ListActivity {
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
 			
-			View row = null;
-			
 			if(convertView == null) { 
-				LayoutInflater inflater = (LayoutInflater)getContext()
-						.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-				row = inflater.inflate(R.layout.file_picker_list_item, parent, false);
-			} else {
-				row = convertView;
+				LayoutInflater inflater = 
+						(LayoutInflater)getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+				convertView = inflater.inflate(R.layout.file_picker_list_item, parent, false);
 			}
-
 			File object = mObjects.get(position);
 
-			ImageView imageView = (ImageView)row.findViewById(R.id.file_picker_image);
-			TextView textView = (TextView)row.findViewById(R.id.file_picker_text);
+			ImageView imageView = (ImageView)convertView.findViewById(R.id.file_picker_image);
+			TextView textView = (TextView)convertView.findViewById(R.id.file_picker_text);
 			textView.setSingleLine(true);
 			textView.setText(object.getName());
 			
@@ -145,7 +140,7 @@ public class FilePickerActivity extends ListActivity {
 				imageView.setImageResource(R.drawable.folder_2);
 			}
 			
-			return row;
+			return convertView;
 		}
 	}
 	

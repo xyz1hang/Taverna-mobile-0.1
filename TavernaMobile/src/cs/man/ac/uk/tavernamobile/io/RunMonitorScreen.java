@@ -15,6 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import cs.man.ac.uk.tavernamobile.R;
+import cs.man.ac.uk.tavernamobile.datamodels.WorkflowBE;
 import cs.man.ac.uk.tavernamobile.server.WorkflowRunManager;
 import cs.man.ac.uk.tavernamobile.utils.CallbackTask;
 import cs.man.ac.uk.tavernamobile.utils.BackgroundTaskHandler;
@@ -59,9 +60,11 @@ public class RunMonitorScreen extends Activity implements CallbackTask {
 
 		// get data passed in
 		Bundle extras = getIntent().getExtras();
-		final String wftitle = extras.getString("workflow_title");
+		final WorkflowBE workflowEntity = (WorkflowBE) extras.getSerializable("workflowEntity");
 		userInputs = (HashMap<String, Object>) extras.getSerializable("userInputs");
 		Activity_Starter_Code = extras.getInt("activity_starter");
+		// command which indicate to start a new run or
+		// monitoring an existing run
 		String command = extras.getString("command");
 
 		ta = (TavernaAndroid) getApplication();
@@ -83,12 +86,12 @@ public class RunMonitorScreen extends Activity implements CallbackTask {
 		root = (LinearLayout) findViewById(R.id.runEndStatLayout);
 
 		//data setup
-		workflowTitle.setText(wftitle);
+		workflowTitle.setText(workflowEntity.getTitle());
 		usernameValue.setText(ta.getDefaultUser().getUsername());
 
-		// start the run
+		// TODO: start the run here ????
 		if(command.equals("RunWorkflow")){
-			manager.StartWorkflowRun(userInputs, this);
+			manager.StartWorkflowRun(userInputs, workflowEntity, this);
 		}
 		else if (command.equals("MonitoringOnly")){
 			manager.StartMonitoring(this);
@@ -96,7 +99,7 @@ public class RunMonitorScreen extends Activity implements CallbackTask {
 
 		// do notification
 		running = true;
-		startNotification(wftitle);
+		startNotification(workflowEntity.getTitle());
 
 		cancelButton.setOnClickListener(new android.view.View.OnClickListener() {
 
@@ -116,7 +119,7 @@ public class RunMonitorScreen extends Activity implements CallbackTask {
 				running = false;
 				mNotificationManager.cancelAll();//.cancel(notificationId);
 
-				manager.getRunOutput(wftitle, null, new CallbackTask(){
+				manager.getRunOutput(workflowEntity.getTitle(), null, new CallbackTask(){
 
 					@Override
 					public Object onTaskInProgress(Object... param) { return null; }
@@ -132,7 +135,7 @@ public class RunMonitorScreen extends Activity implements CallbackTask {
 						
 						Intent goToOutput = new Intent(currentActivity, OutputsList.class);
 						Bundle extras = new Bundle();
-						extras.putString("workflow_title", wftitle);
+						extras.putSerializable("workflowEntity", workflowEntity);
 						extras.putInt("activity_starter", Activity_Starter_Code);
 						goToOutput.putExtras(extras);
 						currentActivity.startActivity(goToOutput);
@@ -156,6 +159,10 @@ public class RunMonitorScreen extends Activity implements CallbackTask {
 	}
 
 	public Object onTaskComplete(Object... result) {
+		if(result.length > 0 && result[0] instanceof String){
+			MessageHelper.showMessageDialog(currentActivity, (String)result[0]);
+			return null;
+		}
 		running = false;
 		new RunEndStatRetriever().Execute();
 		return null;

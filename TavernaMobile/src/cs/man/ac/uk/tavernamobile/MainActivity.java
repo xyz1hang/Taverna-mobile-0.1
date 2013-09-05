@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 import android.app.ActionBar;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -12,6 +13,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -70,7 +72,7 @@ public class MainActivity extends FragmentActivity {
         slidingMenu.attachToActivity(this, SlidingMenu.SLIDING_CONTENT);
         slidingMenu.setMenu(R.layout.sliding_menu);
         
-        this.overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+        this.overridePendingTransition(R.anim.push_left_out, 0);
 		
 		// UI components
 		ActionBar actionBar = getActionBar();
@@ -155,9 +157,16 @@ public class MainActivity extends FragmentActivity {
 	
 
 	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.main_panel_menu, menu);
+		return true;
+	}
+	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 			case R.id.main_panel_setting_menu:
+				Intent goToSetting = new Intent(this, SettingsActivity.class);
+				startActivity(goToSetting);
 				break;
 		    /*case R.id.main_panel_login_menu:
 		    	User user = TavernaAndroid.getMyEUserLoggedin();

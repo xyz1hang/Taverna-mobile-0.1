@@ -5,7 +5,9 @@
         <EditTextPreference
             android:key="launcHistoryLimit"
             android:summary="@string/max_num_records_summary"
-            android:title="@string/max_num_records" />
+            android:title="@string/max_num_records" 
+            android:dialogMessage="@string/max_num_records_dialog_message"
+            android:defaultValue="@string/max_num_records_default_value"/>
     </PreferenceCategory>
     
     <PreferenceCategory android:title="@string/Monitoring_setting" >
@@ -15,6 +17,13 @@
             android:key="runStateRefreshFrequency"
             android:summary="@string/run_refresh_rate_setting_summary"
             android:title="@string/run_refresh_rate_setting" />
+    </PreferenceCategory>
+    
+    <PreferenceCategory android:title="@string/Run_Lists_mode_setting" >
+        <CheckBoxPreference
+            android:key="liveRunListSetting"
+            android:summary="@string/Run_Lists_mode_setting_summary"
+            android:title="@string/Live_run_list_mode_setting" />
     </PreferenceCategory>
 
 </PreferenceScreen>
