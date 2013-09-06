@@ -21,7 +21,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="left|center_vertical"
             android:background="@drawable/top_bg"
-            android:padding="10dp"
+            android:padding="20dp"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textStyle="bold|italic" />
 

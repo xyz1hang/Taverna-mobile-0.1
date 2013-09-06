@@ -66,7 +66,7 @@ public class SearchResultScreen extends Activity implements CallbackTask {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.search_result_screen);
 		
-		this.overridePendingTransition(R.anim.push_right_in, 0);
+		this.overridePendingTransition(R.anim.push_right_in, R.anim.push_right_out);
 
 		currentActivity = this;
 		// utilities object setup
@@ -213,6 +213,12 @@ public class SearchResultScreen extends Activity implements CallbackTask {
 		});*/
 	}
 	
+	@Override
+	protected void onPause() {
+		this.overridePendingTransition(0, R.anim.push_right_out);
+		super.onPause();
+	}
+	
 	private void refreshTheList() {
 		if(searchQuery == null){
 			return;
@@ -293,6 +299,7 @@ public class SearchResultScreen extends Activity implements CallbackTask {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case android.R.id.home:
+			this.overridePendingTransition(0, R.anim.push_left_out);
 			Intent intent = new Intent(this, MainActivity.class);
 			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 			startActivity(intent);

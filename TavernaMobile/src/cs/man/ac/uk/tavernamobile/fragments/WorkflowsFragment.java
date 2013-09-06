@@ -27,10 +27,7 @@ import cs.man.ac.uk.tavernamobile.dataaccess.DataProviderConstants;
 import cs.man.ac.uk.tavernamobile.dataaccess.DatabaseLoader;
 import cs.man.ac.uk.tavernamobile.datamodels.WorkflowBE;
 import cs.man.ac.uk.tavernamobile.io.InputsHistoryActivity;
-import cs.man.ac.uk.tavernamobile.server.WorkflowLaunchHelper;
 import cs.man.ac.uk.tavernamobile.utils.CallbackTask;
-import cs.man.ac.uk.tavernamobile.utils.MessageHelper;
-import cs.man.ac.uk.tavernamobile.utils.SystemStatesChecker;
 
 public class WorkflowsFragment extends Fragment {
 
@@ -167,6 +164,7 @@ public class WorkflowsFragment extends Fragment {
 				DataProviderConstants.WorkflowTitle,
 				DataProviderConstants.Version,
 				DataProviderConstants.UploaderName,
+				DataProviderConstants.WorkflowFileName,
 				DataProviderConstants.Avatar,
 				DataProviderConstants.WorkflowUri,
 				DataProviderConstants.LastLaunch,
@@ -221,9 +219,10 @@ public class WorkflowsFragment extends Fragment {
 							.getBlob(allRecords
 									.getColumnIndexOrThrow(DataProviderConstants.Avatar));
 					Bitmap avatorBitmap = BitmapFactory.decodeByteArray(avatorData, 0, avatorData.length);
-					/*String runID = allRecords
+					
+					String filePath = allRecords
 							.getString(allRecords
-									.getColumnIndexOrThrow(DataProviderConstants.Run_Id));*/
+									.getColumnIndexOrThrow(DataProviderConstants.WorkflowFileName));
 
 					WorkflowBE savedWorkflow = new WorkflowBE();
 					savedWorkflow.setTitle(title);
@@ -233,6 +232,7 @@ public class WorkflowsFragment extends Fragment {
 					savedWorkflow.setWorkflow_URI(wfuri);
 					savedWorkflow.setFirstLaunched(firstLaunch);
 					savedWorkflow.setLastLaunched(lastLaunch);
+					savedWorkflow.setFilename(filePath);
 					//savedWorkflow.setRunID(runID);
 
 					savedWorkflows.add(savedWorkflow);
@@ -264,6 +264,8 @@ public class WorkflowsFragment extends Fragment {
 					
 					Intent gotoInputHistory = new Intent(parentActivity, InputsHistoryActivity.class);
 					gotoInputHistory.putExtra("workflowEntity", selectedWorkflow);
+					gotoInputHistory.putExtra("Activity_Starter_Code", Activity_Starter_Code);
+					parentActivity.overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
 					parentActivity.startActivity(gotoInputHistory);
 					
 					//showLaunchDialog("Do you want to launch this workflow ?");
@@ -316,7 +318,7 @@ public class WorkflowsFragment extends Fragment {
 		}
 	}
 	
-	private void showLaunchDialog(String message) {
+	/*private void showLaunchDialog(String message) {
 		MessageHelper.showOptionsDialog(parentActivity, message, "Attention",
 				new CallbackTask() {
 					@Override
@@ -336,7 +338,7 @@ public class WorkflowsFragment extends Fragment {
 					@Override
 					public Object onTaskComplete(Object... result) { return null; }
 				}, null);
-	}
+	}*/
 
 	private class SavedWorkflowListAdapter extends ArrayAdapter<WorkflowBE> {
 

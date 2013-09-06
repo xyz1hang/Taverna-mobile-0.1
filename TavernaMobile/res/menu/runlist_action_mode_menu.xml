@@ -2,6 +2,12 @@
     xmlns:yourapp="http://schemas.android.com/apk/res-auto" >
 
     <item
+        android:id="@+id/runList_run_start"
+        android:icon="@drawable/play_icon"
+        android:title="@string/view_run_menu"
+        android:showAsAction="always"/>
+    
+    <item
         android:id="@+id/runList_run_stop"
         android:icon="@drawable/stop_action_icon_light"
         android:title="@string/delete_run_menu"

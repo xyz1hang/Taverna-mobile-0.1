@@ -16,14 +16,14 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnLongClickListener;
+import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.CompoundButton.OnCheckedChangeListener;
 import cs.man.ac.uk.tavernamobile.R;
 import cs.man.ac.uk.tavernamobile.datamodels.WorkflowBE;
 import cs.man.ac.uk.tavernamobile.server.WorkflowRunManager;
@@ -46,6 +46,7 @@ public class InputsHistoryActivity extends Activity {
 	private ArrayList<File> selectedInputs;
 	private WorkflowRunManager manager;
 	private WorkflowBE workflowEntity;
+	private int Activity_Starter_Code;
 	
 	private TextView defaultText;
 	private ListView inputsList;
@@ -59,7 +60,7 @@ public class InputsHistoryActivity extends Activity {
 		manager = new WorkflowRunManager(currentActivity);
 		selectedInputs = new ArrayList<File>();
 		
-		this.overridePendingTransition(R.anim.push_right_in, 0);
+		this.overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
 		
 		// UI components
 		ActionBar actionBar = getActionBar();
@@ -70,6 +71,7 @@ public class InputsHistoryActivity extends Activity {
 		defaultText = (TextView) findViewById(R.id.workflow_frag_default_textview);
 
 		workflowEntity = (WorkflowBE) getIntent().getSerializableExtra("workflowEntity");
+		Activity_Starter_Code = (Integer) getIntent().getIntExtra("Activity_Starter_Code", 1);
 
 		if (workflowEntity != null) {
 			
@@ -215,47 +217,50 @@ public class InputsHistoryActivity extends Activity {
 			switch (item.getItemId()) {
 			case R.id.input_history_launch:
 				MessageHelper.showOptionsDialog(currentActivity,
-						"Launch the workflow with selected inputs ?", "Alert", 
-						new CallbackTask() {
-							@Override
-							public Object onTaskInProgress(Object... param) {
-								byte[] workflowData = null;
-								try {
-									 workflowData = WorkflowFileLoader.getBytesFromFile(new File(workflowEntity.getFilename()));
-								} catch (Exception e) {
-									// swallow
-									e.printStackTrace();
-								}
-								String[] inputs = new String[selectedInputs.size()];
-								for(int i = 0; i<selectedInputs.size(); i++){
-									inputs[i] = selectedInputs.get(i).getAbsolutePath();
-								}
-								//selectedInputs.toArray(inputs);
-								manager.StartRunWithSavedInput(workflowData, inputs, new CallbackTask(){
+					"Launch the workflow with selected inputs ?", "Alert", 
+					new CallbackTask() {
+						@Override
+						public Object onTaskInProgress(Object... param) {
+							
+							byte[] workflowData = null;
+							try {
+								 workflowData = WorkflowFileLoader.getBytesFromFile(
+										 new File(workflowEntity.getFilename()));
+							} catch (Exception e) {
+								// swallow
+								e.printStackTrace();
+							}
+							String[] inputs = new String[selectedInputs.size()];
+							for(int i = 0; i<selectedInputs.size(); i++){
+								inputs[i] = selectedInputs.get(i).getAbsolutePath();
+							}
+							//selectedInputs.toArray(inputs);
+							manager.StartRunWithSavedInput(workflowData, 
+									workflowEntity, inputs, new CallbackTask(){
+								@Override
+								public Object onTaskInProgress(Object... param) { return null; }
 
-									@Override
-									public Object onTaskInProgress(Object... param) { return null; }
-
-									@Override
-									public Object onTaskComplete(Object... result) {
-										if(result != null && result.length > 0 && result[0] instanceof String){
-											MessageHelper.showMessageDialog(currentActivity, (String) result[0]);
-										}
-										return null;
+								@Override
+								public Object onTaskComplete(Object... result) {
+									if(result != null && result.length > 0 && 
+											result[0] instanceof String){
+										MessageHelper.showMessageDialog(
+												currentActivity, (String) result[0]);
 									}
 									
-								});
-								
-								mode.finish();
-								return null;
-							}
+									return null;
+								}
+							});
+							
+							mode.finish();
+							return null;
+						}
 
-							@Override
-							public Object onTaskComplete(Object... result) {
-								return null;
-							}
-
-						}, null);
+						@Override
+						public Object onTaskComplete(Object... result) {
+							return null;
+						}
+					}, null);
 				
 				return true;
 			case R.id.input_history_delete:
@@ -267,7 +272,6 @@ public class InputsHistoryActivity extends Activity {
 								for(File f : selectedInputs){
 									f.delete();
 								}
-								
 								mode.finish();
 								return null;
 							}
@@ -277,7 +281,6 @@ public class InputsHistoryActivity extends Activity {
 								refreshFilesList();
 								return null;
 							}
-
 						}, null);
 				
 				return true;

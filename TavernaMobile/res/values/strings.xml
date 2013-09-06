@@ -37,6 +37,7 @@
     <!-- Main screen RunList menu titles -->
     <string name="delete_all_runs_menu">Delete all runs</string>
     <string name="delete_run_menu">Delete run</string>
+    <string name="view_run_menu">View the run</string>
     <!-- main panel menu titles -->
     <string name="search_results_menu">Search again</string>
     <string name="menu_settings">Settings</string>

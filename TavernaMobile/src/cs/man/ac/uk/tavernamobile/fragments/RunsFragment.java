@@ -22,7 +22,7 @@ import android.view.View;
 import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.BaseAdapter;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.CheckBox;
@@ -75,6 +75,8 @@ public class RunsFragment extends Fragment {
 	private String selectedTitle = null;
 	private String selectedWfVersion = null;
 	private String selectedWfUploaderName = null;
+	
+	//private WorkflowBE seletedworkflowBE;
 	
 	// for the sake of Listview inside expendableViwe
 	private int childID;
@@ -249,8 +251,7 @@ public class RunsFragment extends Fragment {
 
 	// Class to process workflow details loaded from the database
 	// when the loading finished
-	private class workflowDetailLoadingListener implements
-			CallbackTask {
+	private class workflowDetailLoadingListener implements CallbackTask {
 
 		@Override
 		public Object onTaskInProgress(Object... param) { return null; }
@@ -400,9 +401,9 @@ public class RunsFragment extends Fragment {
 					new ChildListAdapter(childElements.get(runGroups[groupPosition]));
 			ListView runList = (ListView) convertView.findViewById(R.id.runsList);
 			runList.setAdapter(adapter);
-			runList.setOnItemClickListener(new OnItemClickListener() {
+			runList.setOnItemSelectedListener(new OnItemSelectedListener() {
 
-				public void onItemClick(AdapterView<?> parent, View arg1, final int itemIndex, long arg3) {
+				/*public void onItemClick(AdapterView<?> parent, View arg1, final int itemIndex, long arg3) {
 					
 					// get launched workflows run ID
 					// in order to retrieve its state
@@ -423,34 +424,86 @@ public class RunsFragment extends Fragment {
 						// A run of this workflow has been attempted
 						// i.e it has been recorded
 						// but the run creation was unsuccessful
-							MessageHelper.showOptionsDialog(parentActivity, 
-									"There was a problem launching this workflow."
-									+"\nDo you want to try again ?", "Attention",
-									new CallbackTask() {
-										@Override
-										public Object onTaskInProgress(Object... param) {
-											// check Internet
-											SystemStatesChecker sysChecker = new SystemStatesChecker(parentActivity);
-											if (!sysChecker.isNetworkConnected()) {
-												return null;
-											}
-											WorkflowBE wfBe = (WorkflowBE) adapter.getItem(itemIndex);
-
-											WorkflowLaunchHelper launchHelper = new WorkflowLaunchHelper(
-													parentActivity, wfBe, Activity_Starter_Code);
-											launchHelper.launch();
+						MessageHelper.showOptionsDialog(parentActivity, 
+								"There was a problem launching this workflow."
+								+"\nDo you want to try again ?", "Attention",
+								new CallbackTask() {
+									@Override
+									public Object onTaskInProgress(Object... param) {
+										// check Internet
+										SystemStatesChecker sysChecker = new SystemStatesChecker(parentActivity);
+										if (!sysChecker.isNetworkConnected()) {
 											return null;
 										}
+										WorkflowBE wfBe = (WorkflowBE) adapter.getItem(itemIndex);
 
-										@Override
-										public Object onTaskComplete(Object... result) { return null; }
-									}, null);
+										WorkflowLaunchHelper launchHelper = new WorkflowLaunchHelper(
+												parentActivity, wfBe, Activity_Starter_Code);
+										launchHelper.launch();
+										return null;
+									}
 
-							
+									@Override
+									public Object onTaskComplete(Object... result) { return null; }
+								}, null);
+						}
+						showLaunchDialog("There was a problem launching this workflow."
+										+"\nDo you want to try again ?");
+					}*/
+
+				@Override
+				public void onItemSelected(AdapterView<?> parent, View arg1, final int itemIndex, long arg3) {
+					// get launched workflows run ID
+					// in order to retrieve its state
+					// and then monitor it
+					String runID = (String) adapter.getKey(childPosition);
+					final WorkflowBE workflowEntity = (WorkflowBE) adapter.getItem(childPosition);
+					
+					//final WorkflowBE workflowEntity = (WorkflowBE) adapter.getItem(itemIndex);
+					selectedTitle = workflowEntity.getTitle();
+					selectedWfVersion = workflowEntity.getVersion();
+					selectedWfUploaderName = workflowEntity.getUploaderName();
+					
+					if (runID != null) {
+						WorkflowRunManager manager = new WorkflowRunManager(parentActivity);
+						manager.checkRunStateWithID(runID, 
+								new RunsListAdapter.RunStateChecker(workflowEntity, runID));
+					} else {
+						// A run of this workflow has been attempted
+						// i.e it has been recorded
+						// but the run creation was unsuccessful
+						MessageHelper.showOptionsDialog(parentActivity, 
+								"There was a problem launching this workflow."
+								+"\nDo you want to try again ?", "Attention",
+								new CallbackTask() {
+									@Override
+									public Object onTaskInProgress(Object... param) {
+										// check Internet
+										SystemStatesChecker sysChecker = new SystemStatesChecker(parentActivity);
+										if (!sysChecker.isNetworkConnected()) {
+											return null;
+										}
+										WorkflowBE wfBe = (WorkflowBE) adapter.getItem(itemIndex);
+
+										WorkflowLaunchHelper launchHelper = new WorkflowLaunchHelper(
+												parentActivity, wfBe, Activity_Starter_Code);
+										launchHelper.launch();
+										return null;
+									}
+
+									@Override
+									public Object onTaskComplete(Object... result) { return null; }
+								}, null);
 						}
 						/*showLaunchDialog("There was a problem launching this workflow."
 										+"\nDo you want to try again ?");*/
 					}
+					
+				@Override
+				public void onNothingSelected(AdapterView<?> arg0) {
+					// TODO Auto-generated method stub
+					
+				}
 			});
 			// add adapter into the adapters list
 			// in order to refresh all list when loading complete
@@ -461,8 +514,7 @@ public class RunsFragment extends Fragment {
 
 		@Override
 		public int getChildrenCount(int groupPosition) {
-			int size = childElements.size() <= groupPosition ? 
-					0 : childElements.get(runGroups[groupPosition]) == null? 
+			int size = childElements.get(runGroups[groupPosition]) == null? 
 							0: childElements.get(runGroups[groupPosition]).size();
 			return size;
 		}
@@ -610,7 +662,6 @@ public class RunsFragment extends Fragment {
 			    			  "Stop selected runs ?",
 			    			  null,
 			    			  new CallbackTask(){
-
 								@Override
 								public Object onTaskInProgress(Object... param) {
 									runManager.StopRun("Stopping runs...", selectedRunIds);
@@ -634,7 +685,6 @@ public class RunsFragment extends Fragment {
 			    			  "Delete selected runs ?",
 			    			  null,
 			    			  new CallbackTask(){
-
 								@Override
 								public Object onTaskInProgress(Object... param) {
 									runManager.DeleteRun("Deleting runs...", selectedRunIds);
@@ -651,6 +701,18 @@ public class RunsFragment extends Fragment {
 			    		  
 			    			  }, null);
 			    	  // mode.finish();
+			    	  return true;
+			      case R.id.runList_run_start:
+			    	  	// get launched workflows run ID
+						// in order to retrieve its state
+						// and then monitor it
+						/*String runID = (String) selectedRunIds.get(0);
+						
+						if (runID != null) {
+							WorkflowRunManager manager = new WorkflowRunManager(parentActivity);
+							manager.checkRunStateWithID(runID, 
+									new RunsListAdapter.RunStateChecker(workflowEntity, runID));
+						} */
 			    	  return true;
 			      default:
 			        return false;

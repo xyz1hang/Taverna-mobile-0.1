@@ -7,7 +7,9 @@
     <com.handmark.pulltorefresh.library.PullToRefreshExpandableListView
         android:id="@+id/pull_to_refresh_listview"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent" />
+        android:layout_height="fill_parent"
+        android:focusable="false"
+        android:focusableInTouchMode="false" />
 
     <!--
     <yaochangwei.pulltorefreshlistview.widget.extend.PullToRefreshListView

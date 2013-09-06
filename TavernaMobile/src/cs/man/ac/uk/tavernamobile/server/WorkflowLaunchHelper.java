@@ -60,8 +60,7 @@ public class WorkflowLaunchHelper {
 	private SystemStatesChecker checker;
 	private WorkflowRunManager manager;
 
-	public WorkflowLaunchHelper(FragmentActivity activity, WorkflowBE wfEntity,
-			int code) {
+	public WorkflowLaunchHelper(FragmentActivity activity, WorkflowBE wfEntity, int code) {
 		currentActivity = activity;
 		workflowEntity = wfEntity;
 		Activity_Starter_Code = code;
@@ -119,6 +118,7 @@ public class WorkflowLaunchHelper {
 
 	// class to deal with results loaded by content loader.
 	// To check whether the workflow has been ran before
+	// whether the workflow file actually exist
 	private class workflowDataLoadingListener implements CallbackTask {
 
 		@Override
@@ -141,6 +141,7 @@ public class WorkflowLaunchHelper {
 
 				// if the workflow has a record in database
 				// try to find the workflow file saved on the phone
+				// in order to launch later
 				if (existingWFRecord.moveToFirst()) {
 
 					String downloadURL = existingWFRecord
@@ -153,9 +154,10 @@ public class WorkflowLaunchHelper {
 							.getString(existingWFRecord
 									.getColumnIndexOrThrow(DataProviderConstants.WorkflowFileName));
 
-					File workflowFile = new File(android.os.Environment
+					/*File workflowFile = new File(android.os.Environment
 							.getExternalStorageDirectory().getPath()
-							+ "/TavernaAndroid/" + workflowFilename);
+							+ "/TavernaAndroid/" + workflowFilename);*/
+					File workflowFile = new File(workflowFilename);
 
 					if (workflowFile.exists()) {
 						createRunWithFileData(workflowFile);
@@ -164,8 +166,7 @@ public class WorkflowLaunchHelper {
 					else {
 						checkAndDownload(downloadURL);
 					}
-				}// end of if record exists
-
+				}
 				// else if no record at all
 				else {
 					// prepare to download the workflow file
@@ -177,6 +178,10 @@ public class WorkflowLaunchHelper {
 					String[] pathSegments = path.split("/");
 					String fileName = pathSegments[pathSegments.length - 1];
 					if (fileName.matches(".*\\.t2flow")) {
+						// record the workflow detail in database.
+						// It is the first time this workflow
+						// is going to be downloaded at this point
+						recordWorkflow();
 						checkAndDownload(downloadURL);
 					} else {
 						String message = "The workflow document is not a \"t2flow\" file,\n"
@@ -204,14 +209,12 @@ public class WorkflowLaunchHelper {
 				downloadWorkflowFile(currentActivity, downloadURL);
 			} else {
 				String message = "You don't have the privilege to download this workflow.";
-				MessageHelper.showMessageDialog(currentActivity,
-						message);
+				MessageHelper.showMessageDialog(currentActivity,message);
 			}
 		}
 	}
 
-	private void downloadWorkflowFile(final Activity currentActivity,
-			final String downloadURL) {
+	private void downloadWorkflowFile(final Activity currentActivity, final String downloadURL) {
 		MessageHelper.showOptionsDialog(
 				currentActivity,
 				"The workflow file not found.\n"
@@ -227,7 +230,7 @@ public class WorkflowLaunchHelper {
 						} catch (Exception e) {
 							Toast.makeText(
 								currentActivity,
-								"Workflow download failed, please try again.",
+								"Workflow download failed, please try again.\n" + e.getMessage(),
 								Toast.LENGTH_LONG).show();
 						}
 						return null;
@@ -250,21 +253,20 @@ public class WorkflowLaunchHelper {
 			/*String[] elements = filePath.split("/");
 			String fileName = elements[elements.length - 1];*/
 			File workflowFile = new File(filePath);
-			// save workflow detail in database
-			// recordWorkflow(fileName);
-			recordWorkflow(filePath);
+			// update the saved workflow file path
+			updateWorkflowFilePath(filePath);
 			// then create run for it
 			createRunWithFileData(workflowFile);
 			return null;
 		}
 	}
 
-	private void recordWorkflow(String workflowFileName) {
+	private void recordWorkflow() {
 		ContentValues valuesToInsert = new ContentValues();
 
 		valuesToInsert.put(DataProviderConstants.WorkflowTitle, workflowEntity.getTitle());
 		valuesToInsert.put(DataProviderConstants.Version, workflowEntity.getVersion());
-		valuesToInsert.put(DataProviderConstants.WorkflowFileName, workflowFileName);
+		//valuesToInsert.put(DataProviderConstants.WorkflowFileName, workflowFileName);
 		valuesToInsert.put(DataProviderConstants.UploaderName, workflowEntity.getUploaderName());
 		byte[] avatarData = bitmapToByteArray(workflowEntity.getAvator());
 		valuesToInsert.put(DataProviderConstants.Avatar, avatarData);
@@ -274,6 +276,20 @@ public class WorkflowLaunchHelper {
 		Uri uri = this.currentActivity.getContentResolver()
 				.insert(DataProviderConstants.WF_TABLE_CONTENTURI, valuesToInsert);
 		insertedRowID = uri.getLastPathSegment();
+	}
+	
+	private void updateWorkflowFilePath(String workflowFilePath){
+		ContentValues valuesToUpdate = new ContentValues();
+		valuesToUpdate.put(DataProviderConstants.WorkflowFileName, workflowFilePath);
+		String selection = DataProviderConstants.WorkflowTitle + "= ? AND "+
+						   DataProviderConstants.Version + "= ? AND " +
+						   DataProviderConstants.UploaderName + "= ?";
+		String[] selectionArgs = 
+				new String[] { workflowEntity.getTitle(), 
+							   workflowEntity.getVersion(), 
+							   workflowEntity.getUploaderName()};
+		this.currentActivity.getContentResolver().update(
+				DataProviderConstants.WF_TABLE_CONTENTURI, valuesToUpdate, selection, selectionArgs);
 	}
 
 	private void createRunWithFileData(File workflowFile) {

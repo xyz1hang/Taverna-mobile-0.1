@@ -48,7 +48,7 @@ public class SlidingMenuFragment extends Fragment {
 			obj.setResID(R.drawable.ic_action_overflow);
 			tobeAdapter.add(obj);
 		}
-		setupList(list, tobeAdapter, "myExperiment account");
+		setupList(list, tobeAdapter, "Data sources");
 		
 		SimpleAdapter settingAdapter = new SimpleAdapter(getActivity());
 		listObject obj1 = new listObject();

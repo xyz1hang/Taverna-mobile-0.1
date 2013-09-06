@@ -33,6 +33,7 @@ import uk.org.taverna.server.client.Server;
 import uk.org.taverna.server.client.connection.AccessForbiddenException;
 import uk.org.taverna.server.client.connection.UserCredentials;
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -42,6 +43,7 @@ import cs.man.ac.uk.tavernamobile.datamodels.WorkflowBE;
 import cs.man.ac.uk.tavernamobile.utils.BackgroundTaskHandler;
 import cs.man.ac.uk.tavernamobile.utils.CallbackTask;
 import cs.man.ac.uk.tavernamobile.utils.TavernaAndroid;
+import cs.man.ac.uk.tavernamobile.utils.WorkflowFileLoader;
 
 public class WorkflowRunManager
 {
@@ -123,11 +125,11 @@ public class WorkflowRunManager
 	 * @param savedInputFileName
 	 * @param listener
 	 */
-	public void StartRunWithSavedInput(byte[] workflowData, 
+	public void StartRunWithSavedInput(byte[] workflowData, WorkflowBE workflowEntity,
 			String[] savedInputFilesName, CallbackTask listener){
 		runListener = listener;
 		new RunProgressListenerInvoker().Execute();
-		new RunWithExistingInputs().Execute(workflowData, savedInputFilesName);
+		new RunWithExistingInputs().Execute(workflowData, savedInputFilesName, workflowEntity);
 	}
 
 	// only monitoring
@@ -316,22 +318,14 @@ public class WorkflowRunManager
 		}
 
 		public Object onTaskInProgress(Object... params) {
-			byte[] workflowData = (byte []) params[0];
+			WorkflowBE workflowEntity = (WorkflowBE) params[0];
 
-			Run runCreated = null;
-			try{
-				runCreated = Run.create(ta.getServer(), workflowData, ta.getDefaultUser());
-				ta.setWorkflowRunLaunched(runCreated);
+			Object result = createWorkflowRun(workflowEntity);
+			if(!(result instanceof Run)){
+				return (String) result;
 			}
-			catch(AccessForbiddenException e){
-				exceptionMessage = "Access to the run of this workflow is forbidden";
-			}
-			catch(Exception e){
-				exceptionMessage = e.getMessage();
-				// TODO: "log" has to be removed in release version
-				Log.e("run creation error", e.getMessage());
-			}
-
+			
+			Run runCreated = (Run) result;
 			// get input ports, if available
 			Map<String, InputPort> inputPorts = null;
 			HashMap<String, Map<String, InputPort>> idAndinputs = 
@@ -358,9 +352,79 @@ public class WorkflowRunManager
 		}
 	}
 	
+	private Object createWorkflowRun(WorkflowBE workflowEntity) {
+		
+		byte[] workflowData = null;
+		try {
+			workflowData = WorkflowFileLoader.getBytesFromFile(new File(workflowEntity.getFilename()));
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			return e1.getMessage();
+		}
+		
+		Run runCreated = null;
+		try{
+			runCreated = Run.create(ta.getServer(), workflowData, ta.getDefaultUser());
+			ta.setWorkflowRunLaunched(runCreated);
+		}
+		catch(AccessForbiddenException e){
+			return "Access to the run of this workflow is forbidden";
+		} catch (NetworkConnectionException e) {
+			return e.getMessage();
+		}
+		
+		String runID = runCreated.getIdentifier();
+		ContentValues args = new ContentValues();
+		args.put(DataProviderConstants.Run_Id, runID);
+
+		recordLaunchTime(false, workflowEntity);
+		String subQuery = "(SELECT WF_ID FROM launchHistory "+
+			  "WHERE Workflow_Title=\""+workflowEntity.getTitle()+ "\" AND "+
+				    "Version=\""+workflowEntity.getVersion()+"\" AND "+
+				    "Uploader_Name=\""+workflowEntity.getUploaderName()+"\")";
+		args.put(DataProviderConstants.WF_ID, subQuery);
+		
+		/** INSERT **/
+		currentActivity.getContentResolver().insert(
+				DataProviderConstants.RUN_TABLE_CONTENTURI, args);
+		
+		return runCreated;
+	}
+	
+	private void recordLaunchTime(boolean firstTime, WorkflowBE workflowEntity) {		
+		DateFormat df = DateFormat.getDateTimeInstance();
+		df.setTimeZone(TimeZone.getTimeZone("GMT"));
+		String gmtTime = df.format(new Date());
+		
+		ContentValues values = new ContentValues(); 
+		if(firstTime){
+			values.put(DataProviderConstants.FirstLaunch, gmtTime);
+			values.put(DataProviderConstants.LastLaunch, gmtTime);
+		}else{
+			values.put(DataProviderConstants.LastLaunch, gmtTime);
+		}
+		String selection = 
+				   DataProviderConstants.WorkflowTitle + " = ? AND "
+				 + DataProviderConstants.Version + " = ? AND "
+				 + DataProviderConstants.UploaderName + " = ?";
+		String[] selectionArgs = new String[] {
+				workflowEntity.getTitle(), 
+				workflowEntity.getVersion(), 
+				workflowEntity.getUploaderName()};
+		
+		currentActivity.getContentResolver().update(
+				DataProviderConstants.WF_TABLE_CONTENTURI, 
+				values, 
+				selection, selectionArgs);
+	}
+	
 	public class RunWithExistingInputs implements CallbackTask{
 		
+		private Run runCreated = null;
+		private WorkflowBE workflowEntity;
+		
 		public void Execute(Object... params){
+			workflowEntity = (WorkflowBE) params[2];
 			BackgroundTaskHandler handler = new BackgroundTaskHandler();
 			handler.StartBackgroundTask(currentActivity, this, "Creating run...", params);
 		}
@@ -374,10 +438,14 @@ public class WorkflowRunManager
 			}
 			
 			for(int i = 1; i < inputsFilesPath.length; i++){
-				Run runCreated = null;
 				try{
+					Object result = createWorkflowRun(workflowEntity);
+					if(!(result instanceof Run)){
+						return (String) result;
+					}
 					// create the run
-					runCreated = Run.create(ta.getServer(), workflowData, ta.getDefaultUser());
+					//runCreated = Run.create(ta.getServer(), workflowData, ta.getDefaultUser());
+					runCreated = (Run) result;
 					// read saved input object
 					FileInputStream fis = new FileInputStream(inputsFilesPath[i]);
 				    ObjectInputStream ois = new ObjectInputStream(fis);
@@ -430,6 +498,25 @@ public class WorkflowRunManager
 					}// end of iterating over inputs
 					// close ObjectInputStream
 					ois.close();
+					
+					/** temp **/
+					// prepare data to be inserted into the "RunID, WorkflowID" tables
+					/** Run ID **/
+					String runID = runCreated.getIdentifier();
+					ContentValues args = new ContentValues();
+					args.put(DataProviderConstants.Run_Id, runID);
+
+					recordLaunchTime(false, workflowEntity);
+					String subQuery = "(SELECT WF_ID FROM launchHistory"+
+						  "WHERE Workflow_Title=\""+workflowEntity.getTitle()+ "\" AND"+
+							    "Version=\""+workflowEntity.getVersion()+"\" AND"+
+							    "Uploader_Name=\""+workflowEntity.getUploaderName()+"\")";
+					args.put(DataProviderConstants.WF_ID, subQuery);
+					
+					/** INSERT **/
+					currentActivity.getContentResolver().insert(
+							DataProviderConstants.RUN_TABLE_CONTENTURI, args);
+					
 				} catch (FileNotFoundException e) {
 					return e.getMessage();
 				} catch (NetworkConnectionException e) {
@@ -471,6 +558,9 @@ public class WorkflowRunManager
 			runListener.onTaskComplete(result);
 			return null;
 		}
+		
+		// method that inserts launch time into database 
+				
 		
 	}
 

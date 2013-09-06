@@ -16,6 +16,7 @@ import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
@@ -72,7 +73,8 @@ public class MainActivity extends FragmentActivity {
         slidingMenu.attachToActivity(this, SlidingMenu.SLIDING_CONTENT);
         slidingMenu.setMenu(R.layout.sliding_menu);
         
-        this.overridePendingTransition(R.anim.push_left_in, 0);
+        this.overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 		
 		// UI components
 		ActionBar actionBar = getActionBar();
@@ -187,12 +189,6 @@ public class MainActivity extends FragmentActivity {
 		//mSpinnerAdapter.notifyDataSetChanged();
 		slidingMenu.setSlidingEnabled(true);
 		super.onStart();
-	}
-	
-	@Override
-	protected void onPause() {
-		this.overridePendingTransition(R.anim.push_right_out, 0);
-		super.onPause();
 	}
 
 	public void onBackPressed() 

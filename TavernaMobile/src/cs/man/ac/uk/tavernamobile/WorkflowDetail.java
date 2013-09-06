@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
+import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
+
 import android.app.ActionBar;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
@@ -75,6 +77,16 @@ public class WorkflowDetail extends FragmentActivity implements CallbackTask {
 		mCache = TavernaAndroid.getmTextCache();
 		currentActivity = this; // for the access of current activity in
 								// OnClickListener
+		
+		SlidingMenu slidingMenu = new SlidingMenu(this);
+        slidingMenu.setMode(SlidingMenu.LEFT);
+        slidingMenu.setTouchModeAbove(SlidingMenu.TOUCHMODE_MARGIN);
+        slidingMenu.setShadowWidthRes(R.dimen.shadow_width);
+        slidingMenu.setShadowDrawable(R.drawable.shadow);
+        slidingMenu.setBehindOffsetRes(R.dimen.slidingmenu_offset);
+        slidingMenu.setFadeDegree(0.35f);
+        slidingMenu.attachToActivity(this, SlidingMenu.SLIDING_CONTENT);
+        slidingMenu.setMenu(R.layout.sliding_menu);
 
 		// UI components
 		ActionBar actionBar = getActionBar();

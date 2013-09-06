@@ -19,7 +19,7 @@
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textColor="@color/SteelBlue"
         android:textStyle="bold"
-        android:visibility="visible" />
+        android:visibility="gone" />
 
     <LinearLayout
         android:id="@+id/wfDetailsTopLayout"

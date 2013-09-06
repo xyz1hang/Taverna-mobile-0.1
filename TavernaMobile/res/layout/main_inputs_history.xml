@@ -14,6 +14,7 @@
         android:layout_margin="10dp"
         android:background="@drawable/drop_shadow_container"
         android:padding="10dp"
+        android:text="statistic (to be added...)"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textStyle="bold|italic" />
 
