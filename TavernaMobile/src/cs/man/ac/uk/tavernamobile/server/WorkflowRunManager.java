@@ -124,10 +124,10 @@ public class WorkflowRunManager
 	 * @param listener
 	 */
 	public void StartRunWithSavedInput(byte[] workflowData, 
-			String savedInputFileName, CallbackTask listener){
+			String[] savedInputFilesName, CallbackTask listener){
 		runListener = listener;
 		new RunProgressListenerInvoker().Execute();
-		new RunWithExistingInputs().Execute(workflowData, savedInputFileName);
+		new RunWithExistingInputs().Execute(workflowData, savedInputFilesName);
 	}
 
 	// only monitoring
@@ -368,104 +368,107 @@ public class WorkflowRunManager
 		@Override
 		public Object onTaskInProgress(Object... param) {
 			byte[] workflowData = (byte []) param[0];
-			String inputsFilePath = (String) param[1];
-			if(workflowData == null || inputsFilePath == null){
-				throw new NullPointerException("neither workflowData nor inputsFilePath can be null");
+			String[] inputsFilesPath = (String[]) param[1];
+			if(workflowData == null || inputsFilesPath == null || inputsFilesPath.length < 1){
+				throw new NullPointerException("neither workflowData nor inputsFilePath can be empty");
 			}
-
-			Run runCreated = null;
-			try{
-				// create the run
-				runCreated = Run.create(ta.getServer(), workflowData, ta.getDefaultUser());
-				// read saved input object
-				FileInputStream fis = new FileInputStream(inputsFilePath);
-			    ObjectInputStream ois = new ObjectInputStream(fis);
-			    HashMap<String, Object> savedInputs = (HashMap<String, Object>) ois.readObject();
-			    if(savedInputs == null){
-			    	fis.close();
-			    	ois.close();
-			    	return null;
-			    }
-			    
-			    // setup(upload) input
-			    Iterator<Entry<String, Object>> it = savedInputs.entrySet().iterator();
-				while(it.hasNext()){
-					Map.Entry<String, Object> pair = it.next();
-					Object value = pair.getValue();
-					Class<?> valueType = value.getClass();
-					//String dataToWrite = null;
-					// if input is file
-					if (valueType.equals(File.class)){
-							File inputfile = (File) value;
-							// upload input to server
-							InputPort inputPort = runCreated.getInputPort(pair.getKey());
-							if(inputPort == null){
-								// if one port does not exist the port name must
-								// had been changed, hence an up to dated input data
-								// need to be supplied by creating a new run
-								fis.close();
-								ois.close();
-								return "Saved inputs data is out of date.\n"
-										+"Please supply new data by creating new run";
-							}
-							inputPort.setFile(inputfile);
-					}
-					// if input is text
-					else if (valueType.equals(String.class)){
-							String inputString = (String) value;
-							// upload input to server
-							InputPort inputPort = runCreated.getInputPort(pair.getKey());
-							if(inputPort == null){
-								// if one port does not exist the port name must
-								// had been changed, hence an up to dated input data
-								// need to be supplied by creating a new run
-								fis.close();
-								ois.close();
-								return "Saved inputs data is out of date.\n"
-										+"Please supply new data by creating new run";
-							}
-							inputPort.setValue(inputString);
-					}
-				}// end of iterating over inputs
-				// close ObjectInputStream
-				ois.close();
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			} catch (NetworkConnectionException e) {
-				return e.getMessage();
-			} catch(AccessForbiddenException e){
-				return "Access to the run of this workflow is forbidden";
-			} catch(Exception e){
-				// TODO: "log" has to be removed in release version
-				Log.e("run creation error", e.getMessage());
-				return e.getMessage();
-			}
-
-			// start the run
-			if (runCreated != null){
-				try {
-					runCreated.start();
-					if (!runCreated.isRunning()){
-						// make sure the run is started
-						waitForWorkflowRunToStart(runCreated);
-					}
-					// set run started time and statue
-					reportRunState();
-					reportRunStartTime();
-				} catch (Exception e) {
+			
+			for(int i = 1; i < inputsFilesPath.length; i++){
+				Run runCreated = null;
+				try{
+					// create the run
+					runCreated = Run.create(ta.getServer(), workflowData, ta.getDefaultUser());
+					// read saved input object
+					FileInputStream fis = new FileInputStream(inputsFilesPath[i]);
+				    ObjectInputStream ois = new ObjectInputStream(fis);
+				    HashMap<String, Object> savedInputs = (HashMap<String, Object>) ois.readObject();
+				    if(savedInputs == null){
+				    	fis.close();
+				    	ois.close();
+				    	return null;
+				    }
+				    
+				    // setup(upload) input
+				    Iterator<Entry<String, Object>> it = savedInputs.entrySet().iterator();
+					while(it.hasNext()){
+						Map.Entry<String, Object> pair = it.next();
+						Object value = pair.getValue();
+						Class<?> valueType = value.getClass();
+						//String dataToWrite = null;
+						// if input is file
+						if (valueType.equals(File.class)){
+								File inputfile = (File) value;
+								// upload input to server
+								InputPort inputPort = runCreated.getInputPort(pair.getKey());
+								if(inputPort == null){
+									// if one port does not exist the port name must
+									// had been changed, hence an up to dated input data
+									// need to be supplied by creating a new run
+									fis.close();
+									ois.close();
+									return "Saved inputs data is out of date.\n"
+											+"Please supply new data by creating new run";
+								}
+								inputPort.setFile(inputfile);
+						}
+						// if input is text
+						else if (valueType.equals(String.class)){
+								String inputString = (String) value;
+								// upload input to server
+								InputPort inputPort = runCreated.getInputPort(pair.getKey());
+								if(inputPort == null){
+									// if one port does not exist the port name must
+									// had been changed, hence an up to dated input data
+									// need to be supplied by creating a new run
+									fis.close();
+									ois.close();
+									return "Saved inputs data is out of date.\n"
+											+"Please supply new data by creating new run";
+								}
+								inputPort.setValue(inputString);
+						}
+					}// end of iterating over inputs
+					// close ObjectInputStream
+					ois.close();
+				} catch (FileNotFoundException e) {
+					return e.getMessage();
+				} catch (NetworkConnectionException e) {
+					return e.getMessage();
+				} catch(AccessForbiddenException e){
+					return "Access to the run of this workflow is forbidden";
+				} catch(Exception e){
 					// TODO: "log" has to be removed in release version
-					Log.e("WorkflowRunError1", e.getMessage());
+					Log.e("run creation error", e.getMessage());
+					return e.getMessage();
+				}
+
+				// start the run
+				if (runCreated != null){
+					try {
+						runCreated.start();
+						if (!runCreated.isRunning()){
+							// make sure the run is started
+							waitForWorkflowRunToStart(runCreated);
+						}
+						// set run started time and statue
+						reportRunState();
+						reportRunStartTime();
+					} catch (Exception e) {
+						return e.getMessage();
+						//Log.e("WorkflowRunError1", e.getMessage());
+					}
+				} else{
+					// TODO: "log" has to be removed in release version
+					Log.e("WorkflowRunError2", "Workflow Run needed.");
 				}
 			}
-			else{
-				// TODO: "log" has to be removed in release version
-				Log.e("WorkflowRunError2", "Workflow Run needed.");
-			}
-			return null;
+			
+			return "Workflow have been Launched successfully";
 		}
 
 		@Override
 		public Object onTaskComplete(Object... result) {
+			runListener.onTaskComplete(result);
 			return null;
 		}
 		
@@ -559,7 +562,7 @@ public class WorkflowRunManager
 							DateFormat df = DateFormat.getDateTimeInstance();
 							df.setTimeZone(TimeZone.getTimeZone("GMT"));
 							String gmtTime = df.format(new Date());
-							stream = new FileOutputStream(locationToStore+"/"+gmtTime+".txt");
+							stream = new FileOutputStream(locationToStore+"/"+gmtTime+".tai");
 							
 							Map.Entry<String, Object> pair = it.next();
 							Object value = pair.getValue();
@@ -586,7 +589,7 @@ public class WorkflowRunManager
 							stream.close();*/
 							
 							ObjectOutputStream oos = new ObjectOutputStream(stream);
-							oos.writeObject(inputs);
+							oos.writeObject(inputs.toString());
 							oos.close();
 						} catch (FileNotFoundException e) {
 							e.printStackTrace();

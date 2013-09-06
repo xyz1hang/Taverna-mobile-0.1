@@ -69,7 +69,7 @@
             android:name=".io.InputsList"
             android:configChanges="orientation|keyboardHidden"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden|adjustPan" />
+            android:windowSoftInputMode="stateHidden|adjustPan" /><activity android:name=".io.InputsHistoryActivity"></activity>
         <activity android:name=".io.FilePickerActivity" >
         </activity>
         <activity
@@ -91,6 +91,7 @@
             android:name="cs.man.ac.uk.tavernamobile.dataaccess.RunHistoryHelper"
             android:authorities="@string/authority"
             android:exported="false" />
+        
     </application>
 
 </manifest>

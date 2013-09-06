@@ -50,7 +50,7 @@ import cs.man.ac.uk.tavernamobile.utils.SystemStatesChecker;
 public class RunsFragment extends Fragment {
 
 	private FragmentActivity parentActivity;
-	protected ActionMode mActionMode;
+	private ActionMode mActionMode;
 
 	private int wfDetailLoaderID = 3;
 	private int Activity_Starter_Code = 3;

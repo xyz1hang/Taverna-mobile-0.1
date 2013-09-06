@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -25,6 +26,7 @@ import cs.man.ac.uk.tavernamobile.R;
 import cs.man.ac.uk.tavernamobile.dataaccess.DataProviderConstants;
 import cs.man.ac.uk.tavernamobile.dataaccess.DatabaseLoader;
 import cs.man.ac.uk.tavernamobile.datamodels.WorkflowBE;
+import cs.man.ac.uk.tavernamobile.io.InputsHistoryActivity;
 import cs.man.ac.uk.tavernamobile.server.WorkflowLaunchHelper;
 import cs.man.ac.uk.tavernamobile.utils.CallbackTask;
 import cs.man.ac.uk.tavernamobile.utils.MessageHelper;
@@ -260,7 +262,12 @@ public class WorkflowsFragment extends Fragment {
 
 					selectedWorkflow = savedWorkflows.get(itemIndex);
 					
-					showLaunchDialog("Do you want to launch this workflow ?");
+					Intent gotoInputHistory = new Intent(parentActivity, InputsHistoryActivity.class);
+					gotoInputHistory.putExtra("workflowEntity", selectedWorkflow);
+					parentActivity.startActivity(gotoInputHistory);
+					
+					//showLaunchDialog("Do you want to launch this workflow ?");
+					
 					/*MessageHelper.showOptionsDialog(parentActivity, 
 					 * "Do you want to launch this workflow ?", null, new CallbackTask(){
 

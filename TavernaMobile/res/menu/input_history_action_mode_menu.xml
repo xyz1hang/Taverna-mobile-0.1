@@ -2,13 +2,13 @@
     xmlns:yourapp="http://schemas.android.com/apk/res-auto" >
 
     <item
-        android:id="@+id/runList_run_stop"
-        android:icon="@drawable/stop_action_icon_light"
+        android:id="@+id/input_history_launch"
+        android:icon="@drawable/play_icon"
         android:title="@string/delete_run_menu"
         android:showAsAction="always"/>
     
     <item
-        android:id="@+id/runList_run_delete"
+        android:id="@+id/input_history_delete"
         android:icon="@drawable/trash_bin"
         android:title="@string/delete_run_menu"
         android:showAsAction="always"/>

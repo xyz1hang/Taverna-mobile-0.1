@@ -72,7 +72,7 @@ public class MainActivity extends FragmentActivity {
         slidingMenu.attachToActivity(this, SlidingMenu.SLIDING_CONTENT);
         slidingMenu.setMenu(R.layout.sliding_menu);
         
-        this.overridePendingTransition(R.anim.push_left_out, 0);
+        this.overridePendingTransition(R.anim.push_left_in, 0);
 		
 		// UI components
 		ActionBar actionBar = getActionBar();
@@ -189,6 +189,12 @@ public class MainActivity extends FragmentActivity {
 		super.onStart();
 	}
 	
+	@Override
+	protected void onPause() {
+		this.overridePendingTransition(R.anim.push_right_out, 0);
+		super.onPause();
+	}
+
 	public void onBackPressed() 
 	{
 		if(backHit){

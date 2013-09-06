@@ -66,7 +66,7 @@ public class SearchResultScreen extends Activity implements CallbackTask {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.search_result_screen);
 		
-		this.overridePendingTransition(R.anim.push_left_in, 0);
+		this.overridePendingTransition(R.anim.push_right_in, 0);
 
 		currentActivity = this;
 		// utilities object setup

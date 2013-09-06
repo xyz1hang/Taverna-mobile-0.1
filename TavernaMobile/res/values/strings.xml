@@ -45,6 +45,7 @@
     <string name="Last_Launch_Text">Last Launch: </string>
     <string name="First_Launch_Text">First Launch: </string>
     <string name="Workflow_frag_default_message">No saved workflow</string>
+    <string name="Workflow_history_default_message">No saved Inputs</string>
     
   	<!-- Workflow Details fragments Strings -->
     <string name="workflow_detail_title_section1">Preview</string>

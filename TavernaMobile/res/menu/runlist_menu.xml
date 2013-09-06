@@ -3,7 +3,7 @@
 
     <item
         android:id="@+id/runList_menu"
-        android:icon="@drawable/content_remove"
+        android:icon="@drawable/trash_bin"
         android:title="@string/delete_all_runs_menu"
         android:showAsAction="never"/>
 

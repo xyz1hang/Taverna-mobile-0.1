@@ -181,8 +181,7 @@ public class WorkflowLaunchHelper {
 					} else {
 						String message = "The workflow document is not a \"t2flow\" file,\n"
 								+ "which is currently not supported";
-						MessageHelper.showMessageDialog(currentActivity,
-								message);
+						MessageHelper.showMessageDialog(currentActivity, message);
 					}
 				}
 
@@ -248,11 +247,12 @@ public class WorkflowLaunchHelper {
 		public Object onTaskComplete(Object... result) {
 			String filePath = (String) result[0];
 
-			String[] elements = filePath.split("/");
-			String fileName = elements[elements.length - 1];
+			/*String[] elements = filePath.split("/");
+			String fileName = elements[elements.length - 1];*/
 			File workflowFile = new File(filePath);
 			// save workflow detail in database
-			recordWorkflow(fileName);
+			// recordWorkflow(fileName);
+			recordWorkflow(filePath);
 			// then create run for it
 			createRunWithFileData(workflowFile);
 			return null;

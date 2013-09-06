@@ -42,7 +42,7 @@ public class FilePickerActivity extends ListActivity {
 		// UI components
 		ActionBar actionBar = getActionBar();
 		actionBar.setDisplayHomeAsUpEnabled(true);
-		actionBar.setDisplayShowTitleEnabled(false);
+		actionBar.setTitle("Select Input file");
 		
 		// Set the view to be shown if the list is empty
 		LayoutInflater inflator = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -134,10 +134,10 @@ public class FilePickerActivity extends ListActivity {
 			
 			if(object.isFile()) {
 				// Show the file icon
-				imageView.setImageResource(R.drawable.file);
+				imageView.setImageResource(R.drawable.file_icon);
 			} else {
 				// Show the folder icon
-				imageView.setImageResource(R.drawable.folder_2);
+				imageView.setImageResource(R.drawable.folder_icon);
 			}
 			
 			return convertView;

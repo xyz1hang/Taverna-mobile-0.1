@@ -79,7 +79,7 @@ public class WorkflowDetail extends FragmentActivity implements CallbackTask {
 		// UI components
 		ActionBar actionBar = getActionBar();
 		actionBar.setDisplayHomeAsUpEnabled(true);
-		actionBar.setDisplayShowTitleEnabled(false);
+		actionBar.setTitle("Workflow Details");
 
 		// avatar = (ImageView) findViewById(R.id.avatarImage);
 		title = (TextView) findViewById(R.id.workflowTitle);
