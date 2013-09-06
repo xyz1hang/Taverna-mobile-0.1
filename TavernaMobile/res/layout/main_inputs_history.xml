@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/gradient2"
+    android:gravity="fill_vertical"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/wfHistoryStatistics"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="left|center_vertical"
+        android:layout_margin="10dp"
+        android:background="@drawable/drop_shadow_container"
+        android:padding="10dp"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textStyle="bold|italic" />
+
+    <ListView
+        android:id="@+id/savedInputsList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/wfHistoryStatistics"
+        android:layout_gravity="top"
+        android:layout_marginBottom="20dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="15dp" />
+
+    <TextView
+        android:id="@+id/workflow_frag_default_textview"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:layout_alignParentTop="true"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:text="@string/Workflow_history_default_message"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:visibility="gone" />
+
+</RelativeLayout>
