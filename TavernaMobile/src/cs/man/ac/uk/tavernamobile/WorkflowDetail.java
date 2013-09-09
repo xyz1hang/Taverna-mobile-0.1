@@ -99,9 +99,6 @@ public class WorkflowDetail extends FragmentActivity implements CallbackTask {
 		userName = (TextView) findViewById(R.id.uploaderName);
 		final Button launch = (Button) findViewById(R.id.workflowlaunchButton);
 
-		/**
-		 * data loading
-		 **/
 		// try to get data passed and then load other data e.g. license etc.
 		workflow = (Workflow) getIntent().getSerializableExtra("workflow_details");
 
@@ -173,7 +170,7 @@ public class WorkflowDetail extends FragmentActivity implements CallbackTask {
 				workflowEntity.setVersion(workflow.getVersion());
 				workflowEntity.setWorkflow_URI(workflow.getContent_uri());
 				workflowEntity.setUploaderName(workflow.getUploader().getValue());
-				workflowEntity.setAvator(Bitmap.createScaledBitmap(avatarBitmap, 100, 100, true));
+				workflowEntity.setAvatar(Bitmap.createScaledBitmap(avatarBitmap, 100, 100, true));
 
 				List<String> privilegesStrings = new ArrayList<String>();
 				List<Privilege> privileges = workflow.getPrivileges();
@@ -182,9 +179,9 @@ public class WorkflowDetail extends FragmentActivity implements CallbackTask {
 				}
 				workflowEntity.setPrivileges(privilegesStrings);
 
-				WorkflowLaunchHelper launchHelper = new WorkflowLaunchHelper(
-						currentActivity, workflowEntity, Activity_Starter_Code);
-				launchHelper.launch();
+				WorkflowLaunchHelper launchHelper = 
+						new WorkflowLaunchHelper(currentActivity, Activity_Starter_Code);
+				launchHelper.launch(workflowEntity, 0);
 			}
 		});
 

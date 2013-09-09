@@ -46,7 +46,7 @@ public class MyExperimentLogin extends Activity implements CallbackTask {
 		currentClass = this;
 		requestHandler = new HttpRequestHandler(currentActivity);
 		
-		this.overridePendingTransition(R.anim.push_right_in, R.anim.push_left_out);
+		this.overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
 		
 		// UI components
 		ActionBar actionBar = getActionBar();
@@ -225,7 +225,7 @@ public class MyExperimentLogin extends Activity implements CallbackTask {
 
 	@Override
 	public void finish() {
-		this.overridePendingTransition(R.anim.push_right_in, R.anim.push_left_out);
+		this.overridePendingTransition(R.anim.push_right_in, R.anim.push_right_out);
 		super.finish();
 	}
 }

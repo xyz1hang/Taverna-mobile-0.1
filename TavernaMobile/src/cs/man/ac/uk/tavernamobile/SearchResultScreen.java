@@ -213,12 +213,6 @@ public class SearchResultScreen extends Activity implements CallbackTask {
 		});*/
 	}
 	
-	@Override
-	protected void onPause() {
-		this.overridePendingTransition(0, R.anim.push_right_out);
-		super.onPause();
-	}
-	
 	private void refreshTheList() {
 		if(searchQuery == null){
 			return;

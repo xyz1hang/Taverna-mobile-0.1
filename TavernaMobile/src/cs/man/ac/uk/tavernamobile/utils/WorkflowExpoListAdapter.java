@@ -25,6 +25,7 @@ import android.widget.Toast;
 import cs.man.ac.uk.tavernamobile.R;
 import cs.man.ac.uk.tavernamobile.WorkflowDetail;
 import cs.man.ac.uk.tavernamobile.datamodels.Credit;
+import cs.man.ac.uk.tavernamobile.datamodels.Privilege;
 import cs.man.ac.uk.tavernamobile.datamodels.Rating;
 import cs.man.ac.uk.tavernamobile.datamodels.User;
 import cs.man.ac.uk.tavernamobile.datamodels.Workflow;
@@ -119,21 +120,31 @@ public class WorkflowExpoListAdapter extends BaseAdapter {
 
 			@Override
 			public void onClick(View v) {
-				WorkflowDownloadHelper downloadHelper = 
-						new WorkflowDownloadHelper(mContext);
-				try {
-					// TODO: What to do after workflow has been downloaded from expo
-					// null listener
-					downloadHelper.StartDownload(expo.getContent_uri(), null);
-				} catch (Exception e) {
-					Toast.makeText(
-						mContext,
-						"Workflow download failed, please try again.",
-						Toast.LENGTH_LONG).show();
+				boolean canDownload = false;
+				List<Privilege> privileges = expo.getPrivileges();
+				for (Privilege privilege : privileges) {
+					if (privilege.getType().equals("download")) {
+						canDownload = true;
+					}
 				}
-				
+
+				if (canDownload) {
+					WorkflowDownloadHelper downloadHelper = new WorkflowDownloadHelper(mContext);
+					try {
+						// TODO: What to do after workflow has been downloaded from expo
+						// null listener
+						downloadHelper.StartDownload(expo.getContent_uri(), null);
+					} catch (Exception e) {
+						Toast.makeText(
+							mContext,
+							"Workflow download failed, please try again.",
+							Toast.LENGTH_LONG).show();
+					}
+				} else {
+					String message = "You don't have the privilege to download this workflow.";
+					MessageHelper.showMessageDialog(mContext, message);
+				}
 			}
-			
 		});
 		// loading uploader avatar
 		String uploaderUri = expo.getUploader().getUri();

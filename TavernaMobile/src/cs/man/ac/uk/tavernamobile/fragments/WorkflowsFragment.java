@@ -55,9 +55,8 @@ public class WorkflowsFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		super.onCreateView(inflater, container, savedInstanceState);
-		View wfFragmentsView = inflater.inflate(R.layout.main_workflows,
-				container, false);
-
+		
+		View wfFragmentsView = inflater.inflate(R.layout.main_workflows, container, false);
 		fragWfDesc = (TextView) wfFragmentsView.findViewById(R.id.fragWfDesc);
 		defaultTextView = (TextView) wfFragmentsView.findViewById(R.id.workflow_frag_default_textview);
 		root = (LinearLayout) wfFragmentsView.findViewById(R.id.savedWorkflowListRoot);
@@ -164,7 +163,7 @@ public class WorkflowsFragment extends Fragment {
 				DataProviderConstants.WorkflowTitle,
 				DataProviderConstants.Version,
 				DataProviderConstants.UploaderName,
-				DataProviderConstants.WorkflowFileName,
+				DataProviderConstants.WorkflowFilePath,
 				DataProviderConstants.Avatar,
 				DataProviderConstants.WorkflowUri,
 				DataProviderConstants.LastLaunch,
@@ -222,18 +221,17 @@ public class WorkflowsFragment extends Fragment {
 					
 					String filePath = allRecords
 							.getString(allRecords
-									.getColumnIndexOrThrow(DataProviderConstants.WorkflowFileName));
+									.getColumnIndexOrThrow(DataProviderConstants.WorkflowFilePath));
 
 					WorkflowBE savedWorkflow = new WorkflowBE();
 					savedWorkflow.setTitle(title);
 					savedWorkflow.setUploaderName(username);
 					savedWorkflow.setVersion(version);
-					savedWorkflow.setAvator(avatorBitmap);
+					savedWorkflow.setAvatar(avatorBitmap);
 					savedWorkflow.setWorkflow_URI(wfuri);
 					savedWorkflow.setFirstLaunched(firstLaunch);
 					savedWorkflow.setLastLaunched(lastLaunch);
-					savedWorkflow.setFilename(filePath);
-					//savedWorkflow.setRunID(runID);
+					savedWorkflow.setFilePath(filePath);
 
 					savedWorkflows.add(savedWorkflow);
 			}// end of while moveToNext
@@ -248,7 +246,7 @@ public class WorkflowsFragment extends Fragment {
 				} else {
 					fragWfDesc.setText("There is " + count + " saved workflow : ");
 				}
-				fragWfDesc.setPadding(5, 0, 0, 0);
+				fragWfDesc.setPadding(10, 10, 10, 10);
 				fragWfDesc.setTextSize(14);
 
 				mAdapter = new SavedWorkflowListAdapter(parentActivity, savedWorkflows);
@@ -265,7 +263,6 @@ public class WorkflowsFragment extends Fragment {
 					Intent gotoInputHistory = new Intent(parentActivity, InputsHistoryActivity.class);
 					gotoInputHistory.putExtra("workflowEntity", selectedWorkflow);
 					gotoInputHistory.putExtra("Activity_Starter_Code", Activity_Starter_Code);
-					parentActivity.overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
 					parentActivity.startActivity(gotoInputHistory);
 					
 					//showLaunchDialog("Do you want to launch this workflow ?");
@@ -380,7 +377,7 @@ public class WorkflowsFragment extends Fragment {
 			
 			// TODO: currently scaled to 100 x 100
 			Drawable avatarDrawable = new BitmapDrawable(getResources(),
-					Bitmap.createScaledBitmap(object.getAvator(), 100, 100, true));
+					Bitmap.createScaledBitmap(object.getAvatar(), 100, 100, true));
 			/*Rect outRect = new Rect();
 			userName.getDrawingRect(outRect);
 			// resize the Rect

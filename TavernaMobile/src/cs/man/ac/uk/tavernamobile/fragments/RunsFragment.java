@@ -486,8 +486,8 @@ public class RunsFragment extends Fragment {
 										WorkflowBE wfBe = (WorkflowBE) adapter.getItem(itemIndex);
 
 										WorkflowLaunchHelper launchHelper = new WorkflowLaunchHelper(
-												parentActivity, wfBe, Activity_Starter_Code);
-										launchHelper.launch();
+												parentActivity, Activity_Starter_Code);
+										launchHelper.launch(wfBe, 0);
 										return null;
 									}
 
@@ -540,13 +540,12 @@ public class RunsFragment extends Fragment {
 		public View getGroupView(int groupPosition, boolean isExpanded,
 				View convertView, ViewGroup parent) {
 			if (convertView == null) {
-				LayoutInflater inflater = (LayoutInflater) myContext
-						.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+				LayoutInflater inflater = 
+						(LayoutInflater) myContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 				convertView = inflater.inflate(R.layout.main_runs_group, null);
 			}
 
-			TextView groupName = (TextView) convertView
-					.findViewById(R.id.runGroupHeaderTextView);
+			TextView groupName = (TextView) convertView.findViewById(R.id.runGroupHeaderTextView);
 			groupName.setText(runGroups[groupPosition]);
 		    
 			return convertView;
@@ -728,11 +727,11 @@ public class RunsFragment extends Fragment {
 		
 		private class RunStateChecker implements CallbackTask {
 
-			private WorkflowBE wftitle;
+			private WorkflowBE workflowEntity;
 			private String runId;
 
-			public RunStateChecker(WorkflowBE workflowTitle, String id) {
-				wftitle = workflowTitle;
+			public RunStateChecker(WorkflowBE entity, String id) {
+				workflowEntity = entity;
 				runId = id;
 			}
 
@@ -745,44 +744,32 @@ public class RunsFragment extends Fragment {
 				// if running or finished go to monitor to view progress or output
 				if (runState == "Running" || runState == "Finished") {
 					// go to monitor
-					Intent goToMonitor = new Intent(parentActivity,
-							RunMonitorScreen.class);
+					Intent goToMonitor = new Intent(parentActivity, RunMonitorScreen.class);
 					Bundle extras = new Bundle();
-					extras.putSerializable("workflowEntity", wftitle);
+					extras.putSerializable("workflowEntity", workflowEntity);
 					extras.putString("command", "MonitoringOnly");
 					goToMonitor.putExtras(extras);
 					parentActivity.startActivity(goToMonitor);
 				} else if (runState == "Initialised") {
+					// go to inputs screen
 					WorkflowRunManager manager = new WorkflowRunManager(parentActivity);
-					manager.getRunInputs(runId, new GoToInputs(wftitle));
+					manager.getRunInputs(runId, new CallbackTask(){
+						@Override
+						public Object onTaskInProgress(Object... param) { return null; }
+
+						@Override
+						public Object onTaskComplete(Object... result) {
+							Map<String, InputPort> inputPorts = (Map<String, InputPort>) result[0];
+							WorkflowLaunchHelper launchHelper = 
+									new WorkflowLaunchHelper(parentActivity, Activity_Starter_Code);
+							launchHelper.prepareInputs(inputPorts, workflowEntity);
+							return null;
+						}
+					});
 				} else {
 					showLaunchDialog("Do you want to launch this workflow ?");
 				}
 
-				return null;
-			}
-		}
-		
-		private class GoToInputs implements CallbackTask {
-
-			private WorkflowBE wftitle;
-
-			public GoToInputs(WorkflowBE workflowTitle) {
-				wftitle = workflowTitle;
-			}
-
-			@Override
-			public Object onTaskInProgress(Object... param) {
-				return null;
-			}
-
-			@Override
-			public Object onTaskComplete(Object... result) {
-				Map<String, InputPort> inputPorts = (Map<String, InputPort>) result[0];
-				
-				WorkflowLaunchHelper launchHelper = new WorkflowLaunchHelper(
-						parentActivity, wftitle, Activity_Starter_Code);
-				launchHelper.prepareInputs(inputPorts);
 				return null;
 			}
 		}
@@ -812,9 +799,9 @@ public class RunsFragment extends Fragment {
 			workflowEntity.setVersion(selectedWfVersion);
 			workflowEntity.setUploaderName(selectedWfUploaderName);
 
-			WorkflowLaunchHelper launchHelper = new WorkflowLaunchHelper(
-					parentActivity, workflowEntity, Activity_Starter_Code);
-			launchHelper.launch();
+			WorkflowLaunchHelper launchHelper = 
+					new WorkflowLaunchHelper(parentActivity, Activity_Starter_Code);
+			launchHelper.launch(workflowEntity, 0);
 		}
 	}
 }

@@ -11,66 +11,59 @@ import android.graphics.Bitmap;
 
 // Workflow Business Entity
 public class WorkflowBE implements Serializable{
-	
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = -638985876257294052L;
-	private String Title;
-	private String Version;
-	private String Filename;
-	private String UploaderName;
-	private Bitmap Avator;
-	private String Workflow_URI;
-	private String RunID;
+	private static final long serialVersionUID = 5304169958030841817L;
+	private String workflow_title;
+	private String version;
+	private String filePath;
+	private String uploaderName;
+	private Bitmap avatar;
+	private String workflow_URI;
 	private List<String> privileges;
-	private String FirstLaunched;
-	private String LastLaunched;
+	private String firstLaunched;
+	private String lastLaunched;
+	private List<String> savedInputsFilesPath;
 
 	private static ByteBuffer dst;
 	private static byte[] bytesar;
 	
 	public String getTitle() {
-		return Title;
+		return workflow_title;
 	}
 	public void setTitle(String title) {
-		Title = title;
+		workflow_title = title;
 	}
-	public String getFilename() {
-		return Filename;
+	public String getFilePath() {
+		return filePath;
 	}
-	public void setFilename(String filename) {
-		Filename = filename;
+	public void setFilePath(String path) {
+		filePath = path;
 	}
 	public String getUploaderName() {
-		return UploaderName;
+		return uploaderName;
 	}
-	public void setUploaderName(String uploaderName) {
-		UploaderName = uploaderName;
+	public void setUploaderName(String name) {
+		uploaderName = name;
 	}
-	public Bitmap getAvator() {
-		return Avator;
+	public Bitmap getAvatar() {
+		return avatar;
 	}
-	public void setAvator(Bitmap avator) {
-		Avator = avator;
+	public void setAvatar(Bitmap a) {
+		avatar = a;
 	}
 	public String getVersion() {
-		return Version;
+		return version;
 	}
 	public void setVersion(String version) {
-		this.Version = version;
-	}
-	public String getRunID() {
-		return RunID;
-	}
-	public String setRunID(String runid) {
-		return this.RunID = runid;
+		this.version = version;
 	}
 	public String getWorkflow_URI() {
-		return Workflow_URI;
+		return workflow_URI;
 	}
-	public void setWorkflow_URI(String workflow_URI) {
-		Workflow_URI = workflow_URI;
+	public void setWorkflow_URI(String uri) {
+		workflow_URI = uri;
 	}
 	public List<String> getPrivileges() {
 		return privileges;
@@ -79,46 +72,50 @@ public class WorkflowBE implements Serializable{
 		this.privileges = privileges;
 	}
 	public String getFirstLaunched() {
-		return FirstLaunched;
+		return firstLaunched;
 	}
-	public void setFirstLaunched(String firstLaunched) {
-		FirstLaunched = firstLaunched;
+	public void setFirstLaunched(String first) {
+		firstLaunched = first;
 	}
 	public String getLastLaunched() {
-		return LastLaunched;
+		return lastLaunched;
 	}
-	public void setLastLaunched(String lastLaunched) {
-		LastLaunched = lastLaunched;
+	public void setLastLaunched(String last) {
+		lastLaunched = last;
 	}
-	
+	public List<String> getSavedInputsFilesPath() {
+		return savedInputsFilesPath;
+	}
+	public void setSavedInputsFilesPath(List<String> savedInputsFilePath) {
+		this.savedInputsFilesPath = savedInputsFilePath;
+	}
 	/*public Video (long newVideoId) {
 	    this.videoId=newVideoId;
 	}*/
 	private void writeObject(ObjectOutputStream out) throws IOException{
 
-	    out.writeObject(Title);
-	    out.writeObject(Version);
-	    out.writeObject(Filename);
-	    out.writeObject(UploaderName);
-	    out.writeObject(Workflow_URI);
-	    out.writeObject(RunID);
+	    out.writeObject(workflow_title);
+	    out.writeObject(version);
+	    out.writeObject(filePath);
+	    out.writeObject(uploaderName);
+	    out.writeObject(workflow_URI);
 	    out.writeObject(privileges);
-	    out.writeObject(FirstLaunched);
-	    out.writeObject(LastLaunched);
+	    out.writeObject(firstLaunched);
+	    out.writeObject(lastLaunched);
+	    out.writeObject(savedInputsFilesPath);
 	    
-	    out.writeInt(Avator.getRowBytes());
-	    out.writeInt(Avator.getHeight());
-	    out.writeInt(Avator.getWidth());
+	    out.writeInt(avatar.getRowBytes());
+	    out.writeInt(avatar.getHeight());
+	    out.writeInt(avatar.getWidth());
 
-	    int bmSize = Avator.getRowBytes() * Avator.getHeight();
-	    if(dst==null || bmSize > dst.capacity())
+	    int bmSize = avatar.getRowBytes() * avatar.getHeight();
+	    if(dst==null || bmSize > dst.capacity()){
 	        dst= ByteBuffer.allocate(bmSize);
-
+	    }
 	    out.writeInt(dst.capacity());
-
 	    dst.position(0);
 
-	    Avator.copyPixelsToBuffer(dst);
+	    avatar.copyPixelsToBuffer(dst);
 	    if(bytesar==null || bmSize > bytesar.length)
 	        bytesar=new byte[bmSize];
 
@@ -129,16 +126,16 @@ public class WorkflowBE implements Serializable{
 
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException{
 
-	    Title = (String) in.readObject();
-	    Version = (String) in.readObject();
-	    Filename = (String) in.readObject();
-	    UploaderName = (String) in.readObject();
-	    Workflow_URI = (String) in.readObject();
-	    RunID = (String) in.readObject();
+	    workflow_title = (String) in.readObject();
+	    version = (String) in.readObject();
+	    filePath = (String) in.readObject();
+	    uploaderName = (String) in.readObject();
+	    workflow_URI = (String) in.readObject();
 	    privileges = (List<String>) in.readObject();
-	    FirstLaunched = (String) in.readObject();
-	    LastLaunched = (String) in.readObject();
-
+	    firstLaunched = (String) in.readObject();
+	    lastLaunched = (String) in.readObject();
+	    savedInputsFilesPath = (List<String>) in.readObject();
+	    
 	    in.readInt();
 	    int height=in.readInt();
 	    int width=in.readInt();
@@ -157,8 +154,8 @@ public class WorkflowBE implements Serializable{
 	    dst.position(0);
 	    dst.put(bytesar);
 	    dst.position(0);
-	    Avator=Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
-	    Avator.copyPixelsFromBuffer(dst);
+	    avatar=Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
+	    avatar.copyPixelsFromBuffer(dst);
 	    //in.close();
 	}
 }

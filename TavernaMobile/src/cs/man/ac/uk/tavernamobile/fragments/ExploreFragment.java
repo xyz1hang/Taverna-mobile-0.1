@@ -196,14 +196,14 @@ public class ExploreFragment extends Fragment implements CallbackTask {
 				});*/
 	}
 
-	@Override
+	/*@Override
 	public void onStart() {
 		refreshLoginState();
 		super.onStart();
 	}
 
 	private void refreshLoginState() {
-		/*User userLoggedin = TavernaAndroid.getMyEUserLoggedin();
+		User userLoggedin = TavernaAndroid.getMyEUserLoggedin();
 		String userName = null;
 		if (userLoggedin != null) {
 			userName = userLoggedin.getName();
@@ -222,8 +222,8 @@ public class ExploreFragment extends Fragment implements CallbackTask {
 			myExperimentLoginText.setText("Logged in as: "+ userName);
 		}else{
 			myExperimentLoginText.setText("Log in to myExperiment");
-		}*/
-	}
+		}
+	}*/
 	
 	private void refreshTheList() {
 		expoList.setVisibility(8);

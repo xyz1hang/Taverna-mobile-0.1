@@ -15,6 +15,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -42,6 +43,7 @@ import cs.man.ac.uk.tavernamobile.dataaccess.DataProviderConstants;
 import cs.man.ac.uk.tavernamobile.datamodels.WorkflowBE;
 import cs.man.ac.uk.tavernamobile.utils.BackgroundTaskHandler;
 import cs.man.ac.uk.tavernamobile.utils.CallbackTask;
+import cs.man.ac.uk.tavernamobile.utils.MessageHelper;
 import cs.man.ac.uk.tavernamobile.utils.TavernaAndroid;
 import cs.man.ac.uk.tavernamobile.utils.WorkflowFileLoader;
 
@@ -69,8 +71,8 @@ public class WorkflowRunManager
 	// Background task progress listeners
 	private CallbackTask creationListener;
 	private CallbackTask runListener;
-	private CallbackTask runStateChecker;
-	private CallbackTask inputPortsRetriever;
+	private CallbackTask runStateCheckListener;
+	private CallbackTask inputPortsRetrievalListener;
 	private CallbackTask runListRetrieverListener;
 	private CallbackTask runDeletionListener;
 	private CallbackTask outputRetrievalListener;
@@ -103,9 +105,9 @@ public class WorkflowRunManager
 		return runStatue;
 	}
 
-	public void CreateRun(byte[] workflowData, CallbackTask listener){
+	public void CreateRun(WorkflowBE workflowEntity, CallbackTask listener){
 		creationListener = listener;
-		new RunCreation().Execute(workflowData);
+		new RunCreation().Execute(workflowEntity);
 	}
 
 	// for newly created workflow we need to
@@ -125,11 +127,9 @@ public class WorkflowRunManager
 	 * @param savedInputFileName
 	 * @param listener
 	 */
-	public void StartRunWithSavedInput(byte[] workflowData, WorkflowBE workflowEntity,
-			String[] savedInputFilesName, CallbackTask listener){
+	public void StartRunWithSavedInput(WorkflowBE workflowEntity, CallbackTask listener){
 		runListener = listener;
-		new RunProgressListenerInvoker().Execute();
-		new RunWithExistingInputs().Execute(workflowData, savedInputFilesName, workflowEntity);
+		new RunWithExistingInputs().Execute(workflowEntity);
 	}
 
 	// only monitoring
@@ -176,7 +176,7 @@ public class WorkflowRunManager
 
 	// Check Run State and invoke relevant reaction
 	public void checkRunStateWithID(String runId, CallbackTask listener){
-		runStateChecker = listener;
+		runStateCheckListener = listener;
 		new RunStateChecker().Execute(runId);
 	}
 	
@@ -188,7 +188,7 @@ public class WorkflowRunManager
 	 * @param listener - the listener for handling inputs retrieved
 	 */
 	public void getRunInputs(String runId, CallbackTask listener){
-		inputPortsRetriever = listener;
+		inputPortsRetrievalListener = listener;
 		new InputPortsRetriever().Execute(runId);
 	}
 	
@@ -200,6 +200,7 @@ public class WorkflowRunManager
 	 * @param runID - ID of the run to get output from
 	 * @param listener - the listener for output retrieval states (fail/success)
 	 */
+	// TODO: passing in workflow title String...
 	public void getRunOutput(String workflowTitle, String runId, CallbackTask listener){
 		outputRetrievalListener = listener;
 		// start outputHandler thread gather result
@@ -229,10 +230,9 @@ public class WorkflowRunManager
 				runEndTime = run.getFinishTime().split("\\+")[0].replace('T', ' ');
 			} catch (NetworkConnectionException e1) {
 				return "Connection problem reading data from server/"+
-					"Connection problem reading data from server";
+					   "Connection problem reading data from server";
 			}
-
-			//SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS+HH:mm", Locale.getDefault());
+			
 			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.getDefault());
 			try {
 				Date start = dateFormat.parse(runStartTime);
@@ -241,11 +241,10 @@ public class WorkflowRunManager
 				String duration = String.format(Locale.getDefault(), "%d min, %d sec", 
 						TimeUnit.MILLISECONDS.toMinutes(diff),
 						TimeUnit.MILLISECONDS.toSeconds(diff) - 
-						TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(diff))
-						);
+						TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(diff)));
 				runningTimeString = duration;
 			} catch (ParseException e) {
-				// TODO: possible error when server change the format it returns
+				// TODO: possible error when server change the date format it returns
 				e.printStackTrace();
 			}
 		}
@@ -307,19 +306,57 @@ public class WorkflowRunManager
 			return runStatue;
 		}
 	}
+	
+	private Object createWorkflowRun(WorkflowBE workflowEntity) {
+		byte[] workflowData = null;
+		try {
+			workflowData = WorkflowFileLoader.getBytesFromFile(new File(workflowEntity.getFilePath()));
+		} catch (Exception e) {
+			MessageHelper.showMessageDialog(currentActivity, e.getMessage());
+		}
+		
+		Run runCreated = null;
+		try{
+			runCreated = Run.create(ta.getServer(), workflowData, ta.getDefaultUser());
+			ta.setWorkflowRunLaunched(runCreated);
+		} catch(AccessForbiddenException e){
+			return "Access to the run of this workflow is forbidden";
+		} catch (NetworkConnectionException e) {
+			return e.getMessage();
+		}
+		// Insert Run ID of this workflow into database
+		String runID = runCreated.getIdentifier();
+		ContentValues args = new ContentValues();
+		args.put(DataProviderConstants.Run_Id, runID);
+		
+		String subQuery = "(SELECT WF_ID FROM launchHistory "+
+				  "WHERE Workflow_Title=\""+workflowEntity.getTitle()+ "\" AND "+
+					    "Version=\""+workflowEntity.getVersion()+"\" AND "+
+					    "Uploader_Name=\""+workflowEntity.getUploaderName()+"\")";
+		args.put(DataProviderConstants.WF_ID, subQuery);
+		
+		/** INSERT **/
+		currentActivity.getContentResolver().insert(
+				DataProviderConstants.RUN_TABLE_CONTENTURI, args);
+		
+		return runCreated;
+	}
 
 	// Class that in charge of run creation
-	private class RunCreation implements CallbackTask{
-		private String exceptionMessage = null;
-
+	private class RunCreation implements CallbackTask {
+		private WorkflowBE workflowEntity;
+		
 		public void Execute(Object... params){
+			if(!(params[0] instanceof WorkflowBE)){
+				throw new IllegalArgumentException("Invalid Workflow Entity");
+			}
+			workflowEntity = (WorkflowBE) params[0];
+			
 			BackgroundTaskHandler handler = new BackgroundTaskHandler();
 			handler.StartBackgroundTask(currentActivity, this, "Creating run...", params);
 		}
 
 		public Object onTaskInProgress(Object... params) {
-			WorkflowBE workflowEntity = (WorkflowBE) params[0];
-
 			Object result = createWorkflowRun(workflowEntity);
 			if(!(result instanceof Run)){
 				return (String) result;
@@ -328,7 +365,8 @@ public class WorkflowRunManager
 			Run runCreated = (Run) result;
 			// get input ports, if available
 			Map<String, InputPort> inputPorts = null;
-			HashMap<String, Map<String, InputPort>> idAndinputs = 
+			
+			/*HashMap<String, Map<String, InputPort>> idAndinputs = 
 					new HashMap<String, Map<String, InputPort>>();
 			if (runCreated != null){
 				try{
@@ -338,106 +376,56 @@ public class WorkflowRunManager
 				} catch (Exception e){
 					e.printStackTrace();
 				}
+			}*/
+			
+			try {
+				inputPorts = runCreated.getInputPorts();
+			} catch (NetworkConnectionException e) {
+				return e.getMessage();
 			}
 
-			return exceptionMessage != null ? exceptionMessage : idAndinputs;
+			return inputPorts; //idAndinputs;
 		}
 
 		public Object onTaskComplete(Object... result) {
 			if (creationListener != null){
 				creationListener.onTaskComplete(result);
 			}
-
 			return null;
 		}
 	}
 	
-	private Object createWorkflowRun(WorkflowBE workflowEntity) {
-		
-		byte[] workflowData = null;
-		try {
-			workflowData = WorkflowFileLoader.getBytesFromFile(new File(workflowEntity.getFilename()));
-		} catch (Exception e1) {
-			// TODO Auto-generated catch block
-			return e1.getMessage();
-		}
-		
-		Run runCreated = null;
-		try{
-			runCreated = Run.create(ta.getServer(), workflowData, ta.getDefaultUser());
-			ta.setWorkflowRunLaunched(runCreated);
-		}
-		catch(AccessForbiddenException e){
-			return "Access to the run of this workflow is forbidden";
-		} catch (NetworkConnectionException e) {
-			return e.getMessage();
-		}
-		
-		String runID = runCreated.getIdentifier();
-		ContentValues args = new ContentValues();
-		args.put(DataProviderConstants.Run_Id, runID);
-
-		recordLaunchTime(false, workflowEntity);
-		String subQuery = "(SELECT WF_ID FROM launchHistory "+
-			  "WHERE Workflow_Title=\""+workflowEntity.getTitle()+ "\" AND "+
-				    "Version=\""+workflowEntity.getVersion()+"\" AND "+
-				    "Uploader_Name=\""+workflowEntity.getUploaderName()+"\")";
-		args.put(DataProviderConstants.WF_ID, subQuery);
-		
-		/** INSERT **/
-		currentActivity.getContentResolver().insert(
-				DataProviderConstants.RUN_TABLE_CONTENTURI, args);
-		
-		return runCreated;
-	}
-	
-	private void recordLaunchTime(boolean firstTime, WorkflowBE workflowEntity) {		
-		DateFormat df = DateFormat.getDateTimeInstance();
-		df.setTimeZone(TimeZone.getTimeZone("GMT"));
-		String gmtTime = df.format(new Date());
-		
-		ContentValues values = new ContentValues(); 
-		if(firstTime){
-			values.put(DataProviderConstants.FirstLaunch, gmtTime);
-			values.put(DataProviderConstants.LastLaunch, gmtTime);
-		}else{
-			values.put(DataProviderConstants.LastLaunch, gmtTime);
-		}
-		String selection = 
-				   DataProviderConstants.WorkflowTitle + " = ? AND "
-				 + DataProviderConstants.Version + " = ? AND "
-				 + DataProviderConstants.UploaderName + " = ?";
-		String[] selectionArgs = new String[] {
-				workflowEntity.getTitle(), 
-				workflowEntity.getVersion(), 
-				workflowEntity.getUploaderName()};
-		
-		currentActivity.getContentResolver().update(
-				DataProviderConstants.WF_TABLE_CONTENTURI, 
-				values, 
-				selection, selectionArgs);
-	}
-	
-	public class RunWithExistingInputs implements CallbackTask{
+	/**
+	 * Callback task to create workflow run, setup input ports with
+	 * saved inputs value and start the run all in one go
+	 * 
+	 * @author Hyde
+	 */
+	public class RunWithExistingInputs implements CallbackTask {
 		
 		private Run runCreated = null;
 		private WorkflowBE workflowEntity;
+		private List<String> inputsFilesPath;
 		
 		public void Execute(Object... params){
-			workflowEntity = (WorkflowBE) params[2];
+			// parameters checking
+			workflowEntity = (WorkflowBE) params[0];
+			if(workflowEntity == null){
+				throw new IllegalArgumentException("Invalid Workflow Entity");
+			}
+			inputsFilesPath = workflowEntity.getSavedInputsFilesPath();
+			if(inputsFilesPath == null || inputsFilesPath.size() < 1){
+				throw new IllegalArgumentException("inputsFilesPath can not be empty");
+			}
+			
 			BackgroundTaskHandler handler = new BackgroundTaskHandler();
-			handler.StartBackgroundTask(currentActivity, this, "Creating run...", params);
+			handler.StartBackgroundTask(currentActivity, this, "Launching...", params);
 		}
 
 		@Override
 		public Object onTaskInProgress(Object... param) {
-			byte[] workflowData = (byte []) param[0];
-			String[] inputsFilesPath = (String[]) param[1];
-			if(workflowData == null || inputsFilesPath == null || inputsFilesPath.length < 1){
-				throw new NullPointerException("neither workflowData nor inputsFilePath can be empty");
-			}
-			
-			for(int i = 1; i < inputsFilesPath.length; i++){
+			// launch run for each inputs file
+			for(int i = 1; i < inputsFilesPath.size(); i++){
 				try{
 					Object result = createWorkflowRun(workflowEntity);
 					if(!(result instanceof Run)){
@@ -447,7 +435,7 @@ public class WorkflowRunManager
 					//runCreated = Run.create(ta.getServer(), workflowData, ta.getDefaultUser());
 					runCreated = (Run) result;
 					// read saved input object
-					FileInputStream fis = new FileInputStream(inputsFilesPath[i]);
+					FileInputStream fis = new FileInputStream(inputsFilesPath.get(i));
 				    ObjectInputStream ois = new ObjectInputStream(fis);
 				    HashMap<String, Object> savedInputs = (HashMap<String, Object>) ois.readObject();
 				    if(savedInputs == null){
@@ -499,39 +487,8 @@ public class WorkflowRunManager
 					// close ObjectInputStream
 					ois.close();
 					
-					/** temp **/
-					// prepare data to be inserted into the "RunID, WorkflowID" tables
-					/** Run ID **/
-					String runID = runCreated.getIdentifier();
-					ContentValues args = new ContentValues();
-					args.put(DataProviderConstants.Run_Id, runID);
-
-					recordLaunchTime(false, workflowEntity);
-					String subQuery = "(SELECT WF_ID FROM launchHistory"+
-						  "WHERE Workflow_Title=\""+workflowEntity.getTitle()+ "\" AND"+
-							    "Version=\""+workflowEntity.getVersion()+"\" AND"+
-							    "Uploader_Name=\""+workflowEntity.getUploaderName()+"\")";
-					args.put(DataProviderConstants.WF_ID, subQuery);
-					
-					/** INSERT **/
-					currentActivity.getContentResolver().insert(
-							DataProviderConstants.RUN_TABLE_CONTENTURI, args);
-					
-				} catch (FileNotFoundException e) {
-					return e.getMessage();
-				} catch (NetworkConnectionException e) {
-					return e.getMessage();
-				} catch(AccessForbiddenException e){
-					return "Access to the run of this workflow is forbidden";
-				} catch(Exception e){
-					// TODO: "log" has to be removed in release version
-					Log.e("run creation error", e.getMessage());
-					return e.getMessage();
-				}
-
-				// start the run
-				if (runCreated != null){
-					try {
+					// start the run
+					if (runCreated != null){
 						runCreated.start();
 						if (!runCreated.isRunning()){
 							// make sure the run is started
@@ -540,13 +497,15 @@ public class WorkflowRunManager
 						// set run started time and statue
 						reportRunState();
 						reportRunStartTime();
-					} catch (Exception e) {
-						return e.getMessage();
-						//Log.e("WorkflowRunError1", e.getMessage());
 					}
-				} else{
-					// TODO: "log" has to be removed in release version
-					Log.e("WorkflowRunError2", "Workflow Run needed.");
+				} catch (FileNotFoundException e) {
+					return e.getMessage();
+				} catch (NetworkConnectionException e) {
+					return e.getMessage();
+				} catch(AccessForbiddenException e){
+					return "Access to the run of this workflow is forbidden";
+				} catch(Exception e){
+					return e.getMessage();
 				}
 			}
 			
@@ -555,20 +514,17 @@ public class WorkflowRunManager
 
 		@Override
 		public Object onTaskComplete(Object... result) {
-			runListener.onTaskComplete(result);
+			if(runListener != null){
+				runListener.onTaskComplete(result);
+			}
 			return null;
 		}
-		
-		// method that inserts launch time into database 
-				
-		
 	}
 
 	/**
 	 * Background Task to retrieve inputs of a particular run
 	 * 
 	 * @author Hyde Zhang
-	 *
 	 */
 	private class InputPortsRetriever implements CallbackTask{
 
@@ -604,20 +560,17 @@ public class WorkflowRunManager
 		}
 
 		public Object onTaskComplete(Object... result) {
-			if (inputPortsRetriever != null){
-				inputPortsRetriever.onTaskComplete(result);
+			if (inputPortsRetrievalListener != null){
+				inputPortsRetrievalListener.onTaskComplete(result);
 			}
-
 			return null;
 		}
 	}
 
 	/**
+	 * Background Task to setup inputs and start the run
 	 * 
-	 * Background thread to start the run
-	 * 
-	 * @author Hyde
-	 *
+	 * @author Hyde Zhang
 	 */
 	private class RunInitiator implements CallbackTask{
 
@@ -706,35 +659,36 @@ public class WorkflowRunManager
 						// make sure the run is started
 						waitForWorkflowRunToStart(newlyCreatedRun);
 					}
-
 					// set run started time and statue
 					reportRunState();
 					reportRunStartTime();
-
 				} catch (Exception e) {
-					// TODO: "log" has to be removed in release version
-					Log.e("WorkflowRunError1", e.getMessage());
+					// TODO : exception message handling
+					return e.getMessage();
 				}
-
 			}
 			else{
 				// TODO: "log" has to be removed in release version
 				Log.e("WorkflowRunError2", "Workflow Run needed.");
 			}
-
 			return null;
 		}
 
 		public Object onTaskComplete(Object... result) {
-
-			// inform monitor to pull run statue
-			// since run is now started
-			runListener.onTaskInProgress(result);
-
+			if(runListener != null){
+				// inform monitor to pull run statue
+				// since run is now started
+				runListener.onTaskInProgress(result);
+			}
 			return null;
 		}
 	}
 
+	/**
+	 * Background Task to retrieve run states
+	 * 
+	 * @author Hyde
+	 */
 	private class RunProgressListenerInvoker implements CallbackTask{
 		
 		private int pollInterval;
@@ -773,15 +727,22 @@ public class WorkflowRunManager
 				this.Execute();
 			}
 			else{
-				// inform monitor to get finished time
-				// since run is now finished
-				runListener.onTaskComplete();
+				if(runListener != null){
+					// inform monitor to get finished time
+					// since run is now finished
+					runListener.onTaskComplete();
+				}
 			}
 
 			return null;
 		}
 	}
 
+	/**
+	 * Background Task to retrieve outputs
+	 * 
+	 * @author Hyde
+	 */
 	private class OutputHanlder implements CallbackTask{
 
 		private HashMap<String, String> outputs = new HashMap<String, String>();
@@ -822,7 +783,6 @@ public class WorkflowRunManager
 				}
 			}
 			
-			// if no run has been passed in
 			if(theRun == null){
 				theRun = ta.getWorkflowRunLaunched();
 			}
@@ -1051,7 +1011,7 @@ public class WorkflowRunManager
 		}
 
 		public Object onTaskComplete(Object... result) {
-			runStateChecker.onTaskComplete(result);
+			runStateCheckListener.onTaskComplete(result);
 			return null;
 		}
 	}

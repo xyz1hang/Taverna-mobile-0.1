@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Taverna Mobile</string>
     <string name="authority">cs.man.ac.uk.tavernamobile</string>
-    <string name="main_activity_title">TavernaMobile</string>
+    <string name="main_activity_title">Taverna Mobile</string>
     
     <string name="test_button_name">Start Test</string>
     <string name="Default_avatar">Default user avatar</string>

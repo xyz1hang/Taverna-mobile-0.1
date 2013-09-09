@@ -5,11 +5,12 @@ import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 
 import android.app.ActionBar;
-import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -26,30 +27,29 @@ import android.widget.ListView;
 import android.widget.TextView;
 import cs.man.ac.uk.tavernamobile.R;
 import cs.man.ac.uk.tavernamobile.datamodels.WorkflowBE;
-import cs.man.ac.uk.tavernamobile.server.WorkflowRunManager;
+import cs.man.ac.uk.tavernamobile.server.WorkflowLaunchHelper;
 import cs.man.ac.uk.tavernamobile.utils.CallbackTask;
 import cs.man.ac.uk.tavernamobile.utils.MessageHelper;
-import cs.man.ac.uk.tavernamobile.utils.WorkflowFileLoader;
 
-public class InputsHistoryActivity extends Activity {
+public class InputsHistoryActivity extends FragmentActivity {
 
 	public final static String FILE_PATH = "file_path";
 	public final static String SELECTED_FILE_NAME = "selectedInputFileName";
 	private static String INITIAL_DIRECTORY;
 
 	protected File mDirectory;
-	protected ArrayList<File> mFiles;
+	protected List<File> mFiles;
 	protected InputsHistoryListAdapter mAdapter;
 
-	private Activity currentActivity;
+	private FragmentActivity currentActivity;
 	protected ActionMode mActionMode;
-	private ArrayList<File> selectedInputs;
-	private WorkflowRunManager manager;
-	private WorkflowBE workflowEntity;
-	private int Activity_Starter_Code;
-	
 	private TextView defaultText;
 	private ListView inputsList;
+	
+	private List<File> selectedInputs;
+	private WorkflowBE workflowEntity;
+	
+	private int Activity_Starter_Code;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +57,6 @@ public class InputsHistoryActivity extends Activity {
 		setContentView(R.layout.main_inputs_history);
 
 		currentActivity = this;
-		manager = new WorkflowRunManager(currentActivity);
 		selectedInputs = new ArrayList<File>();
 		
 		this.overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
@@ -101,19 +100,6 @@ public class InputsHistoryActivity extends Activity {
 		super.onBackPressed();
 	}
 
-	/*
-	 * @Override protected void onListItemClick(ListView l, View v, int
-	 * position, long id) { super.onListItemClick(l, v, position, id); File
-	 * newFile = (File)l.getItemAtPosition(position);
-	 * 
-	 * if(newFile.isFile()) { // Set result Intent extra = new Intent();
-	 * extra.putExtra(FILE_PATH, newFile.getAbsolutePath());
-	 * extra.putExtra(SELECTED_FILE_NAME, newFile.getName());
-	 * setResult(RESULT_OK, extra); // close the activity finish(); } else { //
-	 * if it is directory mDirectory = newFile; // Update the files list
-	 * refreshFilesList(); } }
-	 */
-
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
@@ -126,9 +112,9 @@ public class InputsHistoryActivity extends Activity {
 
 	private class InputsHistoryListAdapter extends BaseAdapter {
 
-		private ArrayList<File> fileName;
+		private List<File> fileName;
 
-		public InputsHistoryListAdapter(ArrayList<File> data) {
+		public InputsHistoryListAdapter(List<File> data) {
 			fileName = data;
 		}
 
@@ -162,26 +148,25 @@ public class InputsHistoryActivity extends Activity {
 			TextView fileName = (TextView) convertView.findViewById(R.id.savedInputFileName);
 			CheckBox inputHisCheckbox = (CheckBox) convertView.findViewById(R.id.savedInputCheckBox);
 			inputHisCheckbox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-						@Override
-						public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-							// start the action mode when there are selected
-							// runs
-							if (mActionMode == null
-									&& selectedInputs.size() < 1) {
-								mActionMode = currentActivity.startActionMode(mActionModeCallback);
-							} else if (selectedInputs.size() < 1) {
-								mActionMode.finish();
-							}
-
-							if (isChecked) {
-								// String runid = (String) getKey(childID);
-								selectedInputs.add(file);
-							} else {
-								// String runid = (String) getKey(childID);
-								selectedInputs.remove(file);
-							}
+					@Override
+					public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+						// start the action mode when there are selected
+						// runs
+						if (mActionMode == null && selectedInputs.size() < 1) {
+							mActionMode = currentActivity.startActionMode(mActionModeCallback);
+						} else if (selectedInputs.size() < 1) {
+							mActionMode.finish();
 						}
-					});
+
+						if (isChecked) {
+							// String runid = (String) getKey(childID);
+							selectedInputs.add(file);
+						} else {
+							// String runid = (String) getKey(childID);
+							selectedInputs.remove(file);
+						}
+					}
+				});
 
 			convertView.setOnLongClickListener(new OnLongClickListener() {
 				@Override
@@ -200,8 +185,6 @@ public class InputsHistoryActivity extends Activity {
 
 	private ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
 
-		// Called when the action mode is created; startActionMode() was
-		// called
 		public boolean onCreateActionMode(ActionMode mode, Menu menu) {
 			MenuInflater inflater = mode.getMenuInflater();
 			inflater.inflate(R.menu.input_history_action_mode_menu, menu);
@@ -209,10 +192,9 @@ public class InputsHistoryActivity extends Activity {
 		}
 
 		public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-			return false; // Return false if nothing is done
+			return false;
 		}
 
-		// Called when the user selects a contextual menu item
 		public boolean onActionItemClicked(final ActionMode mode, MenuItem item) {
 			switch (item.getItemId()) {
 			case R.id.input_history_launch:
@@ -221,22 +203,17 @@ public class InputsHistoryActivity extends Activity {
 					new CallbackTask() {
 						@Override
 						public Object onTaskInProgress(Object... param) {
+							// set input history files path of the workflow entity
+							// which will be used to load previous inputs
+							List<String> paths = new ArrayList<String>();
+							for(File f : selectedInputs){
+								paths.add(f.getAbsolutePath());
+							}
+							workflowEntity.setSavedInputsFilesPath(paths);
 							
-							byte[] workflowData = null;
-							try {
-								 workflowData = WorkflowFileLoader.getBytesFromFile(
-										 new File(workflowEntity.getFilename()));
-							} catch (Exception e) {
-								// swallow
-								e.printStackTrace();
-							}
-							String[] inputs = new String[selectedInputs.size()];
-							for(int i = 0; i<selectedInputs.size(); i++){
-								inputs[i] = selectedInputs.get(i).getAbsolutePath();
-							}
-							//selectedInputs.toArray(inputs);
-							manager.StartRunWithSavedInput(workflowData, 
-									workflowEntity, inputs, new CallbackTask(){
+							WorkflowLaunchHelper launchHelper = 
+									new WorkflowLaunchHelper(currentActivity, Activity_Starter_Code);
+							launchHelper.registerLaunchListener(new CallbackTask(){
 								@Override
 								public Object onTaskInProgress(Object... param) { return null; }
 
@@ -247,19 +224,17 @@ public class InputsHistoryActivity extends Activity {
 										MessageHelper.showMessageDialog(
 												currentActivity, (String) result[0]);
 									}
-									
 									return null;
 								}
 							});
-							
+							launchHelper.launch(workflowEntity, 1);
+							// exit action mode
 							mode.finish();
 							return null;
 						}
 
 						@Override
-						public Object onTaskComplete(Object... result) {
-							return null;
-						}
+						public Object onTaskComplete(Object... result) { return null; }
 					}, null);
 				
 				return true;

@@ -119,31 +119,29 @@ public class RunMonitorScreen extends Activity implements CallbackTask {
 				running = false;
 				mNotificationManager.cancelAll();//.cancel(notificationId);
 
-				manager.getRunOutput(workflowEntity.getTitle(), null, new CallbackTask(){
-
-					@Override
-					public Object onTaskInProgress(Object... param) { return null; }
-
-					@Override
-					public Object onTaskComplete(Object... result) {
-						
-						if(result[0] instanceof String){
-							MessageHelper.showMessageDialog(currentActivity, (String)result[0]);
+				manager.getRunOutput(workflowEntity.getTitle(), null, 
+					new CallbackTask(){
+						@Override
+						public Object onTaskInProgress(Object... param) { return null; }
+	
+						@Override
+						public Object onTaskComplete(Object... result) {
+							if(result[0] instanceof String){
+								MessageHelper.showMessageDialog(currentActivity, (String)result[0]);
+								return null;
+							}
+							// TODO : prepare output tree view
+							
+							Intent goToOutput = new Intent(currentActivity, OutputsList.class);
+							Bundle extras = new Bundle();
+							extras.putSerializable("workflowEntity", workflowEntity);
+							extras.putInt("activity_starter", Activity_Starter_Code);
+							goToOutput.putExtras(extras);
+							currentActivity.startActivity(goToOutput);
 							return null;
-						}
-						// TODO : prepare output tree view
-						
-						Intent goToOutput = new Intent(currentActivity, OutputsList.class);
-						Bundle extras = new Bundle();
-						extras.putSerializable("workflowEntity", workflowEntity);
-						extras.putInt("activity_starter", Activity_Starter_Code);
-						goToOutput.putExtras(extras);
-						currentActivity.startActivity(goToOutput);
-						return null;
-					}
-					
-				});
-			}
+						}	
+					});
+			}// end of onClick
 		});
 	}
 

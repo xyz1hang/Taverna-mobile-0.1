@@ -33,7 +33,7 @@ public class RunHistoryHelper extends ContentProvider {
             "(" + " " +
             DataProviderConstants.WF_ID + " " + PRIMARY_KEY_TYPE + " ," +
             DataProviderConstants.WorkflowTitle + " " + TEXT_TYPE + " ," +
-            DataProviderConstants.WorkflowFileName + " " + TEXT_TYPE + " ," +
+            DataProviderConstants.WorkflowFilePath + " " + TEXT_TYPE + " ," +
             DataProviderConstants.WorkflowUri + " " + TEXT_TYPE + " ," +
             DataProviderConstants.Version + " " + TEXT_TYPE + ", " +
             DataProviderConstants.UploaderName + " " + TEXT_TYPE + ", " +

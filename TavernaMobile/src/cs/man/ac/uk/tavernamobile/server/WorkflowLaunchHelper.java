@@ -5,7 +5,6 @@ import java.io.File;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -18,7 +17,6 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.widget.Toast;
@@ -30,7 +28,6 @@ import cs.man.ac.uk.tavernamobile.myexperiment.WorkflowDownloadHelper;
 import cs.man.ac.uk.tavernamobile.utils.CallbackTask;
 import cs.man.ac.uk.tavernamobile.utils.MessageHelper;
 import cs.man.ac.uk.tavernamobile.utils.SystemStatesChecker;
-import cs.man.ac.uk.tavernamobile.utils.WorkflowFileLoader;
 
 public class WorkflowLaunchHelper {
 
@@ -50,33 +47,47 @@ public class WorkflowLaunchHelper {
 	// Workflow-record-checking loader ID
 	private static final int loaderId = 1;
 	
-	// the ID of the row that the workflow record
-	// was being inserted, which will be used to update
-	// the Run reference table
-	private String insertedRowID;
-	
 	// try to reuse object...
 	// utilities set up
 	private SystemStatesChecker checker;
 	private WorkflowRunManager manager;
 
-	public WorkflowLaunchHelper(FragmentActivity activity, WorkflowBE wfEntity, int code) {
+	private boolean firstEntry;
+	private int launchMode;
+	private CallbackTask launchListener;
+
+	public WorkflowLaunchHelper(FragmentActivity activity, int code) {
 		currentActivity = activity;
-		workflowEntity = wfEntity;
 		Activity_Starter_Code = code;
 		checker = new SystemStatesChecker(currentActivity);
 		manager = new WorkflowRunManager(currentActivity);
+		launchListener = new RunCreationListener(); // default
+		firstEntry = false;
+	}
+	
+	public void registerLaunchListener(CallbackTask listener){
+		launchListener = listener;
 	}
 
 	/**
 	 * Launch the workflow. Check whether the workflow file 
 	 * needs to be downloaded first
+	 * 
+	 * @param entity - workflow entity 
+	 * @param mode - 0 = launch only. 1 = launch -> set saved input -> start Run
 	 */
-	public void launch() {
-
+	public void launch(WorkflowBE entity, int mode) {
 		// check whether phone storage is ready for saving output
 		if(!checker.IsPhoneStorageReady()){
 			return;
+		}
+		
+		// set the workflow entity the instance is dealing with
+		workflowEntity = entity;
+		// set the launch mode
+		launchMode = mode;
+		if(launchMode != 0 && launchMode != 1){
+			throw new IllegalArgumentException("launchMode can only be 0 or 1");
 		}
 		
 		// preparing for checking workflow existence
@@ -84,7 +95,7 @@ public class WorkflowLaunchHelper {
 				DataProviderConstants.WorkflowTitle,
 				DataProviderConstants.WorkflowUri,
 				DataProviderConstants.Version,
-				DataProviderConstants.WorkflowFileName,
+				DataProviderConstants.WorkflowFilePath,
 				DataProviderConstants.UploaderName };
 		String selection = DataProviderConstants.WorkflowTitle + " = ? AND "
 						 + DataProviderConstants.Version + " = ? AND "
@@ -110,21 +121,17 @@ public class WorkflowLaunchHelper {
 		// started it will automatically be destroyed when the new loader completes its
 		// work. The callback will be delivered before the old loader is destroyed
 		this.currentActivity.getSupportLoaderManager().restartLoader(
-				loaderId,
-				loaderArgs,
+				loaderId, loaderArgs,
 				new DatabaseLoader(currentActivity,
-						new workflowDataLoadingListener()));
+						new WorkflowDataLoadingListener()));
 	}
 
 	// class to deal with results loaded by content loader.
 	// To check whether the workflow has been ran before
 	// whether the workflow file actually exist
-	private class workflowDataLoadingListener implements CallbackTask {
-
+	private class WorkflowDataLoadingListener implements CallbackTask {
 		@Override
-		public Object onTaskInProgress(Object... param) {
-			return null;
-		}
+		public Object onTaskInProgress(Object... param) { return null;}
 
 		@Override
 		public Object onTaskComplete(Object... result) {
@@ -132,35 +139,34 @@ public class WorkflowLaunchHelper {
 				Cursor existingWFRecord = (Cursor) result[0];
 
 				// if the cursor was previously consumed
-				if (existingWFRecord.isClosed()) {
+				/*if (existingWFRecord.isClosed()) {
 					// do nothing - not to load, downloading etc.
 					// Changes made to the data source can trigger
 					// the reloading of data and hence execute the callback
 					return null;
-				}
+				}*/
 
 				// if the workflow has a record in database
 				// try to find the workflow file saved on the phone
 				// in order to launch later
 				if (existingWFRecord.moveToFirst()) {
 
-					String downloadURL = existingWFRecord
-							.getString(existingWFRecord
-									.getColumnIndexOrThrow(DataProviderConstants.WorkflowUri));
+					String downloadURL = existingWFRecord.getString(
+							existingWFRecord.getColumnIndexOrThrow(
+									DataProviderConstants.WorkflowUri));
 
-					workflowEntity.setWorkflow_URI(downloadURL);
-
-					String workflowFilename = existingWFRecord
-							.getString(existingWFRecord
-									.getColumnIndexOrThrow(DataProviderConstants.WorkflowFileName));
+					String workflowFilePath = existingWFRecord.getString(
+							existingWFRecord.getColumnIndexOrThrow(
+									DataProviderConstants.WorkflowFilePath));
 
 					/*File workflowFile = new File(android.os.Environment
 							.getExternalStorageDirectory().getPath()
 							+ "/TavernaAndroid/" + workflowFilename);*/
-					File workflowFile = new File(workflowFilename);
+					//File workflowFile = new File(workflowFilePath);
 
-					if (workflowFile.exists()) {
-						createRunWithFileData(workflowFile);
+					if (new File(workflowFilePath).exists()) {
+						workflowEntity.setFilePath(workflowFilePath);
+						createWorkflowRun();
 					}
 					// else if it has record but the file doesn't exist
 					else {
@@ -169,6 +175,7 @@ public class WorkflowLaunchHelper {
 				}
 				// else if no record at all
 				else {
+					firstEntry = true;
 					// prepare to download the workflow file
 					String downloadURL = workflowEntity.getWorkflow_URI();
 					// Check whether the workflow file
@@ -252,11 +259,12 @@ public class WorkflowLaunchHelper {
 
 			/*String[] elements = filePath.split("/");
 			String fileName = elements[elements.length - 1];*/
-			File workflowFile = new File(filePath);
+			workflowEntity.setFilePath(filePath);
+			//File workflowFile = new File(filePath);
 			// update the saved workflow file path
 			updateWorkflowFilePath(filePath);
 			// then create run for it
-			createRunWithFileData(workflowFile);
+			createWorkflowRun();
 			return null;
 		}
 	}
@@ -266,21 +274,19 @@ public class WorkflowLaunchHelper {
 
 		valuesToInsert.put(DataProviderConstants.WorkflowTitle, workflowEntity.getTitle());
 		valuesToInsert.put(DataProviderConstants.Version, workflowEntity.getVersion());
-		//valuesToInsert.put(DataProviderConstants.WorkflowFileName, workflowFileName);
 		valuesToInsert.put(DataProviderConstants.UploaderName, workflowEntity.getUploaderName());
-		byte[] avatarData = bitmapToByteArray(workflowEntity.getAvator());
+		byte[] avatarData = bitmapToByteArray(workflowEntity.getAvatar());
 		valuesToInsert.put(DataProviderConstants.Avatar, avatarData);
 		valuesToInsert.put(DataProviderConstants.WorkflowUri, workflowEntity.getWorkflow_URI());
 
 		// insert via content provider
-		Uri uri = this.currentActivity.getContentResolver()
+		this.currentActivity.getContentResolver()
 				.insert(DataProviderConstants.WF_TABLE_CONTENTURI, valuesToInsert);
-		insertedRowID = uri.getLastPathSegment();
 	}
 	
 	private void updateWorkflowFilePath(String workflowFilePath){
 		ContentValues valuesToUpdate = new ContentValues();
-		valuesToUpdate.put(DataProviderConstants.WorkflowFileName, workflowFilePath);
+		valuesToUpdate.put(DataProviderConstants.WorkflowFilePath, workflowFilePath);
 		String selection = DataProviderConstants.WorkflowTitle + "= ? AND "+
 						   DataProviderConstants.Version + "= ? AND " +
 						   DataProviderConstants.UploaderName + "= ?";
@@ -292,23 +298,29 @@ public class WorkflowLaunchHelper {
 				DataProviderConstants.WF_TABLE_CONTENTURI, valuesToUpdate, selection, selectionArgs);
 	}
 
-	private void createRunWithFileData(File workflowFile) {
-		byte[] workflowData = null;
+	private void createWorkflowRun() {
 		try {
-			workflowData = WorkflowFileLoader.getBytesFromFile(workflowFile);
-		} catch (Exception e) {
-			MessageHelper.showMessageDialog(currentActivity, e.getMessage());
-		}
-
-		// create run
-		if (workflowData != null) {
-			try {
-				manager.CreateRun(workflowData, new RunCreationListener());
-			} catch (Exception e) {
-				Toast.makeText(currentActivity,
-						"Run Creation failed please try again.",
-						Toast.LENGTH_LONG).show();
+			switch(launchMode){
+			case 0:
+				manager.CreateRun(workflowEntity, launchListener);
+				break;
+			case 1:
+				manager.StartRunWithSavedInput(workflowEntity, launchListener);
+				break;
+			default:
+				break;
 			}
+			recordLaunchTime(firstEntry, workflowEntity);
+			// set the flag to indicate that it is not the 
+			// first time this workflow has been launched.
+			// For recording the launch time
+			if(firstEntry){
+				firstEntry = false;
+			}
+		} catch (Exception e) {
+			Toast.makeText(currentActivity,
+					"Run Creation failed please try again.",
+					Toast.LENGTH_LONG).show();
 		}
 	}
 
@@ -328,7 +340,7 @@ public class WorkflowLaunchHelper {
 							exceptionMessage);
 				}
 			} else {
-				HashMap<String, Map<String, InputPort>> idAndInputPorts =
+				/*HashMap<String, Map<String, InputPort>> idAndInputPorts =
 				(HashMap<String, Map<String, InputPort>>) result[0];
 
 				Map<String, InputPort> inputPorts = null;
@@ -340,90 +352,48 @@ public class WorkflowLaunchHelper {
 					Map.Entry<String, Map<String, InputPort>> pair = it.next();
 					runID = pair.getKey();
 					inputPorts = pair.getValue();
-				}
+				}*/
 
-				// prepare data to be inserted into the "RunID, WorkflowID" tables
-				/** Run ID **/
-				ContentValues args = new ContentValues();
-				args.put(DataProviderConstants.Run_Id, runID);
-				
-				/** Workflow ID **/
-				// If this run creation is immediately follow an insert
-				// we can reuse the returned(affected) row ID instead of query
-				if(insertedRowID != null){
-					// if there was an insert of workflow record
-					// it is consider to be the first time the workflow was launched
-					recordLaunchTime(true);
-					int wfId = Integer.parseInt(insertedRowID);
-					args.put(DataProviderConstants.WF_ID, wfId);
-				}
-				// if there was no insert i.e the workflow had been ran before
-				// we find the ID of the workflow which this run
-				// belongs to and insert it into the workflowID_runID table 
-				// along with the run id
-				else{
-					// record latest launch time
-					recordLaunchTime(false);
-					String subQuery = "(SELECT WF_ID FROM launchHistory"+
-						  "WHERE Workflow_Title=\""+workflowEntity.getTitle()+ "\" AND"+
-							    "Version=\""+workflowEntity.getVersion()+"\" AND"+
-							    "Uploader_Name=\""+workflowEntity.getUploaderName()+"\")";
-					args.put(DataProviderConstants.WF_ID, subQuery);
-				}
-				
-				/** INSERT **/
-				currentActivity.getContentResolver().insert(
-						DataProviderConstants.RUN_TABLE_CONTENTURI, args);
-
-				prepareInputs(inputPorts);
+				Map<String, InputPort> inputPorts = (Map<String, InputPort>)result[0];
+				prepareInputs(inputPorts, workflowEntity);
 			}
-
-			// reset the inserted ID once 
-			insertedRowID = null;
 			return null;
 		}
-
-		// method that inserts launch time into database 
-		private void recordLaunchTime(boolean firstTime) {
-			/*SimpleDateFormat dateFormat = 
-			new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()); 
-			Date date = new Date();
-			ContentValues values = new ContentValues(); 
-			values.put(DataProviderConstants.LastLaunch, dateFormat.format(date));*/
-			
-			DateFormat df = DateFormat.getDateTimeInstance();
-			df.setTimeZone(TimeZone.getTimeZone("GMT"));
-			String gmtTime = df.format(new Date());
-			
-			ContentValues values = new ContentValues(); 
-			if(firstTime){
-				values.put(DataProviderConstants.FirstLaunch, gmtTime);
-				values.put(DataProviderConstants.LastLaunch, gmtTime);
-			}else{
-				values.put(DataProviderConstants.LastLaunch, gmtTime);
-			}
-			String selection = 
-					   DataProviderConstants.WorkflowTitle + " = ? AND "
-					 + DataProviderConstants.Version + " = ? AND "
-					 + DataProviderConstants.UploaderName + " = ?";
-			String[] selectionArgs = new String[] {
-					workflowEntity.getTitle(), 
-					workflowEntity.getVersion(), 
-					workflowEntity.getUploaderName()};
-			
-			currentActivity.getContentResolver().update(
-					DataProviderConstants.WF_TABLE_CONTENTURI, 
-					values, 
-					selection, selectionArgs);
+	}
+	
+	private void recordLaunchTime(boolean firstTime, WorkflowBE workflowEntity) {		
+		DateFormat df = DateFormat.getDateTimeInstance();
+		df.setTimeZone(TimeZone.getTimeZone("GMT"));
+		String gmtTime = df.format(new Date());
+		
+		ContentValues values = new ContentValues(); 
+		if(firstTime){
+			values.put(DataProviderConstants.FirstLaunch, gmtTime);
+			values.put(DataProviderConstants.LastLaunch, gmtTime);
+		}else{
+			values.put(DataProviderConstants.LastLaunch, gmtTime);
 		}
+		String selection = 
+				   DataProviderConstants.WorkflowTitle + " = ? AND "
+				 + DataProviderConstants.Version + " = ? AND "
+				 + DataProviderConstants.UploaderName + " = ?";
+		String[] selectionArgs = new String[] {
+				workflowEntity.getTitle(), 
+				workflowEntity.getVersion(), 
+				workflowEntity.getUploaderName()};
+		
+		currentActivity.getContentResolver().update(
+				DataProviderConstants.WF_TABLE_CONTENTURI, 
+				values, 
+				selection, selectionArgs);
 	}
 
-	public void prepareInputs(Map<String, InputPort> inputPorts) {
+	public void prepareInputs(Map<String, InputPort> inputPorts, WorkflowBE workflowEntity) {
 		// Navigate to input screen
 		Intent goToInputList = new Intent(currentActivity, InputsList.class);
 		Bundle extras = new Bundle();
 
-		if (!inputPorts.isEmpty()) {
+		if (inputPorts != null && !inputPorts.isEmpty()) {
 			ArrayList<String> inputNames = extractInputName(inputPorts);
 			extras.putStringArrayList("input_names", inputNames);
 		}

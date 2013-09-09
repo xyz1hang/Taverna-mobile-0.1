@@ -10,7 +10,7 @@ public class DataProviderConstants {
 	public static final String WorkflowTitle = "Workflow_Title";
 	public static final String WorkflowUri = "Workflow_Uri";
 	public static final String Version = "Version";
-	public static final String WorkflowFileName = "Workflow_FileName";
+	public static final String WorkflowFilePath = "Workflow_FilePath";
 	public static final String Avatar = "Avatar";
 	public static final String UploaderName = "Uploader_Name";
 	public static final String LastLaunch = "Last_Launch";
