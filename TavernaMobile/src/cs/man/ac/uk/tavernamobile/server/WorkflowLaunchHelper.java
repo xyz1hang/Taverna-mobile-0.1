@@ -185,10 +185,6 @@ public class WorkflowLaunchHelper {
 					String[] pathSegments = path.split("/");
 					String fileName = pathSegments[pathSegments.length - 1];
 					if (fileName.matches(".*\\.t2flow")) {
-						// record the workflow detail in database.
-						// It is the first time this workflow
-						// is going to be downloaded at this point
-						recordWorkflow();
 						checkAndDownload(downloadURL);
 					} else {
 						String message = "The workflow document is not a \"t2flow\" file,\n"
@@ -257,12 +253,18 @@ public class WorkflowLaunchHelper {
 		public Object onTaskComplete(Object... result) {
 			String filePath = (String) result[0];
 
-			/*String[] elements = filePath.split("/");
-			String fileName = elements[elements.length - 1];*/
+			if(filePath == null){
+				return null;
+			}
 			workflowEntity.setFilePath(filePath);
-			//File workflowFile = new File(filePath);
-			// update the saved workflow file path
-			updateWorkflowFilePath(filePath);
+			// if it is the first time the workflow
+			// is downloaded record the workflow detail
+			if(firstEntry){
+				recordWorkflow();
+			}else{
+				// only update the saved workflow file path
+				updateWorkflowFilePath(filePath);
+			}
 			// then create run for it
 			createWorkflowRun();
 			return null;
@@ -275,6 +277,7 @@ public class WorkflowLaunchHelper {
 		valuesToInsert.put(DataProviderConstants.WorkflowTitle, workflowEntity.getTitle());
 		valuesToInsert.put(DataProviderConstants.Version, workflowEntity.getVersion());
 		valuesToInsert.put(DataProviderConstants.UploaderName, workflowEntity.getUploaderName());
+		valuesToInsert.put(DataProviderConstants.WorkflowFilePath, workflowEntity.getFilePath());
 		byte[] avatarData = bitmapToByteArray(workflowEntity.getAvatar());
 		valuesToInsert.put(DataProviderConstants.Avatar, avatarData);
 		valuesToInsert.put(DataProviderConstants.WorkflowUri, workflowEntity.getWorkflow_URI());
@@ -287,9 +290,9 @@ public class WorkflowLaunchHelper {
 	private void updateWorkflowFilePath(String workflowFilePath){
 		ContentValues valuesToUpdate = new ContentValues();
 		valuesToUpdate.put(DataProviderConstants.WorkflowFilePath, workflowFilePath);
-		String selection = DataProviderConstants.WorkflowTitle + "= ? AND "+
-						   DataProviderConstants.Version + "= ? AND " +
-						   DataProviderConstants.UploaderName + "= ?";
+		String selection = DataProviderConstants.WorkflowTitle + " = ? AND "+
+						   DataProviderConstants.Version + " = ? AND " +
+						   DataProviderConstants.UploaderName + " = ?";
 		String[] selectionArgs = 
 				new String[] { workflowEntity.getTitle(), 
 							   workflowEntity.getVersion(), 

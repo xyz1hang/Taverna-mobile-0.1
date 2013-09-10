@@ -329,10 +329,10 @@ public class WorkflowRunManager
 		ContentValues args = new ContentValues();
 		args.put(DataProviderConstants.Run_Id, runID);
 		
-		String subQuery = "(SELECT WF_ID FROM launchHistory "+
-				  "WHERE Workflow_Title=\""+workflowEntity.getTitle()+ "\" AND "+
-					    "Version=\""+workflowEntity.getVersion()+"\" AND "+
-					    "Uploader_Name=\""+workflowEntity.getUploaderName()+"\")";
+		String subQuery = "SELECT WF_ID FROM launchHistory "+
+				  "WHERE Workflow_Title = '"+workflowEntity.getTitle()+ "' AND "+
+					    "Version = '"+workflowEntity.getVersion()+"' AND "+
+					    "Uploader_Name = '"+workflowEntity.getUploaderName()+"'";
 		args.put(DataProviderConstants.WF_ID, subQuery);
 		
 		/** INSERT **/
@@ -425,7 +425,7 @@ public class WorkflowRunManager
 		@Override
 		public Object onTaskInProgress(Object... param) {
 			// launch run for each inputs file
-			for(int i = 1; i < inputsFilesPath.size(); i++){
+			for(int i = 0; i < inputsFilesPath.size(); i++){
 				try{
 					Object result = createWorkflowRun(workflowEntity);
 					if(!(result instanceof Run)){
@@ -437,6 +437,7 @@ public class WorkflowRunManager
 					// read saved input object
 					FileInputStream fis = new FileInputStream(inputsFilesPath.get(i));
 				    ObjectInputStream ois = new ObjectInputStream(fis);
+				    // String test = (String) ois.readObject();
 				    HashMap<String, Object> savedInputs = (HashMap<String, Object>) ois.readObject();
 				    if(savedInputs == null){
 				    	fis.close();
@@ -632,7 +633,7 @@ public class WorkflowRunManager
 							stream.close();*/
 							
 							ObjectOutputStream oos = new ObjectOutputStream(stream);
-							oos.writeObject(inputs.toString());
+							oos.writeObject(inputs);
 							oos.close();
 						} catch (FileNotFoundException e) {
 							e.printStackTrace();
@@ -1107,7 +1108,7 @@ public class WorkflowRunManager
 					// delete all records from database
 					currentActivity.getContentResolver().delete(
 							DataProviderConstants.RUN_TABLE_CONTENTURI, 
-							null, null);
+							DataProviderConstants.WF_RUN_ID +" IS NOT NULL", null);
 					return true;
 				}
 				catch(NetworkConnectionException e){

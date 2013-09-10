@@ -440,4 +440,10 @@ public class SearchResultScreen extends Activity implements CallbackTask {
 			return null;
 		}
 	}
+	
+	@Override
+	public void finish(){
+		this.overridePendingTransition(R.anim.push_right_in, R.anim.push_left_out);
+		super.finish();
+	}
 }

@@ -16,7 +16,8 @@
             android:entryValues="@array/refreshFrequencyValues"
             android:key="runStateRefreshFrequency"
             android:summary="@string/run_refresh_rate_setting_summary"
-            android:title="@string/run_refresh_rate_setting" />
+            android:title="@string/run_refresh_rate_setting" 
+            android:defaultValue="500"/>
     </PreferenceCategory>
     
     <PreferenceCategory android:title="@string/Run_Lists_mode_setting" >

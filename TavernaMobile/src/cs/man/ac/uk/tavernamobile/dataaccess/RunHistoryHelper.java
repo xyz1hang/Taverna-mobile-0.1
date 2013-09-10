@@ -23,6 +23,7 @@ public class RunHistoryHelper extends ContentProvider {
 	
     // Constants for building SQLite tables during initialization
     private static final String TEXT_TYPE = "TEXT";
+    private static final String INTEGER_TYPE = "INTEGER";
     private static final String PRIMARY_KEY_TYPE = "INTEGER PRIMARY KEY AUTOINCREMENT";
     private static final String FOREIGN_KEY_TYPE = "FOREIGN KEY";
     private static final String REFERENCES_TYPE = "REFERENCES ";
@@ -48,7 +49,7 @@ public class RunHistoryHelper extends ContentProvider {
             "(" + " " +
             DataProviderConstants.WF_RUN_ID + " " + PRIMARY_KEY_TYPE + " ," +
             DataProviderConstants.Run_Id + " " + TEXT_TYPE + ", " +
-            DataProviderConstants.WF_ID + " " + TEXT_TYPE + ", " +
+            DataProviderConstants.WF_ID + " " + INTEGER_TYPE + ", " +
             FOREIGN_KEY_TYPE + "(" + DataProviderConstants.WF_ID + ") " + 
             REFERENCES_TYPE + DataProviderConstants.WF_TABLE_NAME + 
             "(" + DataProviderConstants.WF_ID + ")" + ")";
@@ -398,7 +399,7 @@ public class RunHistoryHelper extends ContentProvider {
         	            selectionArgs, null, null, sortOrder);
                 
                 // Sets the ContentResolver to watch this content URI for data changes
-                resultCursor.setNotificationUri(getContext().getContentResolver(), uri);
+                // resultCursor.setNotificationUri(getContext().getContentResolver(), uri);
             	return resultCursor;
             case RUN_TABLE:
                 Cursor resultCursor1 = db.query(
@@ -408,7 +409,7 @@ public class RunHistoryHelper extends ContentProvider {
         	            selectionArgs, null, null, sortOrder);
                 
                 // Sets the ContentResolver to watch this content URI for data changes
-                resultCursor1.setNotificationUri(getContext().getContentResolver(), uri);
+                // resultCursor1.setNotificationUri(getContext().getContentResolver(), uri);
             	return resultCursor1;
             // case that is specifically for the specific join query
             // to retrieve workflow details corresponding to run ID
@@ -416,6 +417,30 @@ public class RunHistoryHelper extends ContentProvider {
             // TODO: Haven't found any other elegant way to execute complex query
             // via ContentProvider
             case JOIN_TABLE:
+            	/** debug **/
+            	Cursor everythingInWFTable = db.rawQuery("SELECT * FROM "+DataProviderConstants.WF_TABLE_NAME, null);
+            	while(everythingInWFTable.moveToNext()){
+            		String row = 
+            				everythingInWFTable.getString(0) + " " +
+            				everythingInWFTable.getString(1) + " " +
+            				everythingInWFTable.getString(2) + " " +
+            				everythingInWFTable.getString(3) + " " +
+            				everythingInWFTable.getString(4) + " " +
+            				everythingInWFTable.getString(5) + " " +
+            				everythingInWFTable.getString(6) + " " +
+            				everythingInWFTable.getString(7) + " ";
+            		System.out.println(row);
+            	}
+            	System.out.println();
+            	Cursor everythingInRUNTable = db.rawQuery("SELECT * FROM "+DataProviderConstants.WF_RUN_TABLE_NAME, null);
+            	while(everythingInRUNTable.moveToNext()){
+            		String row = 
+            				everythingInRUNTable.getString(0) + " " +
+            				everythingInRUNTable.getString(1) + " " +
+            				everythingInRUNTable.getString(2) + " ";
+            		System.out.println(row);
+            	}
+            	/** end of debug **/
             	// the "selection" parameter should be the composed
             	// query part in this case
             	String theQuery = "SELECT r.Run_Id, l.Workflow_Title, l.Version, l.Uploader_Name "+
@@ -455,7 +480,20 @@ public class RunHistoryHelper extends ContentProvider {
         	case RUN_TABLE:
         		long id1 = -1;
         		try{
-        			id1 = db.insert(DataProviderConstants.WF_RUN_TABLE_NAME, null, values);
+        			// execute the nested query first
+        			String wfIDselQuery = (String)values.get(DataProviderConstants.WF_ID);
+        			Cursor wfIDCursor = db.rawQuery(wfIDselQuery, null);
+        			// there should be only one row selected
+        			int workflowID = 0;
+        			if(wfIDCursor.moveToNext()){
+        				workflowID = wfIDCursor.getInt(0);
+        			}
+        			// insert the evaluated query value
+        			ContentValues finalValues = new ContentValues();
+        			finalValues.put(DataProviderConstants.WF_ID, workflowID);
+        			finalValues.put(DataProviderConstants.Run_Id, 
+        					(String) values.get(DataProviderConstants.Run_Id));
+        			id1 = db.insert(DataProviderConstants.WF_RUN_TABLE_NAME, null, finalValues);
         		}catch(Exception e){
         			e.printStackTrace();
         		}
@@ -492,7 +530,7 @@ public class RunHistoryHelper extends ContentProvider {
 		        // If the update succeeded, notify the change and 
 		        // return the number of updated rows.
 		        if (numOfRows != 0) {
-		            // getContext().getContentResolver().notifyChange(uri, null);
+		            //getContext().getContentResolver().notifyChange(uri, null);
 		            return numOfRows;
 		        } else {
 		            throw new SQLiteException("Update error:" + uri);
@@ -509,7 +547,7 @@ public class RunHistoryHelper extends ContentProvider {
 		        // If the update succeeded, notify the change and 
 		        // return the number of updated rows.
 		        if (numOfRows1 != 0) {
-		            // getContext().getContentResolver().notifyChange(uri, null);
+		            //getContext().getContentResolver().notifyChange(uri, null);
 		            return numOfRows1;
 		        } else {
 		            throw new SQLiteException("Update error:" + uri);
@@ -535,7 +573,7 @@ public class RunHistoryHelper extends ContentProvider {
 		        // If the delete succeeded, notify the change and 
 		        // return the number of updated rows.
 		        if (numOfRows != 0) {
-		            // getContext().getContentResolver().notifyChange(uri, null);
+		            getContext().getContentResolver().notifyChange(uri, null);
 		            return numOfRows;
 		        } else {
 		            throw new SQLiteException("Delete error:" + uri);
@@ -551,7 +589,7 @@ public class RunHistoryHelper extends ContentProvider {
 		        // If the delete succeeded, notify the change and 
 		        // return the number of updated rows.
 		        if (numOfRows1 != 0) {
-		            // getContext().getContentResolver().notifyChange(uri, null);
+		            getContext().getContentResolver().notifyChange(uri, null);
 		            return numOfRows1;
 		        } else {
 		            throw new SQLiteException("Delete error:" + uri);

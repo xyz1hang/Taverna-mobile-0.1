@@ -62,7 +62,7 @@ public class RunsFragment extends Fragment {
 	// <state, map<runID, workflow_entity>>
 	private HashMap<String, HashMap<String, WorkflowBE>> childElements;
 	
-	//private ArrayList<ChildListAdapter> childListAdapters;
+	private ArrayList<ChildListAdapter> childListAdapters;
 	private RunsListAdapter mainListAdapter;
 	
 	private PullToRefreshExpandableListView refreshableList;
@@ -172,11 +172,10 @@ public class RunsFragment extends Fragment {
 			return;
 		}
 		// Initialize the collection and adapters
-		childElements = new HashMap<String, HashMap<String, WorkflowBE>>();;
+		childElements = new HashMap<String, HashMap<String, WorkflowBE>>();
+		childListAdapters = new ArrayList<ChildListAdapter>();
 		// Do work to refresh the list here.
     	runManager.getRuns(runRetrievalListener);
-		
-		//childListAdapters = new ArrayList<ChildListAdapter>();
 	}
 
 	// class to process the result of Run List retrieval
@@ -312,9 +311,9 @@ public class RunsFragment extends Fragment {
 			}
 			
 			// refresh all list
-			/*for(ChildListAdapter adapter : childListAdapters){
+			for(ChildListAdapter adapter : childListAdapters){
 				adapter.notifyDataSetChanged();
-			}*/
+			}
 
 			// refresh data
 			mainListAdapter.notifyDataSetChanged();
@@ -507,7 +506,7 @@ public class RunsFragment extends Fragment {
 			});
 			// add adapter into the adapters list
 			// in order to refresh all list when loading complete
-			// childListAdapters.add(adapter);
+			childListAdapters.add(adapter);
 			
 			return convertView;
 		}
@@ -561,169 +560,7 @@ public class RunsFragment extends Fragment {
 			return true;
 		}
 		
-		// adaptor for the child(listView) of expendableListView
-		private class ChildListAdapter extends BaseAdapter{
-			private HashMap<String, WorkflowBE> listData;
-			private String[] mKeys;
-			
-			public ChildListAdapter(HashMap<String, WorkflowBE> data){
-				listData = data;
-		        mKeys = listData.keySet().toArray(new String[data.size()]);
-			}
-			
-			public Object getKey (int index){
-				return mKeys[index];
-			}
-
-			@Override
-			public int getCount() {
-				return listData.size();
-			}
-
-			@Override
-			public Object getItem(int index) {
-				return listData.get(mKeys[index]);
-			}
-
-			@Override
-			public long getItemId(int position) {
-				return position;
-			}
-
-			@Override
-			public View getView(int position, View convertView, ViewGroup parent) {
-				if(convertView == null){
-					LayoutInflater mInflater = 
-							(LayoutInflater) parentActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-					convertView = mInflater.inflate(R.layout.main_runs_child_singlerow, null);
-				}
-				
-				WorkflowBE wfBE = (WorkflowBE) getItem(childID);
-				CheckBox runCheckbox = (CheckBox)convertView.findViewById(R.id.runList_run_checkbox);
-				TextView wfTitleVersion = (TextView) convertView.findViewById(R.id.runsTitleVersion);
-				TextView wfuploaderName = (TextView) convertView.findViewById(R.id.runsUploader);
-				
-				wfTitleVersion.setText(wfBE.getTitle()+" (v"+wfBE.getVersion()+")");
-				wfuploaderName.setText(wfBE.getUploaderName());
-				
-				runCheckbox.setOnCheckedChangeListener(new OnCheckedChangeListener(){
-
-					@Override
-					public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-						// start the action mode when there are selected runs
-						if(mActionMode == null && selectedRunIds.size() < 1){
-							mActionMode = parentActivity.startActionMode(mActionModeCallback);
-						}else if(selectedRunIds.size() < 1){
-							mActionMode.finish();
-						}
-
-						if(isChecked){
-							String runid = (String) getKey(childID);
-							selectedRunIds.add(runid);
-						}
-						else{
-							String runid = (String) getKey(childID);
-							selectedRunIds.remove(runid);
-						}
-					}
-				});
-				
-				convertView.setOnLongClickListener(new OnLongClickListener(){
-					@Override
-					public boolean onLongClick(View view) {
-				        mActionMode = parentActivity.startActionMode(mActionModeCallback);
-						return true;
-					}
-				});
-				
-				return convertView;
-			}
-			
-			private ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
-
-			    // Called when the action mode is created; startActionMode() was called
-			    public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-				      MenuInflater inflater = mode.getMenuInflater();
-				      inflater.inflate(R.menu.runlist_action_mode_menu, menu);
-				      return true;
-			    }
-
-			    public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-			    	return false; // Return false if nothing is done
-			    }
-
-			    // Called when the user selects a contextual menu item
-			    public boolean onActionItemClicked(final ActionMode mode, MenuItem item) {
-			      switch (item.getItemId()) {
-			      case R.id.runList_run_stop:
-			    	  MessageHelper.showOptionsDialog(
-			    			  refreshableList.getContext(), 
-			    			  "Stop selected runs ?",
-			    			  null,
-			    			  new CallbackTask(){
-								@Override
-								public Object onTaskInProgress(Object... param) {
-									runManager.StopRun("Stopping runs...", selectedRunIds);
-									// automatically close action mode when action performed
-									mode.finish();
-									return null;
-								}
-
-								@Override
-								public Object onTaskComplete(Object... result){
-									prepareListData();
-									return null; 
-								}
-			    		  
-			    			  }, null);
-			    	  // mode.finish(); 
-			        return true;
-			      case R.id.runList_run_delete:
-			    	  MessageHelper.showOptionsDialog(
-			    			  refreshableList.getContext(), 
-			    			  "Delete selected runs ?",
-			    			  null,
-			    			  new CallbackTask(){
-								@Override
-								public Object onTaskInProgress(Object... param) {
-									runManager.DeleteRun("Deleting runs...", selectedRunIds);
-									// automatically close action mode when action performed
-									mode.finish();
-									return null;
-								}
-
-								@Override
-								public Object onTaskComplete(Object... result){
-									prepareListData();
-									return null; 
-								}
-			    		  
-			    			  }, null);
-			    	  // mode.finish();
-			    	  return true;
-			      case R.id.runList_run_start:
-			    	  	// get launched workflows run ID
-						// in order to retrieve its state
-						// and then monitor it
-						/*String runID = (String) selectedRunIds.get(0);
-						
-						if (runID != null) {
-							WorkflowRunManager manager = new WorkflowRunManager(parentActivity);
-							manager.checkRunStateWithID(runID, 
-									new RunsListAdapter.RunStateChecker(workflowEntity, runID));
-						} */
-			    	  return true;
-			      default:
-			        return false;
-			      }
-			    }
-
-			    // Called when the user exits the action mode
-			    public void onDestroyActionMode(ActionMode mode) {
-			    	mActionMode = null;
-			    }
-			  };
-		}// end of childListAdapter
+		
 		
 		private class RunStateChecker implements CallbackTask {
 
@@ -804,4 +641,168 @@ public class RunsFragment extends Fragment {
 			launchHelper.launch(workflowEntity, 0);
 		}
 	}
+	
+	// adaptor for the child(listView) of expendableListView
+			private class ChildListAdapter extends BaseAdapter{
+				private HashMap<String, WorkflowBE> listData;
+				private String[] mKeys;
+				
+				public ChildListAdapter(HashMap<String, WorkflowBE> data){
+					listData = data;
+			        mKeys = listData.keySet().toArray(new String[data.size()]);
+				}
+				
+				public Object getKey (int index){
+					return mKeys[index];
+				}
+
+				@Override
+				public int getCount() {
+					return listData.size();
+				}
+
+				@Override
+				public Object getItem(int index) {
+					return listData.get(mKeys[index]);
+				}
+
+				@Override
+				public long getItemId(int position) {
+					return position;
+				}
+
+				@Override
+				public View getView(int position, View convertView, ViewGroup parent) {
+					if(convertView == null){
+						LayoutInflater mInflater = 
+								(LayoutInflater) parentActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+						convertView = mInflater.inflate(R.layout.main_runs_child_singlerow, null);
+					}
+					
+					WorkflowBE wfBE = (WorkflowBE) getItem(childID);
+					CheckBox runCheckbox = (CheckBox)convertView.findViewById(R.id.runList_run_checkbox);
+					TextView wfTitleVersion = (TextView) convertView.findViewById(R.id.runsTitleVersion);
+					TextView wfuploaderName = (TextView) convertView.findViewById(R.id.runsUploader);
+					
+					wfTitleVersion.setText(wfBE.getTitle()+" (v"+wfBE.getVersion()+")");
+					wfuploaderName.setText(wfBE.getUploaderName());
+					
+					runCheckbox.setOnCheckedChangeListener(new OnCheckedChangeListener(){
+
+						@Override
+						public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+							if(isChecked){
+								String runid = (String) getKey(childID);
+								selectedRunIds.add(runid);
+							}
+							else{
+								String runid = (String) getKey(childID);
+								selectedRunIds.remove(runid);
+							}
+							
+							// start the action mode when there are selected runs
+							if(mActionMode == null){
+								mActionMode = parentActivity.startActionMode(mActionModeCallback);
+							}else if(selectedRunIds.size() < 1){
+								mActionMode.finish();
+							}
+						}
+					});
+					
+					convertView.setOnLongClickListener(new OnLongClickListener(){
+						@Override
+						public boolean onLongClick(View view) {
+					        mActionMode = parentActivity.startActionMode(mActionModeCallback);
+							return true;
+						}
+					});
+					
+					return convertView;
+				}
+				
+				private ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
+
+				    // Called when the action mode is created; startActionMode() was called
+				    public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+					      MenuInflater inflater = mode.getMenuInflater();
+					      inflater.inflate(R.menu.runlist_action_mode_menu, menu);
+					      return true;
+				    }
+
+				    public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+				    	return false; // Return false if nothing is done
+				    }
+
+				    // Called when the user selects a contextual menu item
+				    public boolean onActionItemClicked(final ActionMode mode, MenuItem item) {
+				      switch (item.getItemId()) {
+				      case R.id.runList_run_stop:
+				    	  MessageHelper.showOptionsDialog(
+				    			  refreshableList.getContext(), 
+				    			  "Stop selected runs ?",
+				    			  null,
+				    			  new CallbackTask(){
+									@Override
+									public Object onTaskInProgress(Object... param) {
+										runManager.StopRun("Stopping runs...", selectedRunIds);
+										// automatically close action mode when action performed
+										mode.finish();
+										return null;
+									}
+
+									@Override
+									public Object onTaskComplete(Object... result){
+										prepareListData();
+										return null; 
+									}
+				    		  
+				    			  }, null);
+				    	  // mode.finish(); 
+				        return true;
+				      case R.id.runList_run_delete:
+				    	  MessageHelper.showOptionsDialog(
+				    			  refreshableList.getContext(), 
+				    			  "Delete selected runs ?",
+				    			  null,
+				    			  new CallbackTask(){
+									@Override
+									public Object onTaskInProgress(Object... param) {
+										runManager.DeleteRun("Deleting runs...", selectedRunIds);
+										// automatically close action mode when action performed
+										mode.finish();
+										return null;
+									}
+
+									@Override
+									public Object onTaskComplete(Object... result){
+										prepareListData();
+										return null; 
+									}
+				    		  
+				    			  }, null);
+				    	  // mode.finish();
+				    	  return true;
+				      case R.id.runList_run_start:
+				    	  	// get launched workflows run ID
+							// in order to retrieve its state
+							// and then monitor it
+							/*String runID = (String) selectedRunIds.get(0);
+							
+							if (runID != null) {
+								WorkflowRunManager manager = new WorkflowRunManager(parentActivity);
+								manager.checkRunStateWithID(runID, 
+										new RunsListAdapter.RunStateChecker(workflowEntity, runID));
+							} */
+				    	  return true;
+				      default:
+				        return false;
+				      }
+				    }
+
+				    // Called when the user exits the action mode
+				    public void onDestroyActionMode(ActionMode mode) {
+				    	mActionMode = null;
+				    }
+				  };
+			}// end of childListAdapter
 }

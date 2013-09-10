@@ -99,6 +99,12 @@ public class InputsHistoryActivity extends FragmentActivity {
 		finish();
 		super.onBackPressed();
 	}
+	
+	@Override
+	public void finish(){
+		this.overridePendingTransition(R.anim.push_right_in, R.anim.push_left_out);
+		super.finish();
+	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -150,20 +156,18 @@ public class InputsHistoryActivity extends FragmentActivity {
 			inputHisCheckbox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 					@Override
 					public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-						// start the action mode when there are selected
-						// runs
-						if (mActionMode == null && selectedInputs.size() < 1) {
+						if (isChecked) {
+							selectedInputs.add(file);
+						} else {
+							selectedInputs.remove(file);
+						}
+						
+						// start the action mode when there are 
+						// selected input file
+						if (mActionMode == null) {
 							mActionMode = currentActivity.startActionMode(mActionModeCallback);
 						} else if (selectedInputs.size() < 1) {
 							mActionMode.finish();
-						}
-
-						if (isChecked) {
-							// String runid = (String) getKey(childID);
-							selectedInputs.add(file);
-						} else {
-							// String runid = (String) getKey(childID);
-							selectedInputs.remove(file);
 						}
 					}
 				});
@@ -223,6 +227,7 @@ public class InputsHistoryActivity extends FragmentActivity {
 											result[0] instanceof String){
 										MessageHelper.showMessageDialog(
 												currentActivity, (String) result[0]);
+										finish();
 									}
 									return null;
 								}
