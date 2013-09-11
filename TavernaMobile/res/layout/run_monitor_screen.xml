@@ -19,20 +19,22 @@
         android:layout_marginLeft="30dp"
         android:layout_marginRight="30dp"
         android:layout_marginTop="30dp" >
+
         <TextView
             android:id="@+id/monitorUsername"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
-            android:layout_weight="1"
+            android:layout_weight="2"
             android:text="@string/MonitorScreen_Username"
             android:textAppearance="?android:attr/textAppearanceSmall" />
+
         <TextView
             android:id="@+id/monitorUsernameValue"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
-            android:layout_weight="5"
+            android:layout_weight="3"
             android:text="@string/MonitorScreen_DefaultMessage"
             android:textAppearance="?android:attr/textAppearanceSmall" />
     </LinearLayout>
@@ -43,20 +45,22 @@
         android:layout_marginLeft="30dp"
         android:layout_marginRight="30dp"
         android:layout_marginTop="10dp" >
+
         <TextView
             android:id="@+id/monitorCurrentState"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
-            android:layout_weight="1"
+            android:layout_weight="2"
             android:text="@string/MonitorScreen_CurrentState"
             android:textAppearance="?android:attr/textAppearanceSmall" />
+
         <TextView
             android:id="@+id/monitorCurrentStateValue"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
-            android:layout_weight="5"
+            android:layout_weight="3"
             android:text="@string/MonitorScreen_DefaultMessage"
             android:textAppearance="?android:attr/textAppearanceSmall" />
     </LinearLayout>
@@ -67,20 +71,22 @@
         android:layout_marginLeft="30dp"
         android:layout_marginRight="30dp"
         android:layout_marginTop="10dp" >
+
         <TextView
             android:id="@+id/monitorStartTime"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
-            android:layout_weight="1"
+            android:layout_weight="2"
             android:text="@string/MonitorScreen_StartTime"
             android:textAppearance="?android:attr/textAppearanceSmall" />
+
         <TextView
             android:id="@+id/monitorStartTimeValue"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
-            android:layout_weight="5"
+            android:layout_weight="3"
             android:text="Reading data..."
             android:textAppearance="?android:attr/textAppearanceSmall" />
     </LinearLayout>

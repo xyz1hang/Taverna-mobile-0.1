@@ -57,7 +57,7 @@ public class ExploreFragment extends Fragment implements CallbackTask {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-
+		
 		parentActivity = getActivity();
 		// set up a loader for search
 		// wfSearchLoader = new WorkflowsLoader(parentActivity, this);

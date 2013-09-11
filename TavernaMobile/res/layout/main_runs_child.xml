@@ -17,14 +17,4 @@
         android:dividerHeight="10dp" >
     </ListView>
 
-    <!-- <yaochangwei.pulltorefreshlistview.widget.extend.PullToRefreshListView
-        android:id="@+id/runsList"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="top"
-        android:layout_margin="10dp"
-        android:divider="@android:color/transparent"
-        android:dividerHeight="10dp">
-    </yaochangwei.pulltorefreshlistview.widget.extend.PullToRefreshListView> -->
-
 </LinearLayout>

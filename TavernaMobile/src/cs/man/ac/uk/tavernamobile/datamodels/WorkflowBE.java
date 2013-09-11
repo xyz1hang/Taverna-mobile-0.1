@@ -104,24 +104,26 @@ public class WorkflowBE implements Serializable{
 	    out.writeObject(lastLaunched);
 	    out.writeObject(savedInputsFilesPath);
 	    
-	    out.writeInt(avatar.getRowBytes());
-	    out.writeInt(avatar.getHeight());
-	    out.writeInt(avatar.getWidth());
+	    if(avatar != null){
+	    	out.writeInt(avatar.getRowBytes());
+		    out.writeInt(avatar.getHeight());
+		    out.writeInt(avatar.getWidth());
 
-	    int bmSize = avatar.getRowBytes() * avatar.getHeight();
-	    if(dst==null || bmSize > dst.capacity()){
-	        dst= ByteBuffer.allocate(bmSize);
-	    }
-	    out.writeInt(dst.capacity());
-	    dst.position(0);
+		    int bmSize = avatar.getRowBytes() * avatar.getHeight();
+		    if(dst==null || bmSize > dst.capacity()){
+		        dst= ByteBuffer.allocate(bmSize);
+		    }
+		    out.writeInt(dst.capacity());
+		    dst.position(0);
 
-	    avatar.copyPixelsToBuffer(dst);
-	    if(bytesar==null || bmSize > bytesar.length)
-	        bytesar=new byte[bmSize];
+		    avatar.copyPixelsToBuffer(dst);
+		    if(bytesar==null || bmSize > bytesar.length)
+		        bytesar=new byte[bmSize];
 
-	    dst.position(0);
-	    dst.get(bytesar);
-	    out.write(bytesar, 0, bytesar.length);
+		    dst.position(0);
+		    dst.get(bytesar);
+		    out.write(bytesar, 0, bytesar.length);
+	    }   
 	}
 
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException{
@@ -136,26 +138,30 @@ public class WorkflowBE implements Serializable{
 	    lastLaunched = (String) in.readObject();
 	    savedInputsFilesPath = (List<String>) in.readObject();
 	    
+	    if(avatar != null){
 	    in.readInt();
 	    int height=in.readInt();
 	    int width=in.readInt();
 	    int bmSize=in.readInt();
-	    if(bytesar==null || bmSize > bytesar.length)
-	        bytesar= new byte[bmSize];
+	    //if(height > 1 && width > 1 && bmSize > 1){
+	    	if(bytesar==null || bmSize > bytesar.length)
+		        bytesar= new byte[bmSize];
 
-	    int offset=0;
+		    int offset=0;
 
-	    while(in.available()>0){
-	        offset=offset + in.read(bytesar, offset, in.available());
+		    while(in.available()>0){
+		        offset=offset + in.read(bytesar, offset, in.available());
+		    }
+
+		    if(dst==null || bmSize > dst.capacity())
+		        dst= ByteBuffer.allocate(bmSize);
+		    dst.position(0);
+		    dst.put(bytesar);
+		    dst.position(0);
+		    avatar=Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
+		    avatar.copyPixelsFromBuffer(dst);
+		    //in.close();
+	    //}
 	    }
-
-	    if(dst==null || bmSize > dst.capacity())
-	        dst= ByteBuffer.allocate(bmSize);
-	    dst.position(0);
-	    dst.put(bytesar);
-	    dst.position(0);
-	    avatar=Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
-	    avatar.copyPixelsFromBuffer(dst);
-	    //in.close();
 	}
 }

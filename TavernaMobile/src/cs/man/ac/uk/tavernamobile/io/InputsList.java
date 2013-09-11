@@ -14,6 +14,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,6 +26,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 import cs.man.ac.uk.tavernamobile.R;
 import cs.man.ac.uk.tavernamobile.datamodels.WorkflowBE;
+import cs.man.ac.uk.tavernamobile.server.WorkflowRunManager;
+import cs.man.ac.uk.tavernamobile.utils.CallbackTask;
 import cs.man.ac.uk.tavernamobile.utils.MessageHelper;
 import cs.man.ac.uk.tavernamobile.utils.SystemStatesChecker;
 
@@ -32,6 +35,7 @@ public class InputsList extends Activity{
 	
 	// for context access within this class
 	private InputsList currentActivity;
+	private WorkflowRunManager manager;
 
 	// data used to display
 	private ArrayList<Map<String, String>> listData = new ArrayList<Map<String, String>>();
@@ -56,6 +60,8 @@ public class InputsList extends Activity{
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.inputs);
+		
+		manager = new WorkflowRunManager(this);
 		
 		// UI components
 		ActionBar actionBar = getActionBar();
@@ -123,18 +129,76 @@ public class InputsList extends Activity{
 			}
 
 			private void startTheRun() {
-				// go to monitor and then start the run there
-				Intent goToMonitor = new Intent(currentActivity, RunMonitorScreen.class);
-				Bundle extras = new Bundle();
-				extras.putSerializable("workflowEntity", workflowEntity);
-				if(inputNames != null && inputNames.size() > 0){
-					extras.putSerializable("userInputs", userInputs);
-				}
-				extras.putInt("activity_starter", Activity_Starter_Code);
-				extras.putString("command", "RunWorkflow");
-				goToMonitor.putExtras(extras);
-				currentActivity.startActivity(goToMonitor);
-			}
+				MessageHelper.showOptionsDialog(currentActivity, 
+					"Do you want to monitor the run?", 
+					"Run Monitoring", 
+					// Positive button action
+					new CallbackTask(){
+						@Override
+						public Object onTaskInProgress(Object... param) {
+							// go to monitor and then start the run there
+							Intent goToMonitor = new Intent(currentActivity, RunMonitorScreen.class);
+							Bundle extras = new Bundle();
+							extras.putSerializable("workflowEntity", workflowEntity);
+							if(inputNames != null && inputNames.size() > 0){
+								extras.putSerializable("userInputs", userInputs);
+							}
+							extras.putInt("activity_starter", Activity_Starter_Code);
+							extras.putString("command", "RunWorkflow");
+							goToMonitor.putExtras(extras);
+							currentActivity.startActivity(goToMonitor);
+							return null;
+						}
+	
+						@Override
+						public Object onTaskComplete(Object... result) { return null; }
+					}, 
+					// Negative button action
+					new CallbackTask(){
+						@Override
+						public Object onTaskInProgress(Object... param) {
+							// if user don't want to monitor
+							// just start the run and the quit the activity
+							manager.StartWorkflowRun(
+								userInputs, 
+								workflowEntity, 
+								new CallbackTask(){
+									@Override
+									public Object onTaskInProgress(Object... param) {
+										return null;
+									}
+	
+									@Override
+									public Object onTaskComplete(Object... result) {
+										// in case there are any message returned 
+										// during the starting of workflow run
+										if(result[0] instanceof String){
+											String message = (String) result[0];
+											
+											MessageHelper.showMessageDialog(
+													currentActivity, (String) result[0]);
+											if(message.equals(
+													"The Run has been successfully started.")){
+												new Handler().postDelayed(
+													new Runnable() {
+														public void run() {
+															currentActivity.setResult(RESULT_OK, null);
+															currentActivity.finish();
+														}
+													}, 
+													2000);
+											}
+										}
+										return null;
+									}
+							});
+							return null;
+						}
+	
+						@Override
+						public Object onTaskComplete(Object... result) {return null;}
+					});
+			}// end of startTheRun
 		});
 
 		cancel.setOnClickListener(new android.view.View.OnClickListener() {

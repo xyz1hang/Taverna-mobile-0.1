@@ -480,20 +480,26 @@ public class RunHistoryHelper extends ContentProvider {
         	case RUN_TABLE:
         		long id1 = -1;
         		try{
-        			// execute the nested query first
-        			String wfIDselQuery = (String)values.get(DataProviderConstants.WF_ID);
+        			// the WF_ID in the WorkflowRuns table should only
+        			// coming from the LaunchHistory table execute the nested query first
+        			String wfIDselQuery = (String) values.get(DataProviderConstants.WF_ID);
         			Cursor wfIDCursor = db.rawQuery(wfIDselQuery, null);
         			// there should be only one row selected
         			int workflowID = 0;
         			if(wfIDCursor.moveToNext()){
         				workflowID = wfIDCursor.getInt(0);
         			}
-        			// insert the evaluated query value
-        			ContentValues finalValues = new ContentValues();
-        			finalValues.put(DataProviderConstants.WF_ID, workflowID);
-        			finalValues.put(DataProviderConstants.Run_Id, 
-        					(String) values.get(DataProviderConstants.Run_Id));
-        			id1 = db.insert(DataProviderConstants.WF_RUN_TABLE_NAME, null, finalValues);
+        			// if the query is actually nested and the subQuery
+        			// returned a workflow ID
+        			if(workflowID != 0){
+        				// insert the evaluated query value
+            			ContentValues finalValues = new ContentValues();
+            			finalValues.put(DataProviderConstants.WF_ID, workflowID);
+            			finalValues.put(DataProviderConstants.Run_Id, 
+            					(String) values.get(DataProviderConstants.Run_Id));
+            			values = finalValues;
+        			}
+        			id1 = db.insert(DataProviderConstants.WF_RUN_TABLE_NAME, null, values);
         		}catch(Exception e){
         			e.printStackTrace();
         		}

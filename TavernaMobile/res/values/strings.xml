@@ -86,8 +86,8 @@
     <!-- Monitor Screen -->
     <string name="MonitorScreen_Username">User : </string>
     <string name="MonitorScreen_CurrentState">Current State : </string>
-    <string name="MonitorScreen_StartTime">Stared at : </string>
-    <string name="MonitorScreen_EndTime">Finished at : </string>
+    <string name="MonitorScreen_StartTime">Started at :</string>
+    <string name="MonitorScreen_EndTime">Finished at :</string>
     <string name="MonitorScreen_RunningTime">Running Time : </string>
     <string name="MonitorScreen_DefaultMessage">Reading data&#8230;</string>
 

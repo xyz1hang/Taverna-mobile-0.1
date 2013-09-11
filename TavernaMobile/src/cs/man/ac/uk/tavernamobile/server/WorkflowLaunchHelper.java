@@ -356,9 +356,16 @@ public class WorkflowLaunchHelper {
 					runID = pair.getKey();
 					inputPorts = pair.getValue();
 				}*/
-
+				
 				Map<String, InputPort> inputPorts = (Map<String, InputPort>)result[0];
-				prepareInputs(inputPorts, workflowEntity);
+				if(inputPorts == null){
+					return null;
+				}
+				// Navigate to input screen
+				Intent goToInputList = new Intent(currentActivity, InputsList.class);
+				Bundle extras = prepareInputs(inputPorts, workflowEntity);
+				goToInputList.putExtras(extras);
+				currentActivity.startActivity(goToInputList);
 			}
 			return null;
 		}
@@ -391,21 +398,17 @@ public class WorkflowLaunchHelper {
 				selection, selectionArgs);
 	}
 
-	public void prepareInputs(Map<String, InputPort> inputPorts, WorkflowBE workflowEntity) {
+	public Bundle prepareInputs(Map<String, InputPort> inputPorts, WorkflowBE workflowEntity) {
 		// Navigate to input screen
-		Intent goToInputList = new Intent(currentActivity, InputsList.class);
 		Bundle extras = new Bundle();
-
 		if (inputPorts != null && !inputPorts.isEmpty()) {
 			ArrayList<String> inputNames = extractInputName(inputPorts);
 			extras.putStringArrayList("input_names", inputNames);
 		}
-
 		extras.putSerializable("workflowEntity", workflowEntity);
 		extras.putInt("activity_starter", Activity_Starter_Code);
-		goToInputList.putExtras(extras);
 
-		currentActivity.startActivity(goToInputList);
+		return extras;
 	}
 
 	private ArrayList<String> extractInputName(Map<String, InputPort> inputPorts) {

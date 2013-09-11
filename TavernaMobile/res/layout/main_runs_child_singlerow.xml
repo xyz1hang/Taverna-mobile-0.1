@@ -1,56 +1,99 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
-    android:layout_margin="10dp"
-    android:background="@drawable/list_selector"
     android:baselineAligned="false"
     android:orientation="horizontal" >
 
-    <LinearLayout
-        android:layout_width="0dp"
+    <RelativeLayout
+        android:id="@+id/runsDetailsLayout"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_margin="10dp"
-        android:layout_weight="2"
-        android:gravity="center"
+        android:background="@drawable/list_selector"
+        android:baselineAligned="false"
         android:orientation="vertical" >
 
-        <TextView
-            android:id="@+id/runsTitleVersion"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="left|center_vertical"
-            android:layout_marginBottom="10dp"
-            android:text="Workflow Title"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textColor="@color/Black" />
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center"
+            android:layout_margin="10dp"
+            android:layout_weight="2"
+            android:gravity="center"
+            android:orientation="vertical" >
 
-        <TextView
-            android:id="@+id/runsUploader"
+            <TextView
+                android:id="@+id/runsTitleVersion"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left|center_vertical"
+                android:layout_marginBottom="10dp"
+                android:text="Workflow Title"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="@color/Black" />
+
+            <TextView
+                android:id="@+id/runsUploader"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left|center_vertical"
+                android:gravity="center_vertical"
+                android:text="Uploader"
+                android:textColor="@color/Black"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/runsStartTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left|center_vertical"
+                android:layout_marginTop="5dp"
+                android:gravity="center_vertical"
+                android:text="Started at:"
+                android:textColor="@color/Black"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/runsEndTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left|center_vertical"
+                android:layout_marginTop="5dp"
+                android:gravity="center_vertical"
+                android:text="Ended at:"
+                android:textColor="@color/Black"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="left|center_vertical"
-            android:gravity="center_vertical"
-            android:text="Uploader"
-            android:textColor="@color/Black"
-            android:textSize="10dp" />
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center_vertical"
+            android:layout_margin="5dp"
+            android:layout_weight="1"
+            android:orientation="vertical" >
 
-    </LinearLayout>
+            <CheckBox
+                android:id="@+id/runList_run_checkbox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+    </RelativeLayout>
 
-    <LinearLayout
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:layout_margin="5dp"
-        android:layout_weight="1"
-        android:orientation="vertical" >
-        
-        <CheckBox
-            android:id="@+id/runList_run_checkbox"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-    </LinearLayout>
+    <View
+        style="@style/Divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@+id/runsDetailsLayout"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center"
+        android:visibility="gone" />
 
-</LinearLayout>
+</RelativeLayout>

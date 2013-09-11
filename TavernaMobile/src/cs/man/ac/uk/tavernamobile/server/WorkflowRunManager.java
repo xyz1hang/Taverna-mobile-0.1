@@ -636,16 +636,21 @@ public class WorkflowRunManager
 							oos.writeObject(inputs);
 							oos.close();
 						} catch (FileNotFoundException e) {
+							// if there were any error saving the input
+							// swallow... the run starting process
+							// shouldn't be interrupted
 							e.printStackTrace();
 						} catch (NetworkConnectionException e) {
 							try {
 								stream.close();
 							} catch (IOException e1) {
-								// swallow
+								// Irrelevant message. swallow
 								e1.printStackTrace();
 							}
+							// report network connection problem
 							return e.getMessage();
 						} catch(IOException e){
+							// Irrelevant message. swallow
 							e.printStackTrace();	
 						}
 					}// end of iterating over inputs
@@ -672,7 +677,7 @@ public class WorkflowRunManager
 				// TODO: "log" has to be removed in release version
 				Log.e("WorkflowRunError2", "Workflow Run needed.");
 			}
-			return null;
+			return "The Run has been successfully started.";
 		}
 
 		public Object onTaskComplete(Object... result) {
@@ -721,7 +726,9 @@ public class WorkflowRunManager
 
 		public Object onTaskComplete(Object... result) {
 			// inform monitor to update statues
-			runListener.onTaskInProgress();
+			if(runListener != null){
+				runListener.onTaskInProgress();
+			}
 
 			// pull state again
 			if(!runStatue.equals("Finished")){

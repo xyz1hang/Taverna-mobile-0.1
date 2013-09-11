@@ -10,6 +10,7 @@ import java.util.List;
 import android.app.ActionBar;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
@@ -227,7 +228,15 @@ public class InputsHistoryActivity extends FragmentActivity {
 											result[0] instanceof String){
 										MessageHelper.showMessageDialog(
 												currentActivity, (String) result[0]);
-										finish();
+										// delay 3 second before quite the activity
+										new Handler().postDelayed(
+												new Runnable() {
+													public void run() {
+														currentActivity.setResult(RESULT_OK, null);
+														currentActivity.finish();
+													}
+												}, 
+												3000);
 									}
 									return null;
 								}
