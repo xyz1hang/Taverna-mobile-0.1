@@ -54,6 +54,8 @@ public class RunsFragment extends Fragment {
 		{ "Initialised", "Running", "Finished", "Stopped", "Deleted" };
 	// <State, Map<RunID, Workflow_entity>>
 	private HashMap<String, HashMap<String, WorkflowBE>> childElements;
+	// collection that help with set up checkbox states
+	private HashMap<String, ArrayList<Boolean>> checkboxesStates;
 	
 	private SystemStatesChecker systemStateChecker;
 	private WorkflowRunManager runManager;
@@ -85,6 +87,7 @@ public class RunsFragment extends Fragment {
 		// Initialize the collection and adapters
 		childElements = new HashMap<String, HashMap<String, WorkflowBE>>();
 		selectedRunIds = new  ArrayList<String>();
+		checkboxesStates = new HashMap<String, ArrayList<Boolean>>();
 		//childListAdapters = new ArrayList<ChildListAdapter>();
 	}
 
@@ -113,7 +116,7 @@ public class RunsFragment extends Fragment {
 		    }
 		});
 		
-		mainListAdapter = new RunsListAdapter(parentActivity);
+		mainListAdapter = new RunsListAdapter(parentActivity, childElements);
 		refreshableList.setExpandableAdapter(mainListAdapter);
 		for(int i = 0; i < mainListAdapter.getGroupCount(); i++){
 			refreshableList.expandGroup(i);
@@ -198,7 +201,7 @@ public class RunsFragment extends Fragment {
 			// if message return get returned
 			if (result[0] instanceof String) {
 				String message = (String) result[0];
-				MessageHelper.showMessageDialog(parentActivity, message);
+				MessageHelper.showMessageDialog(parentActivity, null, message, null);
 				// refresh list
 				mainListAdapter.notifyDataSetChanged();
 				// Mark the current Refresh as complete.
@@ -316,7 +319,9 @@ public class RunsFragment extends Fragment {
 			}*/
 
 			// refresh data
-			mainListAdapter.notifyDataSetChanged();
+			//mainListAdapter.notifyDataSetChanged();
+			mainListAdapter = new RunsListAdapter(parentActivity, childElements);
+			refreshableList.setExpandableAdapter(mainListAdapter);
 			// Mark the current Refresh as complete.
 			refreshableList.onRefreshComplete();
 			
@@ -329,15 +334,22 @@ public class RunsFragment extends Fragment {
 			
 			// try to get the child list at specific group (index)
 			HashMap<String, WorkflowBE> iniMap = null;
+			ArrayList<Boolean> singleGroupCheckState = null;
 			if(childElements.size() < 1){
 				iniMap = new HashMap<String, WorkflowBE>();
+				singleGroupCheckState = new ArrayList<Boolean>();
 			}
 			else{
 				iniMap = childElements.get(state);
+				singleGroupCheckState = checkboxesStates.get(state);
 				// if there isn't such list (first time)
 				// create a new one
 				if(iniMap == null){
 					iniMap = new HashMap<String, WorkflowBE>();
+				}
+				
+				if(singleGroupCheckState == null){
+					singleGroupCheckState = new ArrayList<Boolean>();
 				}
 			}
 
@@ -345,21 +357,26 @@ public class RunsFragment extends Fragment {
 			// child elements mapping
 			iniMap.put(runId, wfBE);
 			childElements.put(state, iniMap);
+			
+			singleGroupCheckState.add(false);
+			checkboxesStates.put(state, singleGroupCheckState);
 		}
 	}
 	
 	// Adapter of the ExpandableListView (Root layout of the Run fragment)
 	private class RunsListAdapter extends BaseExpandableListAdapter {
 		private Context myContext;
+		private HashMap<String, HashMap<String, WorkflowBE>> listData;
 
-		public RunsListAdapter(Context context) {
+		public RunsListAdapter(Context context, HashMap<String, HashMap<String, WorkflowBE>> data) {
 			myContext = context;
+			listData = data;
 		}
 
 		@Override
 		public Object getChild(int groupPosition, int childPosition) {
-			Object child = childElements.size() <= groupPosition ?
-					null : childElements.get(groupPosition).get(childPosition);
+			Object child = listData.size() <= groupPosition ?
+					null : listData.get(runGroups[groupPosition]).get(childPosition);
 			return child;
 		}
 
@@ -371,10 +388,10 @@ public class RunsFragment extends Fragment {
 		
 		@Override
 		public int getChildrenCount(int groupPosition) {
-			int size = childElements.get(runGroups[groupPosition]) == null? 
-							0: childElements.get(runGroups[groupPosition]).size();
+			int size = listData.get(runGroups[groupPosition]) == null? 
+							0: listData.get(runGroups[groupPosition]).size();
 			return size;
-			/*int size = childElements.get(runGroups[groupPosition]) == null ? 0 : 1;
+			/*int size = listData.get(runGroups[groupPosition]) == null ? 0 : 1;
 			return size;*/
 		}
 
@@ -391,7 +408,7 @@ public class RunsFragment extends Fragment {
 			}
 			
 			// get data 
-			HashMap<String, WorkflowBE> children = childElements.get(runGroups[groupPosition]);
+			HashMap<String, WorkflowBE> children = listData.get(runGroups[groupPosition]);
 			// (run ids)
 			final String[] mKeys = children.keySet().toArray(new String[children.size()]);
 			// workflow entity
@@ -400,10 +417,11 @@ public class RunsFragment extends Fragment {
 			// UI elements
 			TextView wfTitleVersion = (TextView) convertView.findViewById(R.id.runsTitleVersion);
 			TextView wfuploaderName = (TextView) convertView.findViewById(R.id.runsUploader);
-			CheckBox runCheckbox = (CheckBox)convertView.findViewById(R.id.runList_run_checkbox);
+			final CheckBox runCheckbox = (CheckBox) convertView.findViewById(R.id.runList_run_checkbox);
 			// data setup
 			wfTitleVersion.setText(workflowEntity.getTitle()+" (v"+workflowEntity.getVersion()+")");
 			wfuploaderName.setText(workflowEntity.getUploaderName());
+			runCheckbox.setChecked(checkboxesStates.get(runGroups[groupPosition]).get(childPosition));
 			runCheckbox.setOnCheckedChangeListener(new OnCheckedChangeListener(){
 				@Override
 				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -415,9 +433,19 @@ public class RunsFragment extends Fragment {
 						// set the selected run group
 						// in order to load different action mode menu
 						selectedGroup = groupPosition;
+						// save the check state in to the state collection
+						ArrayList<Boolean> childStates = checkboxesStates.get(runGroups[groupPosition]);
+						childStates.set(childPosition, true);
+						checkboxesStates.put(runGroups[groupPosition], childStates);
+						
 						String runid = (String) mKeys[childPosition];
 						selectedRunIds.add(runid);
 					} else{
+						// remove the check state in to the state collection
+						ArrayList<Boolean> childStates = checkboxesStates.get(runGroups[groupPosition]);
+						childStates.set(childPosition, false);
+						checkboxesStates.put(runGroups[groupPosition], childStates);
+						
 						String runid = (String) mKeys[childPosition];
 						selectedRunIds.remove(runid);
 					}
@@ -521,7 +549,23 @@ public class RunsFragment extends Fragment {
 										return null; 
 									}
 				    		  
-				    			  }, null);
+				    			  }, 
+				    			  new CallbackTask(){
+									@Override
+									public Object onTaskInProgress(Object... param) {
+										ArrayList<Boolean> childStates = checkboxesStates.get(runGroups[groupPosition]);
+										for(int i=0; i < childStates.size(); i++){
+											childStates.set(i, false);
+										}
+										checkboxesStates.put(runGroups[groupPosition], childStates);
+										mainListAdapter.notifyDataSetChanged();
+										mode.finish();
+										return null;
+									}
+
+									@Override
+									public Object onTaskComplete(Object... result) { return null; }
+				    			  });
 				    	  // mode.finish();
 				    	  return true;
 				      case R.id.runList_run_start:
@@ -669,8 +713,8 @@ public class RunsFragment extends Fragment {
 
 		@Override
 		public Object getGroup(int groupPosition) {
-			Object group = childElements.size() <= groupPosition ?
-					null : childElements.get(groupPosition);
+			Object group = listData.size() <= groupPosition ?
+					null : listData.get(groupPosition);
 			return group;
 		}
 

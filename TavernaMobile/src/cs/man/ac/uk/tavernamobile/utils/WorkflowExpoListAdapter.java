@@ -142,7 +142,7 @@ public class WorkflowExpoListAdapter extends BaseAdapter {
 					}
 				} else {
 					String message = "You don't have the privilege to download this workflow.";
-					MessageHelper.showMessageDialog(mContext, message);
+					MessageHelper.showMessageDialog(mContext, null, message, null);
 				}
 			}
 		});

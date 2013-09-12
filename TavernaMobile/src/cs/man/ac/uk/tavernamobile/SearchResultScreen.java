@@ -275,7 +275,7 @@ public class SearchResultScreen extends Activity implements CallbackTask {
 		searchQuery = query.getText().toString();
 		if (searchQuery.isEmpty()){
 			MessageHelper.showMessageDialog(currentActivity, 
-					"Oops! You haven't told me what you would like to search !");
+					"Alert", "Oops! You haven't told me what you would like to search !", null);
 		}
 		else{
 			loadingProBar.setVisibility(0);
@@ -326,7 +326,7 @@ public class SearchResultScreen extends Activity implements CallbackTask {
 		if(result[0] instanceof String){
 			String exception = (String) result[0];
 			if(exception != null){
-				MessageHelper.showMessageDialog(currentActivity, exception);
+				MessageHelper.showMessageDialog(currentActivity, null, exception, null);
 			}
 		}
 		else{
@@ -358,7 +358,7 @@ public class SearchResultScreen extends Activity implements CallbackTask {
 		public Object onTaskComplete(Object... result) {
 			if(result[0] instanceof String){
 				// exception message
-				MessageHelper.showMessageDialog(currentActivity, (String)result[0]);
+				MessageHelper.showMessageDialog(currentActivity, null, (String)result[0], null);
 				loadingProBar.setVisibility(8);
 				return null;
 			}
@@ -383,7 +383,7 @@ public class SearchResultScreen extends Activity implements CallbackTask {
 				onScrollTaskHandler.disableTask = true;
 				MessageHelper.showMessageDialog(
 						currentActivity, 
-						"No more matching workflow found");
+						null, "No more matching workflow found", null);
 			}
 
 			// tell the loader that we are not in a search
@@ -413,7 +413,7 @@ public class SearchResultScreen extends Activity implements CallbackTask {
 		public Object onTaskComplete(Object... result) {
 			if(result[0] instanceof String){
 				// exception message
-				MessageHelper.showMessageDialog(currentActivity, (String)result[0]);
+				MessageHelper.showMessageDialog(currentActivity, null, (String)result[0], null);
 				return null;
 			}
 			
@@ -433,7 +433,7 @@ public class SearchResultScreen extends Activity implements CallbackTask {
 				onScrollTaskHandler.disableTask = true;
 				MessageHelper.showMessageDialog(
 						currentActivity, 
-						"No more matching workflow found");
+						null, "No more matching workflow found", null);
 			}
 
 			onScrollTaskHandler.taskInProgress = false;

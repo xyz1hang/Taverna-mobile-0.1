@@ -120,7 +120,7 @@ public class InputsList extends Activity{
 					String unSetInputName = inputCheck(userInputs);
 					if (unSetInputName != null){
 						MessageHelper.showMessageDialog(currentActivity, 
-								"Please set input for \"" + unSetInputName+ "\"");
+								null, "Please set input for \"" + unSetInputName+ "\"", null);
 						return;
 					}
 				}
@@ -172,22 +172,23 @@ public class InputsList extends Activity{
 									public Object onTaskComplete(Object... result) {
 										// in case there are any message returned 
 										// during the starting of workflow run
-										if(result[0] instanceof String){
-											String message = (String) result[0];
+										if(result!= null && result[0] instanceof String){
+											final String message = (String) result[0];
 											
 											MessageHelper.showMessageDialog(
-													currentActivity, (String) result[0]);
-											if(message.equals(
-													"The Run has been successfully started.")){
-												new Handler().postDelayed(
-													new Runnable() {
-														public void run() {
-															currentActivity.setResult(RESULT_OK, null);
+												currentActivity, null, 
+												(String) result[0], new CallbackTask(){
+													@Override
+													public Object onTaskInProgress(Object... param) {
+														if(message.equals("The Run has been successfully started.")){
 															currentActivity.finish();
 														}
-													}, 
-													2000);
-											}
+														return null;
+													}
+
+													@Override
+													public Object onTaskComplete(Object... result) { return null; }
+												});
 										}
 										return null;
 									}

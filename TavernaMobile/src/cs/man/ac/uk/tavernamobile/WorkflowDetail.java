@@ -132,8 +132,8 @@ public class WorkflowDetail extends FragmentActivity implements CallbackTask {
 				// rather than crash the application
 				MessageHelper.showMessageDialog(
 						currentActivity,
-						"No workflow data found,"
-						+ "please try again.\n(The message will be dismissed in 4 seconds)");
+						null, "No workflow data found,"
+						+ "please try again.\n(The message will be dismissed in 4 seconds)", null);
 				
 				new Handler().postDelayed(
 					new Runnable() {
@@ -286,7 +286,7 @@ public class WorkflowDetail extends FragmentActivity implements CallbackTask {
 		if (result[0] instanceof String) {
 			String exception = (String) result[0];
 			if (exception != null) {
-				MessageHelper.showMessageDialog(currentActivity, exception);
+				MessageHelper.showMessageDialog(currentActivity, null, exception, null);
 			}
 		} else {
 			// Scale it to 125 x 125

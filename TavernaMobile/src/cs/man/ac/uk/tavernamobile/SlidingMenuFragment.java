@@ -138,9 +138,9 @@ public class SlidingMenuFragment extends Fragment {
 			Bitmap avatarBitmap = 
 			 	TavernaAndroid.getmMemoryCache().get(userLoggedin.getAvatar().getResource());
 			if(avatarBitmap != null){
-				// TODO : scaled to 50 x 50
+				// TODO : scaled to 70 x 70
 				Drawable avatarDrawable = new BitmapDrawable(getResources(),
-						Bitmap.createScaledBitmap(avatarBitmap, 50, 50, false));
+						Bitmap.createScaledBitmap(avatarBitmap, 70, 70, false));
 				/*Rect outRect = new Rect();
 				myExperimentLoginText.getDrawingRect(outRect);
 				// resize the Rect

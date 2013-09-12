@@ -242,7 +242,7 @@ public class ExploreFragment extends Fragment implements CallbackTask {
 		// if there was an (error) message
 		if (result[0] instanceof String) {
 			String message = (String) result[0];
-			MessageHelper.showMessageDialog(parentActivity, message);
+			MessageHelper.showMessageDialog(parentActivity, null, message, null);
 		} else {
 			ArrayList<Workflow> workflowResults = (ArrayList<Workflow>) result[0];
 
@@ -257,7 +257,7 @@ public class ExploreFragment extends Fragment implements CallbackTask {
 					dialogMessage = "No workflow found for " + "\""
 							+ searchQuery + "\"";
 				}
-				MessageHelper.showMessageDialog(parentActivity, dialogMessage);
+				MessageHelper.showMessageDialog(parentActivity, null, dialogMessage, null);
 			} else {
 				Intent intent = new Intent(parentActivity, SearchResultScreen.class);
 				Bundle extras = new Bundle();
@@ -280,7 +280,7 @@ public class ExploreFragment extends Fragment implements CallbackTask {
 		@Override
 		public Object onTaskComplete(Object... result) {
 			if(result[0] instanceof String){
-				MessageHelper.showMessageDialog(parentActivity, (String)result[0]);
+				MessageHelper.showMessageDialog(parentActivity, null, (String)result[0], null);
 				return null;
 			}
 			
@@ -349,7 +349,7 @@ public class ExploreFragment extends Fragment implements CallbackTask {
 				onScrollTaskHandler.disableTask = true;
 				MessageHelper.showMessageDialog(
 						parentActivity,
-						"No more matching workflow found");
+						null, "No more matching workflow found", null);
 			}
 			return null;
 		}

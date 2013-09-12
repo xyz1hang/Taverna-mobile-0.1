@@ -11,10 +11,8 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_margin="10dp"
-        android:gravity="center"
         android:text="Medium Text"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textColor="@color/White" />
+        android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <Button
         android:id="@+id/neutraldialog_dismiss_button"
@@ -22,8 +20,12 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/neutraldialog_message"
         android:layout_centerHorizontal="true"
-        android:background="@drawable/list_selector"
+        android:layout_margin="10dp"
+        android:background="@drawable/dialog_bottom_selector"
         android:gravity="center"
+        android:minHeight="45dp"
+        android:paddingLeft="35dp"
+        android:paddingRight="35dp"
         android:text="@string/netrual_dialog_button_text" />
 
 </RelativeLayout>

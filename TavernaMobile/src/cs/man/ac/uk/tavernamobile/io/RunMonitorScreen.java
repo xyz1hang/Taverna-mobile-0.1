@@ -127,7 +127,7 @@ public class RunMonitorScreen extends Activity implements CallbackTask {
 						@Override
 						public Object onTaskComplete(Object... result) {
 							if(result[0] instanceof String){
-								MessageHelper.showMessageDialog(currentActivity, (String)result[0]);
+								MessageHelper.showMessageDialog(currentActivity, null, (String)result[0], null);
 								return null;
 							}
 							// TODO : prepare output tree view
@@ -158,7 +158,7 @@ public class RunMonitorScreen extends Activity implements CallbackTask {
 
 	public Object onTaskComplete(Object... result) {
 		if(result.length > 0 && result[0] instanceof String){
-			MessageHelper.showMessageDialog(currentActivity, (String)result[0]);
+			MessageHelper.showMessageDialog(currentActivity, null, (String)result[0], null);
 			return null;
 		}
 		running = false;

@@ -418,7 +418,7 @@ public class RunHistoryHelper extends ContentProvider {
             // via ContentProvider
             case JOIN_TABLE:
             	/** debug **/
-            	Cursor everythingInWFTable = db.rawQuery("SELECT * FROM "+DataProviderConstants.WF_TABLE_NAME, null);
+            	/*Cursor everythingInWFTable = db.rawQuery("SELECT * FROM "+DataProviderConstants.WF_TABLE_NAME, null);
             	while(everythingInWFTable.moveToNext()){
             		String row = 
             				everythingInWFTable.getString(0) + " " +
@@ -439,7 +439,7 @@ public class RunHistoryHelper extends ContentProvider {
             				everythingInRUNTable.getString(1) + " " +
             				everythingInRUNTable.getString(2) + " ";
             		System.out.println(row);
-            	}
+            	}*/
             	/** end of debug **/
             	// the "selection" parameter should be the composed
             	// query part in this case

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="center" >
 
@@ -9,37 +9,42 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
         android:layout_margin="10dp"
         android:text="Medium Text"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textColor="@color/White" />
+        android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <LinearLayout
-        style="?android:attr/buttonBarStyle"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/twooptionsdialog_message"
         android:layout_centerHorizontal="true"
+        android:layout_margin="10dp"
         android:gravity="center" >
 
         <Button
             android:id="@+id/twooptionsdialog_option1_button"
             style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginRight="10dp"
-            android:background="@drawable/list_selector"
-            android:padding="10dp"
-            android:text="@string/dialog_button_option1_default_text" />
+            android:layout_weight="1"
+            android:background="@drawable/dialog_bottom_selector"
+            android:minHeight="45dp"
+            android:paddingLeft="35dp"
+            android:paddingRight="35dp"
+            android:text="@string/dialog_button_option1_default_text"/>
 
         <Button
             android:id="@+id/twooptionsdialog_option2_button"
             style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:background="@drawable/list_selector"
-            android:padding="10dp"
+            android:layout_weight="1"
+            android:background="@drawable/dialog_bottom_selector"
+            android:minHeight="45dp"
+            android:paddingLeft="35dp"
+            android:paddingRight="35dp"
             android:text="@string/dialog_button_option2_default_text" />
 
     </LinearLayout>

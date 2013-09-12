@@ -77,10 +77,10 @@ public class LoginScreenActivity extends Activity implements CallbackTask {
 				String passwordvalue = password.getText().toString().trim();
 
 				if(usernamevalue == null || usernamevalue.equals("")){
-					MessageHelper.showMessageDialog(currentActivity, "Please type in username");
+					MessageHelper.showMessageDialog(currentActivity, null, "Please type in username", null);
 				}
 				else if(passwordvalue == null || passwordvalue.equals("")){
-					MessageHelper.showMessageDialog(currentActivity, "Please type in password");
+					MessageHelper.showMessageDialog(currentActivity, null, "Please type in password", null);
 				}
 				else{
 					try {
@@ -88,7 +88,7 @@ public class LoginScreenActivity extends Activity implements CallbackTask {
 						server = new Server(serverURI);
 						defaultUser = new HttpBasicCredentials(usernamevalue, passwordvalue);
 					} catch (Exception e) {
-						MessageHelper.showMessageDialog(currentActivity, e.getMessage());
+						MessageHelper.showMessageDialog(currentActivity, null, e.getMessage(), null);
 					}
 
 					BackgroundTaskHandler handler = new BackgroundTaskHandler();
@@ -132,7 +132,7 @@ public class LoginScreenActivity extends Activity implements CallbackTask {
 				try {
 					run.delete();
 				} catch (NetworkConnectionException e) {
-					MessageHelper.showMessageDialog(this, e.getMessage());
+					MessageHelper.showMessageDialog(this, null, e.getMessage(), null);
 				}
 			}
 		}
@@ -143,7 +143,7 @@ public class LoginScreenActivity extends Activity implements CallbackTask {
 	public Object onTaskComplete(Object... result) {
 		String exceptionMessage = (String) result[0];
 		if (exceptionMessage != null){
-			MessageHelper.showMessageDialog(currentActivity, exceptionMessage);
+			MessageHelper.showMessageDialog(currentActivity, null, exceptionMessage, null);
 		}
 		else{
 			ta.setServer(server);

@@ -100,11 +100,9 @@ public class MyExperimentLogin extends Activity implements CallbackTask {
 				String passwordvalue = password.getText().toString().trim();
 
 				if (usernamevalue == null || usernamevalue.equals("")) {
-					MessageHelper.showMessageDialog(currentActivity,
-							"Please type in username");
+					MessageHelper.showMessageDialog(currentActivity, null, "Please type in username", null);
 				} else if (passwordvalue == null || passwordvalue.equals("")) {
-					MessageHelper.showMessageDialog(currentActivity,
-							"Please type in password");
+					MessageHelper.showMessageDialog(currentActivity, null, "Please type in password", null);
 				} else {
 					BackgroundTaskHandler handler = new BackgroundTaskHandler();
 					handler.StartBackgroundTask(currentActivity,
@@ -151,8 +149,7 @@ public class MyExperimentLogin extends Activity implements CallbackTask {
 				// when needed rather than over network request
 				String avatarURI = currentUser.getAvatar().getResource();
 				Bitmap avatar = new ImageRetriever().retrieveAvatarImage(avatarURI);
-				LruCache<String, Bitmap> imageCache = TavernaAndroid
-						.getmMemoryCache();
+				LruCache<String, Bitmap> imageCache = TavernaAndroid.getmMemoryCache();
 				imageCache.put(avatarURI, avatar);
 				TavernaAndroid.setmMemoryCache(imageCache);
 
@@ -192,7 +189,7 @@ public class MyExperimentLogin extends Activity implements CallbackTask {
 	public Object onTaskComplete(Object... result) {
 		String responseMessage = (String) result[0];
 		if (responseMessage != null) {
-			MessageHelper.showMessageDialog(this, responseMessage);
+			MessageHelper.showMessageDialog(this, null, responseMessage, null);
 		} else {
 			/*menu.setSlidingEnabled(true);
 			FragmentTransaction ft =

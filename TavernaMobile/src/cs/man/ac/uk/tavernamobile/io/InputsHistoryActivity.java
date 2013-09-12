@@ -227,16 +227,17 @@ public class InputsHistoryActivity extends FragmentActivity {
 									if(result != null && result.length > 0 && 
 											result[0] instanceof String){
 										MessageHelper.showMessageDialog(
-												currentActivity, (String) result[0]);
-										// delay 3 second before quite the activity
-										new Handler().postDelayed(
-												new Runnable() {
-													public void run() {
-														currentActivity.setResult(RESULT_OK, null);
+												currentActivity, null, (String) result[0], new CallbackTask(){
+
+													@Override
+													public Object onTaskInProgress(Object... param) {
 														currentActivity.finish();
+														return null;
 													}
-												}, 
-												3000);
+
+													@Override
+													public Object onTaskComplete(Object... result) { return null; }
+												});
 									}
 									return null;
 								}

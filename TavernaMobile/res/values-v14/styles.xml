@@ -1,5 +1,21 @@
 <resources>
 
     <style name="AppTheme" parent="android:Theme.Holo.Light.DarkActionBar" />
+    <style name="DefaultDialogTheme" parent="@android:style/Theme.Dialog">
+        <item name="android:alertDialogStyle">@style/dialog</item>
+    </style>
+    
+    <style name="dialog">
+        <item name="android:topDark">@drawable/dialog_title</item>
+        <item name="android:topBright">@null</item>
+        <item name="android:fullDark">@drawable/dialog_body</item>
+        <item name="android:fullBright">@null</item>
+        <item name="android:centerDark">@drawable/dialog_body</item>
+        <item name="android:centerMedium">@null</item>
+        <item name="android:centerBright">@null</item>
+        <item name="android:bottomDark">@drawable/dialog_footer</item>
+        <item name="android:bottomMedium">@null</item>
+        <item name="android:bottomBright">@null</item>
+    </style>
 
 </resources>

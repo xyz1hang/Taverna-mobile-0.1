@@ -1,15 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/runsDetailsRootLayout"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
     android:baselineAligned="false"
-    android:orientation="horizontal" >
+    android:orientation="vertical" >
 
+    <!-- the extra RelativeLayout is for set padding for each child
+         better solution needed -->
     <RelativeLayout
         android:id="@+id/runsDetailsLayout"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
         android:layout_gravity="center"
         android:layout_margin="10dp"
         android:background="@drawable/list_selector"
@@ -23,7 +27,6 @@
             android:layout_centerVertical="true"
             android:layout_gravity="center"
             android:layout_margin="10dp"
-            android:layout_weight="2"
             android:gravity="center"
             android:orientation="vertical" >
 
@@ -77,7 +80,6 @@
             android:layout_centerVertical="true"
             android:layout_gravity="center_vertical"
             android:layout_margin="5dp"
-            android:layout_weight="1"
             android:orientation="vertical" >
 
             <CheckBox
@@ -86,14 +88,5 @@
                 android:layout_height="wrap_content" />
         </LinearLayout>
     </RelativeLayout>
-
-    <View
-        style="@style/Divider"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_below="@+id/runsDetailsLayout"
-        android:layout_centerHorizontal="true"
-        android:layout_gravity="center"
-        android:visibility="gone" />
 
 </RelativeLayout>

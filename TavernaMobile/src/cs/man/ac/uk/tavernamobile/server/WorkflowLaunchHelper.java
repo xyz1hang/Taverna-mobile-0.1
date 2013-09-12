@@ -189,7 +189,7 @@ public class WorkflowLaunchHelper {
 					} else {
 						String message = "The workflow document is not a \"t2flow\" file,\n"
 								+ "which is currently not supported";
-						MessageHelper.showMessageDialog(currentActivity, message);
+						MessageHelper.showMessageDialog(currentActivity, null, message, null);
 					}
 				}
 
@@ -212,7 +212,7 @@ public class WorkflowLaunchHelper {
 				downloadWorkflowFile(currentActivity, downloadURL);
 			} else {
 				String message = "You don't have the privilege to download this workflow.";
-				MessageHelper.showMessageDialog(currentActivity,message);
+				MessageHelper.showMessageDialog(currentActivity, null, message, null);
 			}
 		}
 	}
@@ -339,8 +339,7 @@ public class WorkflowLaunchHelper {
 			if (result[0] instanceof String) {
 				String exceptionMessage = (String) result[0];
 				if (exceptionMessage != null) {
-					MessageHelper.showMessageDialog(currentActivity,
-							exceptionMessage);
+					MessageHelper.showMessageDialog(currentActivity, null, exceptionMessage, null);
 				}
 			} else {
 				/*HashMap<String, Map<String, InputPort>> idAndInputPorts =
