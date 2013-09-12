@@ -11,83 +11,94 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginBottom="30dp"
         android:drawablePadding="10dp"
         android:drawableRight="@drawable/myexperiment_logo"
+        android:gravity="center"
         android:text="@string/myExperiment_login_title"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textColor="@color/AliceBlue"
-        android:textStyle="bold" />
+        android:textStyle="bold|italic" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <EditText
+        android:id="@+id/myeloginUsernameValue"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dp"
-        android:layout_marginLeft="30dp"
-        android:layout_marginRight="30dp"
-        android:layout_marginTop="30dp" >
+        android:ems="10"
+        android:hint="@string/LoginUserNameText"
+        android:imeOptions="actionNext"
+        android:inputType="text"
+        android:nextFocusDown="@+id/myeloginPasswordValue"
+        android:singleLine="true"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColorHint="@color/Gray"
+        android:textStyle="italic" />
+
+    <EditText
+        android:id="@+id/myeloginPasswordValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:ems="10"
+        android:hint="@string/LoginPassWordText"
+        android:imeOptions="actionNext"
+        android:inputType="textVisiblePassword"
+        android:nextFocusDown="@+id/myeloginButton"
+        android:singleLine="true"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColorHint="@color/Gray"
+        android:textStyle="italic" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="10dp" >
 
         <TextView
-            android:id="@+id/myeloginUsername"
-            android:layout_width="0dp"
+            android:id="@+id/saveLoginText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:layout_marginLeft="5dp"
+            android:text="Remember my :" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_weight="1"
             android:gravity="center"
-            android:text="@string/LoginUserNameText"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textColor="@color/AliceBlue"
-            android:textStyle="bold" />
+            android:orientation="horizontal" >
 
-        <EditText
-            android:id="@+id/myeloginUsernameValue"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="2"
-            android:ems="10"
-            android:imeOptions="actionNext"
-            android:inputType="text"
-            android:nextFocusDown="@+id/myeloginPasswordValue"
-            android:singleLine="true" />
+            <CheckBox
+                android:id="@+id/saveUsernameCheckbox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:enabled="true"
+                android:text="username"
+                android:textAppearance="?android:attr/textAppearanceSmall" />
+
+            <CheckBox
+                android:id="@+id/savePasswordsCheckbox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:enabled="false"
+                android:text="password"
+                android:textAppearance="?android:attr/textAppearanceSmall" />
+
+        </LinearLayout>
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="30dp"
-        android:layout_marginLeft="30dp"
-        android:layout_marginRight="30dp"
-        android:layout_marginTop="10dp" >
-
-        <TextView
-            android:id="@+id/myeloginPassword"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="@string/LoginPassWordText"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textColor="@color/AliceBlue"
-            android:textStyle="bold" />
-
-        <EditText
-            android:id="@+id/myeloginPasswordValue"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="2"
-            android:inputType="textPassword"
-            android:nextFocusDown="@+id/myeloginButton"
-            android:singleLine="true" >
-        </EditText>
-    </LinearLayout>
-
-    <LinearLayout
-        style="?android:attr/buttonBarButtonStyle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="30dp"
-        android:layout_marginLeft="30dp"
-        android:layout_marginRight="30dp"
-        android:layout_marginTop="10dp" >
+        android:layout_gravity="center"
+        android:layout_margin="20dp"
+        android:gravity="center" >
 
         <Button
             android:id="@+id/myeloginButton"
@@ -95,7 +106,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginTop="10dp"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/dialog_bottom_selector"
+            android:minHeight="40dp"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
             android:text="@string/LoginButtonLabel" />
 
         <Button
@@ -103,7 +118,11 @@
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_gravity="center"
+            android:background="@drawable/dialog_bottom_selector"
+            android:minHeight="40dp"
+            android:paddingLeft="25dp"
+            android:paddingRight="25dp"
             android:text="@string/BackButtonLabel" />
     </LinearLayout>
 

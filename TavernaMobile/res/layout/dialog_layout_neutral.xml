@@ -10,9 +10,11 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_margin="10dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
         android:text="Medium Text"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="@color/Black" />
 
     <Button
         android:id="@+id/neutraldialog_dismiss_button"

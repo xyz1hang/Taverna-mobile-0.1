@@ -297,6 +297,7 @@ public class SearchResultScreen extends Activity implements CallbackTask {
 			Intent intent = new Intent(this, MainActivity.class);
 			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 			startActivity(intent);
+			this.overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
@@ -443,7 +444,7 @@ public class SearchResultScreen extends Activity implements CallbackTask {
 	
 	@Override
 	public void finish(){
-		this.overridePendingTransition(R.anim.push_right_in, R.anim.push_left_out);
+		this.overridePendingTransition(R.anim.push_right_in, R.anim.push_right_out);
 		super.finish();
 	}
 }

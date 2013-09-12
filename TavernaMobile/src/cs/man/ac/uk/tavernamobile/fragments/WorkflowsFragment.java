@@ -82,11 +82,13 @@ public class WorkflowsFragment extends Fragment {
 
 	@Override
 	public void onResume() {
+		parentActivity.overridePendingTransition(R.anim.push_right_in, R.anim.push_right_out);
 		super.onResume();
 	}
 
 	@Override
 	public void onPause() {
+		parentActivity.overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
 		super.onPause();
 	}
 
@@ -264,6 +266,7 @@ public class WorkflowsFragment extends Fragment {
 					gotoInputHistory.putExtra("workflowEntity", selectedWorkflow);
 					gotoInputHistory.putExtra("Activity_Starter_Code", Activity_Starter_Code);
 					parentActivity.startActivity(gotoInputHistory);
+					parentActivity.overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
 					
 					//showLaunchDialog("Do you want to launch this workflow ?");
 					

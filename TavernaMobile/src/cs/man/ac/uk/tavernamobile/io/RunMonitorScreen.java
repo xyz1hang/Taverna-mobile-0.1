@@ -91,7 +91,7 @@ public class RunMonitorScreen extends Activity implements CallbackTask {
 
 		// TODO: start the run here ????
 		if(command.equals("RunWorkflow")){
-			manager.StartWorkflowRun(userInputs, workflowEntity, this);
+			manager.StartWorkflowRun(userInputs, workflowEntity, this, true);
 		}
 		else if (command.equals("MonitoringOnly")){
 			manager.StartMonitoring(this);

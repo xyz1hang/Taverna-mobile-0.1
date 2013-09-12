@@ -443,7 +443,7 @@ public class RunHistoryHelper extends ContentProvider {
             	/** end of debug **/
             	// the "selection" parameter should be the composed
             	// query part in this case
-            	String theQuery = "SELECT r.Run_Id, l.Workflow_Title, l.Version, l.Uploader_Name "+
+            	String theQuery = "SELECT r.Run_Id, l.Workflow_Title, l.Version, l.Uploader_Name, l.Avatar "+
             					  "FROM "+DataProviderConstants.WF_TABLE_NAME+" l "+
             					  "INNER JOIN "+DataProviderConstants.WF_RUN_TABLE_NAME+" r "+
             					  "ON l.WF_ID = r.WF_ID "+
@@ -581,9 +581,9 @@ public class RunHistoryHelper extends ContentProvider {
 		        if (numOfRows != 0) {
 		            getContext().getContentResolver().notifyChange(uri, null);
 		            return numOfRows;
-		        } else {
+		        } /*else {
 		            throw new SQLiteException("Delete error:" + uri);
-		        }
+		        }*/
             
 		    case RUN_TABLE:
 		    	// Updates the table
@@ -597,9 +597,9 @@ public class RunHistoryHelper extends ContentProvider {
 		        if (numOfRows1 != 0) {
 		            getContext().getContentResolver().notifyChange(uri, null);
 		            return numOfRows1;
-		        } else {
+		        } /*else {
 		            throw new SQLiteException("Delete error:" + uri);
-		        }
+		        }*/
         }
 		return 0;
 	}

@@ -41,6 +41,7 @@ import android.util.Log;
 import android.widget.Toast;
 import cs.man.ac.uk.tavernamobile.dataaccess.DataProviderConstants;
 import cs.man.ac.uk.tavernamobile.datamodels.WorkflowBE;
+import cs.man.ac.uk.tavernamobile.datamodels.WorkflowRun;
 import cs.man.ac.uk.tavernamobile.utils.BackgroundTaskHandler;
 import cs.man.ac.uk.tavernamobile.utils.CallbackTask;
 import cs.man.ac.uk.tavernamobile.utils.MessageHelper;
@@ -93,6 +94,11 @@ public class WorkflowRunManager
 		sharedPrefs = PreferenceManager.getDefaultSharedPreferences(currentActivity);
 	}
 
+	public void getRuns(CallbackTask listener){
+		runListRetrieverListener = listener;
+		new RunListRetriever().Execute();
+	}
+	
 	public String getRunStartTime() {
 		return runStartTime;
 	}
@@ -104,6 +110,33 @@ public class WorkflowRunManager
 	public String getRunStatue() {
 		return runStatue;
 	}
+	
+	/**
+	 * Retrieve outputs of a particular run or the most recent run
+	 * from the Taverna server
+	 * 
+	 * @param runID - ID of the run to get output from
+	 * @param listener - the listener for handling inputs retrieved
+	 */
+	public void getRunInputs(String runId, CallbackTask listener){
+		inputPortsRetrievalListener = listener;
+		new InputPortsRetriever().Execute(runId);
+	}
+	
+	/**
+	 * Retrieve outputs of a particular run or the most recent run
+	 * from the Taverna server
+	 * 
+	 * @param workflowTitle - String that is used to build outputs directory
+	 * @param runID - ID of the run to get output from
+	 * @param listener - the listener for output retrieval states (fail/success)
+	 */
+	// TODO: passing in workflow title String...
+	public void getRunOutput(String workflowTitle, String runId, CallbackTask listener){
+		outputRetrievalListener = listener;
+		// start outputHandler thread gather result
+		new OutputHanlder().Execute(workflowTitle, runId);
+	}
 
 	public void CreateRun(WorkflowBE workflowEntity, CallbackTask listener){
 		creationListener = listener;
@@ -113,12 +146,25 @@ public class WorkflowRunManager
 	// for newly created workflow we need to
 	// setup input and then run the workflow, all in one go
 	// in order to minimise threads interference
+	
+	/**
+	 * for newly created workflow we need to setup input 
+	 * and then run the workflow, all in one go
+	 * 
+	 * @param inputs
+	 * @param workflowEntity
+	 * @param listener
+	 * @param requireMonitor - flag to indicate whether monitor info is needed
+	 * i.e whether the monitor is on
+	 */
 	public void StartWorkflowRun(Map<String, Object> inputs, 
-			WorkflowBE workflowEntity, CallbackTask listener){
+			WorkflowBE workflowEntity, CallbackTask listener, boolean requireMonitor){
 		runListener = listener;
 		// start this thread to pull run statue first
 		// otherwise it is difficult to update statue
-		new RunProgressListenerInvoker().Execute();
+		if(requireMonitor){
+			new RunProgressListenerInvoker().Execute();
+		}
 		new RunInitiator().Execute(inputs, workflowEntity);
 	}
 	
@@ -169,10 +215,7 @@ public class WorkflowRunManager
 		new RunCleaner().Execute("Deleting all runs...", 2);
 	}
 	
-	public void getRuns(CallbackTask listener){
-		runListRetrieverListener = listener;
-		new RunListRetriever().Execute();
-	}
+	
 
 	// Check Run State and invoke relevant reaction
 	public void checkRunStateWithID(String runId, CallbackTask listener){
@@ -180,32 +223,7 @@ public class WorkflowRunManager
 		new RunStateChecker().Execute(runId);
 	}
 	
-	/**
-	 * Retrieve outputs of a particular run or the most recent run
-	 * from the Taverna server
-	 * 
-	 * @param runID - ID of the run to get output from
-	 * @param listener - the listener for handling inputs retrieved
-	 */
-	public void getRunInputs(String runId, CallbackTask listener){
-		inputPortsRetrievalListener = listener;
-		new InputPortsRetriever().Execute(runId);
-	}
 	
-	/**
-	 * Retrieve outputs of a particular run or the most recent run
-	 * from the Taverna server
-	 * 
-	 * @param workflowTitle - String that is used to build outputs directory
-	 * @param runID - ID of the run to get output from
-	 * @param listener - the listener for output retrieval states (fail/success)
-	 */
-	// TODO: passing in workflow title String...
-	public void getRunOutput(String workflowTitle, String runId, CallbackTask listener){
-		outputRetrievalListener = listener;
-		// start outputHandler thread gather result
-		new OutputHanlder().Execute(workflowTitle, runId);
-	}
 
 	public String reportRunStartTime(){
 		Run run = ta.getWorkflowRunLaunched();
@@ -266,7 +284,7 @@ public class WorkflowRunManager
 		return runStatue;
 	}
 
-	public String getRunStateWithID(String runID){
+	/*public String getRunStateWithID(String runID){
 		Server server = ta.getServer();
 		Run theRun = null;
 		try {
@@ -285,7 +303,7 @@ public class WorkflowRunManager
 			runStatue = getRunState(statu);
 		}
 		return runStatue;
-	}
+	}*/
 
 	private String getRunState(RunStatus statu) {
 		switch (statu){
@@ -1014,8 +1032,26 @@ public class WorkflowRunManager
 
 		public Object onTaskInProgress(Object... param) {
 			String runID = (String) param[0];
-			String runState = getRunStateWithID(runID);
-			return runState;
+			//String runState = getRunStateWithID(runID);
+			Server server = ta.getServer();
+			Run theRun = null;
+			try {
+				theRun = server.getRun(runID, ta.getDefaultUser());
+			} catch (NetworkConnectionException e) {
+				return "Connection problem reading data from server";
+			}
+			if(theRun != null){
+				ta.setWorkflowRunLaunched(theRun);
+				RunStatus statu;
+				try {
+					statu = theRun.getStatus();
+				} catch (NetworkConnectionException e) {
+					return "Connection problem reading data from server";
+				}
+				runStatue = getRunState(statu);
+			}
+			return runStatue;
+			//return runState;
 		}
 
 		public Object onTaskComplete(Object... result) {
@@ -1089,19 +1125,28 @@ public class WorkflowRunManager
 					for(int i = 0; i<idsOfRunsToDelete.size(); i++){
 						String id = idsOfRunsToDelete.get(i);
 						runToDelete = ta.getServer().getRun(id, ta.getDefaultUser());
-						state = getRunState(runToDelete.getStatus());
-						
-						//Run runToDelete = (Run) params[2];
-						if(state != STATE_DELETED && idsOfRunsToDelete != null){
-								succeed = runToDelete.delete();
+						if(runToDelete != null){
+							state = getRunState(runToDelete.getStatus());
+							
+							//Run runToDelete = (Run) params[2];
+							if(state != STATE_DELETED && idsOfRunsToDelete != null){
+									succeed = runToDelete.delete();
+							}
+							// build the where args for database DELETE
+							whereArgs[i] = id;
 						}
-						// build the where args for database DELETE
-						whereArgs[i] = id;
 					}
 					// delete records from database
+					String selection = null;
+					if(whereArgs.length < 1){
+						selection = DataProviderConstants.Run_Id + " IS NOT NULL";
+						whereArgs = null;
+					} else{
+						selection = DataProviderConstants.Run_Id + "= ?";
+					}
 					currentActivity.getContentResolver().delete(
 							DataProviderConstants.RUN_TABLE_CONTENTURI, 
-							DataProviderConstants.Run_Id + "= ?",
+							selection,
 							whereArgs);
 				}catch (NetworkConnectionException e) {
 					succeed = false;
@@ -1163,7 +1208,7 @@ public class WorkflowRunManager
 			
 			Server server = ta.getServer();
 			UserCredentials user = ta.getDefaultUser();
-			HashMap<String, String> runIdsStates = null;
+			HashMap<String, WorkflowRun> runIdsStates = null;
 			// TODO: catch exception
 			try{
 				Collection<Run> runs = server.getRuns(user);
@@ -1173,11 +1218,19 @@ public class WorkflowRunManager
 					return message; 
 				}
 				
-				runIdsStates = new HashMap<String, String>();
+				runIdsStates = new HashMap<String, WorkflowRun>();
 				// return a <Run_Id, Run_state> map
 				for(Run r : runs){
+					String[] startTime = r.getStartTime().replace("T", " ").split("\\.");
+					String[] endTime = r.getFinishTime().replace("T", " ").split("\\.");
 					String state = getRunState(r.getStatus());
-					runIdsStates.put(r.getIdentifier(), state);
+					
+					WorkflowRun wfRun = new WorkflowRun();
+					wfRun.setStartTime(startTime[0]);
+					wfRun.setEndTime(endTime[0]);
+					wfRun.setRunState(state);
+					
+					runIdsStates.put(r.getIdentifier(), wfRun);
 				}
 			}catch(NetworkConnectionException e){
 				exceptionMessage = e.getMessage();

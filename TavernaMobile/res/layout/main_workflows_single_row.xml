@@ -115,6 +115,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_weight="0.5"
+        android:contentDescription="@string/input_history_screen_nav_icon"
         android:src="@drawable/navigation_next" />
 
 </LinearLayout>

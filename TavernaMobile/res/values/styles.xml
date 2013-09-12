@@ -17,7 +17,7 @@
         <item name="android:background">?android:attr/listDivider</item>
     </style>
     
-    <style name="dialog">
+    <!-- <style name="dialog">
         <item name="android:topDark">@drawable/dialog_title</item>
         <item name="android:topBright">@drawable/dialog_title</item>
         <item name="android:fullDark">@drawable/dialog_body</item>
@@ -28,6 +28,6 @@
         <item name="android:bottomDark">@drawable/dialog_footer</item>
         <item name="android:bottomMedium">@drawable/dialog_footer</item>
         <item name="android:bottomBright">@drawable/dialog_footer</item>
-    </style>
+    </style> -->
     
 </resources>

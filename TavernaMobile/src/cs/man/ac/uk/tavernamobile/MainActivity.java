@@ -73,7 +73,7 @@ public class MainActivity extends FragmentActivity {
         slidingMenu.attachToActivity(this, SlidingMenu.SLIDING_CONTENT);
         slidingMenu.setMenu(R.layout.sliding_menu);
         
-        this.overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+        // this.overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 		
 		// UI components
@@ -202,6 +202,12 @@ public class MainActivity extends FragmentActivity {
 		Toast.makeText(this, "Press Back button one more time to quit", Toast.LENGTH_SHORT).show();
 		backHit = true;
 	    return;
+	}
+	
+	@Override
+	protected void onPause(){
+		this.overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+		super.onPause();
 	}
 	
 	/**

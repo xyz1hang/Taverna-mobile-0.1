@@ -14,7 +14,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -170,9 +169,12 @@ public class InputsList extends Activity{
 	
 									@Override
 									public Object onTaskComplete(Object... result) {
+										if(result == null || result.length < 1){
+											return null;
+										}
 										// in case there are any message returned 
 										// during the starting of workflow run
-										if(result!= null && result[0] instanceof String){
+										if(result[0] instanceof String){
 											final String message = (String) result[0];
 											
 											MessageHelper.showMessageDialog(
@@ -192,7 +194,8 @@ public class InputsList extends Activity{
 										}
 										return null;
 									}
-							});
+								},
+								false);
 							return null;
 						}
 	
@@ -304,6 +307,7 @@ public class InputsList extends Activity{
 					currentInputName = inputNames.get(selectedInputIndex);
 					inputsListSelectedIndex = selectedInputIndex;
 					Intent intent = new Intent(currentActivity, FilePickerActivity.class);
+					intent.putExtra("inputPortName", currentInputName);
 					startActivityForResult(intent, REQUEST_PICK_FILE);
 				}
 			});

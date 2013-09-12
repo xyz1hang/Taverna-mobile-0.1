@@ -14,7 +14,7 @@
     <string name="title_section1">Explore</string>
     
     <!-- Main screen Explore fragments Strings -->
-     <string name="sort_text">Sort by :</string>
+    <string name="sort_text">Sort by :</string>
    	<string name="order_radio_button_text">Ascending order</string>
     <string-array name="wfExpo_sort_criteria">
         <item>Creation time</item>
@@ -34,7 +34,17 @@
     <string name="wfexpo_sr_mediam_wf_thumbnail">Mediam Workflow thumbnail</string>
     <string name="thumbnail_not_available_text">Thumbnail not available</string>
    
-    <!-- Main screen RunList menu titles -->
+    <!-- Main screen Workflows fragments String  -->
+    <string name="Last_Launch_Text">Last Launch: </string>
+    <string name="First_Launch_Text">First Launch: </string>
+    <string name="Workflow_frag_default_message">No saved workflow</string>
+    <string name="Workflow_history_default_message">No saved Inputs</string>
+    <string name="input_history_screen_nav_icon">input_history_screen_nav_icon</string>
+    
+    <!-- Main screen RunList Fragemtns -->
+    <string name="runList_row_started_at">Started at:</string>
+    <string name="runList_row_ended_at">Ended at:</string>
+    <!-- menu titles -->
     <string name="delete_all_runs_menu">Delete all runs</string>
     <string name="delete_run_menu">Delete run</string>
     <string name="view_run_menu">View the run</string>
@@ -42,11 +52,7 @@
     <string name="search_results_menu">Search again</string>
     <string name="menu_settings">Settings</string>
     <string name="myExp_login_menu_title">Log in to myExperiment</string>
-    <!-- Main screen Workflows fragments String  -->
-    <string name="Last_Launch_Text">Last Launch: </string>
-    <string name="First_Launch_Text">First Launch: </string>
-    <string name="Workflow_frag_default_message">No saved workflow</string>
-    <string name="Workflow_history_default_message">No saved Inputs</string>
+    
     
   	<!-- Workflow Details fragments Strings -->
     <string name="workflow_detail_title_section1">Preview</string>
@@ -69,8 +75,8 @@
     
     <!-- Taverna Server Login page -->
     <string name="Taverna_Server_login_title">Login to Taverna Server : </string>
-    <string name="LoginUserNameText">Username : </string>
-    <string name="LoginPassWordText">Password : </string>
+    <string name="LoginUserNameText">Type username here</string>
+    <string name="LoginPassWordText">Type password here</string>
     <string name="ServerText">Server : </string>
     <string name="LoginButtonLabel">Login</string>
     <string name="BackButtonLabel">Back</string>
