@@ -242,7 +242,7 @@ public class ExploreFragment extends Fragment implements CallbackTask {
 		// if there was an (error) message
 		if (result[0] instanceof String) {
 			String message = (String) result[0];
-			MessageHelper.showMessageDialog(parentActivity, null, message, null);
+			MessageHelper.showMessageDialog(parentActivity, "Attention", message, null);
 		} else {
 			ArrayList<Workflow> workflowResults = (ArrayList<Workflow>) result[0];
 
@@ -280,7 +280,7 @@ public class ExploreFragment extends Fragment implements CallbackTask {
 		@Override
 		public Object onTaskComplete(Object... result) {
 			if(result[0] instanceof String){
-				MessageHelper.showMessageDialog(parentActivity, null, (String)result[0], null);
+				MessageHelper.showMessageDialog(parentActivity, "Attention", (String)result[0], null);
 				return null;
 			}
 			
@@ -300,8 +300,12 @@ public class ExploreFragment extends Fragment implements CallbackTask {
 			WorkflowExpoListAdapter resultListAdapter = 
 					new WorkflowExpoListAdapter(parentActivity, workflows);
 			expoList.setAdapter(resultListAdapter);
+			if(workflows.size() <= expoList.getLastVisiblePosition()){
+				expoList.removeFooterView(footerView);
+			}
 			
-			onScrollTaskHandler = new ListViewOnScrollTaskHandler(expoList, new OnScrollLoadingTask());
+			onScrollTaskHandler = 
+					new ListViewOnScrollTaskHandler(expoList, new OnScrollLoadingTask());
 			onScrollTaskHandler.setOnScrollLoading();
 			
 			// the initial loading is finished 
@@ -349,7 +353,7 @@ public class ExploreFragment extends Fragment implements CallbackTask {
 				onScrollTaskHandler.disableTask = true;
 				MessageHelper.showMessageDialog(
 						parentActivity,
-						null, "No more matching workflow found", null);
+						"Attention", "No more matching workflow found", null);
 			}
 			return null;
 		}

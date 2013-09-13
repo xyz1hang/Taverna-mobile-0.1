@@ -26,28 +26,29 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dp"
-        android:ems="10"
         android:hint="@string/LoginUserNameText"
         android:imeOptions="actionNext"
         android:inputType="text"
+        android:minEms="10"
         android:nextFocusDown="@+id/myeloginPasswordValue"
         android:singleLine="true"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textColorHint="@color/Gray"
-        android:textStyle="italic" />
+        android:textStyle="italic" >
+
+        <requestFocus />
+    </EditText>
 
     <EditText
         android:id="@+id/myeloginPasswordValue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dp"
-        android:ems="10"
         android:hint="@string/LoginPassWordText"
-        android:imeOptions="actionNext"
-        android:inputType="textVisiblePassword"
-        android:nextFocusDown="@+id/myeloginButton"
-        android:singleLine="true"
-        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:imeOptions="actionDone"
+        android:inputType="textPassword"
+        android:minEms="10"
+        android:singleLine="false"
         android:textColorHint="@color/Gray"
         android:textStyle="italic" />
 
@@ -65,7 +66,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="left"
             android:layout_marginLeft="5dp"
-            android:text="Remember my :" />
+            android:text="@string/LoginSaveUsrPwdText" />
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -78,16 +79,16 @@
                 android:id="@+id/saveUsernameCheckbox"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginRight="10dp"
                 android:enabled="true"
-                android:text="username"
+                android:text="@string/LoginUserNameText"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
 
             <CheckBox
                 android:id="@+id/savePasswordsCheckbox"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:enabled="false"
-                android:text="password"
+                android:text="@string/LoginPassWordText"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
 
         </LinearLayout>
@@ -108,6 +109,7 @@
             android:layout_gravity="center"
             android:layout_marginRight="10dp"
             android:background="@drawable/dialog_bottom_selector"
+            android:focusableInTouchMode="true"
             android:minHeight="40dp"
             android:paddingLeft="20dp"
             android:paddingRight="20dp"

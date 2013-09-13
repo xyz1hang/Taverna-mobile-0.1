@@ -187,7 +187,7 @@ public class WorkflowLaunchHelper {
 					if (fileName.matches(".*\\.t2flow")) {
 						checkAndDownload(downloadURL);
 					} else {
-						String message = "The workflow document is not a \"t2flow\" file,\n"
+						String message = "The workflow document is not a \".t2flow\" file,"
 								+ "which is currently not supported";
 						MessageHelper.showMessageDialog(currentActivity, null, message, null);
 					}
@@ -212,7 +212,7 @@ public class WorkflowLaunchHelper {
 				downloadWorkflowFile(currentActivity, downloadURL);
 			} else {
 				String message = "You don't have the privilege to download this workflow.";
-				MessageHelper.showMessageDialog(currentActivity, null, message, null);
+				MessageHelper.showMessageDialog(currentActivity, "Attention", message, null);
 			}
 		}
 	}

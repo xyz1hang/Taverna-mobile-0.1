@@ -54,11 +54,15 @@ public class SplashScreenActivity extends Activity implements CallbackTask {
 			}
 		}
 		
+		// username and password both not null
+		// try to automatically login
 		if (username != null && passwords != null) {
 			BackgroundTaskHandler handler = new BackgroundTaskHandler();
-			handler.StartBackgroundTask(
-					thisActivity, thisClass, "Authenticating myExperiment User...");
-		} else if (username != null && passwords == null){
+			handler.StartBackgroundTask(thisActivity, thisClass, null);
+		}
+		// else if passwords is null
+		// let user type in passwords
+		else if (username != null && passwords == null){
 			navigateToActivity(MyExperimentLogin.class);
 		} else{
 			navigateToActivity(MainActivity.class);
@@ -67,8 +71,7 @@ public class SplashScreenActivity extends Activity implements CallbackTask {
 
 	@Override
 	public void finish() {
-		this.overridePendingTransition(R.anim.push_left_in,
-				R.anim.push_left_out);
+		this.overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
 		super.finish();
 	}
 
@@ -135,9 +138,11 @@ public class SplashScreenActivity extends Activity implements CallbackTask {
 					new CallbackTask(){
 						@Override
 						public Object onTaskInProgress(Object... param) {
-							Intent mainIntent = new Intent(SplashScreenActivity.this, MyExperimentLogin.class);
+							Intent mainIntent = 
+									new Intent(SplashScreenActivity.this, MyExperimentLogin.class);
 							thisActivity.startActivity(mainIntent);
-							thisActivity.overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+							thisActivity.overridePendingTransition(
+									R.anim.push_left_in, R.anim.push_left_out);
 							thisActivity.finish();
 							return null;
 						}

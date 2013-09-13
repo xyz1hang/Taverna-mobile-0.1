@@ -215,7 +215,7 @@ public class RunsFragment extends Fragment {
 			// if message return get returned
 			if (result[0] instanceof String) {
 				String message = (String) result[0];
-				MessageHelper.showMessageDialog(parentActivity, null, message, null);
+				MessageHelper.showMessageDialog(parentActivity, "Attention", message, null);
 				// refresh list
 				mainListAdapter.notifyDataSetChanged();
 				// Mark the current Refresh as complete.

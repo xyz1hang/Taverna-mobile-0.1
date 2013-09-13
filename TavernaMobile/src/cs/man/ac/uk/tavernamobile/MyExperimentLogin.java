@@ -8,10 +8,8 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.util.LruCache;
-import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnKeyListener;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -79,38 +77,13 @@ public class MyExperimentLogin extends Activity implements CallbackTask {
 	        	// restore check box states
 	        	saveUserNameCb.setChecked(usernameSaved);
 	        	savePasswordCb.setChecked(passwordSaved);
+	        	
+	        	if(!saveUserNameCb.isChecked()){
+	    			savePasswordCb.setChecked(false);
+	    			savePasswordCb.setEnabled(false);
+	    		}
 	        }
 		}
-		
-		username.setOnKeyListener(new OnKeyListener() {
-
-		    public boolean onKey(View v, int keyCode, KeyEvent event) {
-		          // If the event is a key-down event on the "enter" button
-		          if ((event.getAction() == KeyEvent.ACTION_DOWN) &&
-		               (keyCode == KeyEvent.KEYCODE_ENTER)){
-		        	  username.clearFocus();
-		        	  password.requestFocus();
-		              return true;
-		          }
-		          return false;
-		    }
-		});
-		
-		password.setSingleLine();
-		password.setOnKeyListener(new OnKeyListener() {
-
-		    public boolean onKey(View v, int keyCode, KeyEvent event) {
-		          // If the event is a key-down event on the "enter" button
-		          if ((event.getAction() == KeyEvent.ACTION_DOWN) &&
-		               (keyCode == KeyEvent.KEYCODE_ENTER)){
-		        	  password.clearFocus();
-		        	  btnSubmit.requestFocus();
-		        	  //hideKeyboard();
-		              return true;
-		          }
-		          return false;
-		    }
-		});
 		
 		btnSubmit.setOnClickListener(new android.view.View.OnClickListener() {
 
@@ -126,10 +99,10 @@ public class MyExperimentLogin extends Activity implements CallbackTask {
 
 				if (usernamevalue == null || usernamevalue.equals("")) {
 					MessageHelper.showMessageDialog(
-							currentActivity, null, "Please type in username", null);
+							currentActivity, "Empty field", "Please type in username", null);
 				} else if (passwordvalue == null || passwordvalue.equals("")) {
 					MessageHelper.showMessageDialog(
-							currentActivity, null, "Please type in password", null);
+							currentActivity, "Empty field", "Please type in password", null);
 				} else {
 					BackgroundTaskHandler handler = new BackgroundTaskHandler();
 					handler.StartBackgroundTask(currentActivity,
@@ -140,9 +113,11 @@ public class MyExperimentLogin extends Activity implements CallbackTask {
 		});
 		
 		btnBack.setOnClickListener(new android.view.View.OnClickListener() {
-
 			public void onClick(View v) {
-				finish();
+				Intent goBackToMain = new Intent(currentActivity, MainActivity.class);
+				goBackToMain.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+				startActivity(goBackToMain);
+				currentActivity.overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
 			}
 		});
 		
@@ -154,6 +129,7 @@ public class MyExperimentLogin extends Activity implements CallbackTask {
 				if(isChecked){
 					savePasswordCb.setEnabled(true);
 				}else{
+					savePasswordCb.setChecked(false);
 					savePasswordCb.setEnabled(false);
 				}
 			}
@@ -267,6 +243,7 @@ public class MyExperimentLogin extends Activity implements CallbackTask {
 			Intent goBackToMain = new Intent(this, MainActivity.class);
 			goBackToMain.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 			startActivity(goBackToMain);
+			this.overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
 		}
 		return null;
 	}

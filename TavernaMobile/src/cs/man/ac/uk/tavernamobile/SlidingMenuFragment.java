@@ -2,6 +2,7 @@ package cs.man.ac.uk.tavernamobile;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -81,25 +82,25 @@ public class SlidingMenuFragment extends Fragment {
 					User user = TavernaAndroid.getMyEUserLoggedin();
 					if (user != null) {
 						MessageHelper.showOptionsDialog(parentActivity,
-								"Do you wish to log out ?", 
-								"Attention",
-								new CallbackTask() {
+							"Do you wish to log out ?", 
+							"Attention",
+							new CallbackTask() {
+								@Override
+								public Object onTaskInProgress(
+										Object... param) {
+									// Clear user logged-in and cookie
+									TavernaAndroid.setMyEUserLoggedin(null);
+									TavernaAndroid.setMyExperimentSessionCookies(null);
+									refreshLoginState();
+									clearLoginPreference();
+									return null;
+								}
 	
-									@Override
-									public Object onTaskInProgress(
-											Object... param) {
-										// Clear user logged-in and cookie
-										TavernaAndroid.setMyEUserLoggedin(null);
-										TavernaAndroid.setMyExperimentSessionCookies(null);
-										refreshLoginState();
-										return null;
-									}
-	
-									@Override
-									public Object onTaskComplete(Object... result) {
-										return null;
-									}
-								}, null);
+								@Override
+								public Object onTaskComplete(Object... result) {
+									return null;
+								}
+							}, null);
 					}else{
 						/*FragmentTransaction ft =
 								parentActivity.getSupportFragmentManager().beginTransaction();
@@ -118,6 +119,12 @@ public class SlidingMenuFragment extends Fragment {
 					}
 				}
 			});
+	}
+
+	@Override
+	public void onStart() {
+		refreshLoginState();
+		super.onStart();
 	}
 
 	private void setupList(ListView list, SimpleAdapter tobeAdapter, String listTitle) {
@@ -156,6 +163,26 @@ public class SlidingMenuFragment extends Fragment {
 			myExperimentLoginText.setCompoundDrawablesWithIntrinsicBounds(
 					defaultDrawable, null, null, null);
 			myExperimentLoginText.setText("Log in to myExperiment");
+		}
+	}
+	
+	private void clearLoginPreference(){
+		SharedPreferences loginPreferences = 
+				parentActivity.getSharedPreferences("loginPreference", Context.MODE_PRIVATE);
+		if (loginPreferences != null){
+			SharedPreferences.Editor loginPrefsEditor = loginPreferences.edit();
+			boolean usernameSaved = loginPreferences.getBoolean("usernameSaved", false);
+	        if (usernameSaved) {
+	        	loginPrefsEditor = loginPreferences.edit();
+	        	loginPrefsEditor.putBoolean("usernameSaved", false);
+	        	loginPrefsEditor.putString("username", "");
+	        	boolean passwordSaved = loginPreferences.getBoolean("passwordSaved", false);
+	        	if(passwordSaved){
+	        		loginPrefsEditor.putBoolean("passwordSaved", false);
+	        		loginPrefsEditor.putString("password", "");
+	        	}
+	        	loginPrefsEditor.commit();
+	        }
 		}
 	}
 

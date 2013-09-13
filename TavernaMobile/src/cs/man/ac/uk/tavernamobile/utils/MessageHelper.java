@@ -36,8 +36,11 @@ public class MessageHelper extends AlertDialog {
 		dialogMessageTextView.setText(dialogMessage);
 		// set up button action
 		Button dialogButton = (Button) dialogView.findViewById(R.id.neutraldialog_dismiss_button);
-		if (title != null)
+		if (title != null){
 			dialog.setTitle(title);
+		} else{
+			dialog.setTitle("Attention");
+		}
 		dialog.setView(dialogView);
 		dialog.setCancelable(false);
 		dialogButton.setOnClickListener(new View.OnClickListener() {

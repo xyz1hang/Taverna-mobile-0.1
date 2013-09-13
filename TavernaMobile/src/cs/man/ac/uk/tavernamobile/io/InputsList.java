@@ -119,7 +119,7 @@ public class InputsList extends Activity{
 					String unSetInputName = inputCheck(userInputs);
 					if (unSetInputName != null){
 						MessageHelper.showMessageDialog(currentActivity, 
-								null, "Please set input for \"" + unSetInputName+ "\"", null);
+								"Empty field", "Please set input for \"" + unSetInputName+ "\"", null);
 						return;
 					}
 				}

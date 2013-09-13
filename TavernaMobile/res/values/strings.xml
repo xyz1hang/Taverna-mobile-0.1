@@ -75,8 +75,9 @@
     
     <!-- Taverna Server Login page -->
     <string name="Taverna_Server_login_title">Login to Taverna Server : </string>
-    <string name="LoginUserNameText">Type username here</string>
-    <string name="LoginPassWordText">Type password here</string>
+    <string name="LoginSaveUsrPwdText">Remember my :</string>
+    <string name="LoginUserNameText">Username</string>
+    <string name="LoginPassWordText">Password</string>
     <string name="ServerText">Server : </string>
     <string name="LoginButtonLabel">Login</string>
     <string name="BackButtonLabel">Back</string>

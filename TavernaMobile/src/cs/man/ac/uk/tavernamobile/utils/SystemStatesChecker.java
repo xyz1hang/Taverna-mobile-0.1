@@ -63,7 +63,7 @@ public class SystemStatesChecker {
 			Toast.makeText(
 					appContext,
 					"No Internet access. Please check your network Connection.",
-					Toast.LENGTH_LONG).show();
+					Toast.LENGTH_SHORT).show();
 			return false;
 		}
 		return true;

@@ -330,7 +330,7 @@ public class WorkflowRunManager
 		try {
 			workflowData = WorkflowFileLoader.getBytesFromFile(new File(workflowEntity.getFilePath()));
 		} catch (Exception e) {
-			MessageHelper.showMessageDialog(currentActivity, null, e.getMessage(), null);
+			MessageHelper.showMessageDialog(currentActivity, "Error", e.getMessage(), null);
 		}
 		
 		Run runCreated = null;

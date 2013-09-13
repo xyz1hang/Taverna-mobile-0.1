@@ -107,7 +107,8 @@ public class SearchResultScreen extends Activity implements CallbackTask {
 		resultList.addFooterView(footerView);
 		resultList.setAdapter(resultListAdapter);*/
 		
-		onScrollTaskHandler = new ListViewOnScrollTaskHandler(resultList, new OnScrollLoadingTask());
+		onScrollTaskHandler = 
+				new ListViewOnScrollTaskHandler(resultList, new OnScrollLoadingTask());
 		onScrollTaskHandler.setOnScrollLoading();
 		
 		// setup event reaction -
@@ -373,9 +374,12 @@ public class SearchResultScreen extends Activity implements CallbackTask {
 				workflowResults.addAll(newResults);
 				resultListAdapter = new SearchResultListAdapter(currentActivity, workflowResults);
 				resultListAdapter.animationStartPosition = 0;
-				
 				resultList.addFooterView(footerView);
 				resultList.setAdapter(resultListAdapter);
+				
+				if(newResults.size() <= resultList.getLastVisiblePosition()){
+					resultList.removeFooterView(footerView);
+				}
 			}
 			else{
 				resultList.removeFooterView(footerView);
@@ -384,7 +388,7 @@ public class SearchResultScreen extends Activity implements CallbackTask {
 				onScrollTaskHandler.disableTask = true;
 				MessageHelper.showMessageDialog(
 						currentActivity, 
-						null, "No more matching workflow found", null);
+						null, "No matching workflow found", null);
 			}
 
 			// tell the loader that we are not in a search

@@ -1,8 +1,9 @@
 package cs.man.ac.uk.tavernamobile.utils;
 
+import android.os.Handler;
 import android.widget.AbsListView;
-import android.widget.ListView;
 import android.widget.AbsListView.OnScrollListener;
+import android.widget.ListView;
 
 public class ListViewOnScrollTaskHandler {
 	
@@ -42,20 +43,22 @@ public class ListViewOnScrollTaskHandler {
 				// ">=" - in case there are any padding
 				boolean reachTheEnd = firstVisibleItem + visibleItemCount >= totalItemCount &&
 						totalItemCount > visibleItemCount;
-
-						// Check Network Connection
-						if(!systemStatesChecker.isNetworkConnected()){
-							return;
-						}
-						
 						// if scroll reach the end of the list AND
 						// in - if we are already in the process of doing
 						// a new search... (since every change made to the list
 						// triggers the invocation of onScroll())
 						if(reachTheEnd &&!taskInProgress && userScrolled && !disableTask) {
 							taskInProgress = true; // lock
-							loadingTask.onTaskComplete();
 							userScrolled = false;
+							// Check Network Connection
+							if(!systemStatesChecker.isNetworkConnected()){
+								return;
+							}
+							// slightly delay in order to add footer smoothly
+							new Handler().postDelayed(new Runnable() {
+								public void run() {
+									loadingTask.onTaskComplete();
+								}},1000);
 						}
 			}
 

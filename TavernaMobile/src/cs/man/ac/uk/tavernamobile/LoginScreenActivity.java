@@ -77,10 +77,12 @@ public class LoginScreenActivity extends Activity implements CallbackTask {
 				String passwordvalue = password.getText().toString().trim();
 
 				if(usernamevalue == null || usernamevalue.equals("")){
-					MessageHelper.showMessageDialog(currentActivity, null, "Please type in username", null);
+					MessageHelper.showMessageDialog(
+							currentActivity, "Empty field", "Please type in username", null);
 				}
 				else if(passwordvalue == null || passwordvalue.equals("")){
-					MessageHelper.showMessageDialog(currentActivity, null, "Please type in password", null);
+					MessageHelper.showMessageDialog(
+							currentActivity, "Empty field", "Please type in password", null);
 				}
 				else{
 					try {
