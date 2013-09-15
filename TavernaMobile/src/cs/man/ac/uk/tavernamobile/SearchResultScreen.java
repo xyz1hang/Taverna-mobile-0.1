@@ -228,17 +228,6 @@ public class SearchResultScreen extends Activity implements CallbackTask {
 		search.DoSearch(searchQuery, sortedBy, order, false);
 	}
 	
-	private class OnScrollLoadingTask implements CallbackTask{
-		@Override
-		public Object onTaskInProgress(Object... param) {return null;}
-
-		@Override
-		public Object onTaskComplete(Object... result) {
-			search.DoSearch(searchQuery, sortedBy, order, false);
-			return null;
-		}
-	}
-	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.search_results_screen, menu);
@@ -365,7 +354,7 @@ public class SearchResultScreen extends Activity implements CallbackTask {
 				return null;
 			}
 			
-			ArrayList<Workflow> newResults = (ArrayList<Workflow>) result[0];
+			final ArrayList<Workflow> newResults = (ArrayList<Workflow>) result[0];
 			
 			if(newResults!= null && newResults.size() > 0){
 				// do animation on all of them since they are all
@@ -373,25 +362,35 @@ public class SearchResultScreen extends Activity implements CallbackTask {
 				workflowResults = new ArrayList<Workflow>();
 				workflowResults.addAll(newResults);
 				resultListAdapter = new SearchResultListAdapter(currentActivity, workflowResults);
-				resultListAdapter.animationStartPosition = 0;
 				resultList.addFooterView(footerView);
 				resultList.setAdapter(resultListAdapter);
 				
-				if(newResults.size() <= resultList.getLastVisiblePosition()){
-					resultList.removeFooterView(footerView);
-				}
+				resultList.post(new Runnable() {
+				    public void run() {
+				    	if(newResults.size() <= resultList.getLastVisiblePosition()){
+							resultList.removeFooterView(footerView);
+				    	}
+				    	// At this point the list has already being rendered.
+				    	// Set the animation start position to be the start of the
+				    	// next set of items, hence any layout changes made on the 
+				    	// rendered list will not trigger animation 
+				    	// the list view being refreshed
+						resultListAdapter.animationStartPosition = resultList.getLastVisiblePosition();
+				    }
+				});
 			}
 			else{
-				resultList.removeFooterView(footerView);
-				// tell loader no need to do the loading
+				// inform loader no need to do the loading
 				// since no more results found
 				onScrollTaskHandler.disableTask = true;
+				// inform the adapter not to add bottom loading view
+				// resultListAdapter.noMoreData = true;
 				MessageHelper.showMessageDialog(
 						currentActivity, 
 						null, "No matching workflow found", null);
 			}
 
-			// tell the loader that we are not in a search
+			// inform the loader that we are not in a search
 			// therefore it is safe to execute a new search
 			// when scroll to the end
 			onScrollTaskHandler.taskInProgress = false;
@@ -423,25 +422,39 @@ public class SearchResultScreen extends Activity implements CallbackTask {
 			}
 			
 			ArrayList<Workflow> newResults = (ArrayList<Workflow>) result[0];
-			
+			// only do animation on newly added items
+			resultListAdapter.animationStartPosition = 
+					workflowResults.size() > 0 ? workflowResults.size() - 1 : 0;
 			if(newResults!= null && newResults.size() > 0){
-				// only do animation on newly added items
-				resultListAdapter.animationStartPosition = 
-						workflowResults.size() > 0 ? workflowResults.size() - 1 : 0;
 				workflowResults.addAll(newResults);
 				resultListAdapter.notifyDataSetChanged();
 			}
 			else{
 				resultList.removeFooterView(footerView);
-				// tell loader no need to do the loading
+				// inform loader no need to do the loading
 				// since no more results found
 				onScrollTaskHandler.disableTask = true;
+				// inform the adapter not to add bottom loading view
+				// resultListAdapter.noMoreData = true;
 				MessageHelper.showMessageDialog(
 						currentActivity, 
 						null, "No more matching workflow found", null);
 			}
 
 			onScrollTaskHandler.taskInProgress = false;
+			return null;
+		}
+	}
+	
+	private class OnScrollLoadingTask implements CallbackTask{
+		@Override
+		public Object onTaskInProgress(Object... param) {
+			search.DoSearch(searchQuery, sortedBy, order, false);
+			return null;
+		}
+
+		@Override
+		public Object onTaskComplete(Object... result) {
 			return null;
 		}
 	}

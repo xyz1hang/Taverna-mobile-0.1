@@ -44,10 +44,10 @@ public class ListViewOnScrollTaskHandler {
 				boolean reachTheEnd = firstVisibleItem + visibleItemCount >= totalItemCount &&
 						totalItemCount > visibleItemCount;
 						// if scroll reach the end of the list AND
-						// in - if we are already in the process of doing
-						// a new search... (since every change made to the list
+						// if we are already in the process of doing
+						// a new search... (since every change made to the list layout
 						// triggers the invocation of onScroll())
-						if(reachTheEnd &&!taskInProgress && userScrolled && !disableTask) {
+						if(reachTheEnd && userScrolled && !taskInProgress && !disableTask) {
 							taskInProgress = true; // lock
 							userScrolled = false;
 							// Check Network Connection
@@ -57,7 +57,7 @@ public class ListViewOnScrollTaskHandler {
 							// slightly delay in order to add footer smoothly
 							new Handler().postDelayed(new Runnable() {
 								public void run() {
-									loadingTask.onTaskComplete();
+									loadingTask.onTaskInProgress();
 								}},1000);
 						}
 			}

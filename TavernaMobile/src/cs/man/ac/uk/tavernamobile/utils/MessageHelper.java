@@ -61,9 +61,11 @@ public class MessageHelper extends AlertDialog {
 			final CallbackTask listenerPos, final CallbackTask listenerNeg){
 		//new MessageHelper(context, message).twoOptionsDialog(title, listenerPos, listenerNeg).show();
 		final MessageHelper dialog = new MessageHelper(context, message);
-		if (title != null)
+		if (title != null){
 			dialog.setTitle(title);
-		
+		} else{
+			dialog.setTitle("Attention");
+		}
 		View dialogView = dialog.getLayoutInflater().inflate(R.layout.dialog_layout_two_options, null);
 		TextView dialogMessageTextView = (TextView) dialogView.findViewById(R.id.twooptionsdialog_message);
 		dialogMessageTextView.setText(dialogMessage);

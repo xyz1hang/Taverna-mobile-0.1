@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="fill_parent"
+    android:layout_height="wrap_content"
     android:layout_gravity="center"
     android:gravity="center" >
 
@@ -15,7 +15,8 @@
         android:layout_marginRight="20dp"
         android:text="Medium Text"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textColor="@color/Black" />
+        android:textColor="@color/Black"
+        android:textSize="15sp" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -36,7 +37,8 @@
             android:minHeight="45dp"
             android:paddingLeft="35dp"
             android:paddingRight="35dp"
-            android:text="@string/dialog_button_option1_default_text"/>
+            android:text="@string/dialog_button_option1_default_text"
+            android:textSize="15sp" />
 
         <Button
             android:id="@+id/twooptionsdialog_option2_button"
@@ -48,7 +50,8 @@
             android:minHeight="45dp"
             android:paddingLeft="35dp"
             android:paddingRight="35dp"
-            android:text="@string/dialog_button_option2_default_text" />
+            android:text="@string/dialog_button_option2_default_text"
+            android:textSize="15sp" />
 
     </LinearLayout>
 

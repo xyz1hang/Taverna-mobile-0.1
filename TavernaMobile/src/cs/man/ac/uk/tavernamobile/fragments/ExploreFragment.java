@@ -284,7 +284,7 @@ public class ExploreFragment extends Fragment implements CallbackTask {
 				return null;
 			}
 			
-			ArrayList<Workflow> workflows = (ArrayList<Workflow>) result[0];
+			final ArrayList<Workflow> workflows = (ArrayList<Workflow>) result[0];
 			if(workflows == null){
 				return null;
 			}
@@ -292,17 +292,22 @@ public class ExploreFragment extends Fragment implements CallbackTask {
 			loadingProBar.setVisibility(8);
 			expoList.setVisibility(0);
 			
-			footerView = 
-					((LayoutInflater) parentActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE))
-					.inflate(R.layout.list_footer_loading, null, false);
+			footerView = ((LayoutInflater) parentActivity
+								.getSystemService(Context.LAYOUT_INFLATER_SERVICE))
+										.inflate(R.layout.list_footer_loading, null, false);
 			expoList.addFooterView(footerView);
 			
 			WorkflowExpoListAdapter resultListAdapter = 
 					new WorkflowExpoListAdapter(parentActivity, workflows);
 			expoList.setAdapter(resultListAdapter);
-			if(workflows.size() <= expoList.getLastVisiblePosition()){
-				expoList.removeFooterView(footerView);
-			}
+			
+			expoList.post(new Runnable() {
+			    public void run() {
+			    	if(workflows.size() <= expoList.getLastVisiblePosition()){
+			    		expoList.removeFooterView(footerView);
+			    	}
+			    }
+			});
 			
 			onScrollTaskHandler = 
 					new ListViewOnScrollTaskHandler(expoList, new OnScrollLoadingTask());
@@ -333,17 +338,13 @@ public class ExploreFragment extends Fragment implements CallbackTask {
 		// loading results will gets passed here
 		public Object onTaskComplete(Object... result) {
 			ArrayList<Workflow> newResults = (ArrayList<Workflow>) result[0];
-			
+			int previousDataSize = listAdaptor.getCount();
+			listAdaptor.animationStartPosition = 
+					previousDataSize > 0 ? previousDataSize - 1 : 0;
 			if(newResults != null && newResults.size() > 0){
-				int previousDataSize = listAdaptor.getCount();
-				listAdaptor.animationStartPosition = 
-						previousDataSize > 0 ? previousDataSize - 1 : 0;
-
 				listAdaptor.AppendData(newResults);
 				listAdaptor.notifyDataSetChanged();
-				
-				// onScrollTask is complete and 
-				// release the lock
+				// onScrollTask is complete and release the lock
 				onScrollTaskHandler.taskInProgress = false;
 			}
 			else{
@@ -362,11 +363,13 @@ public class ExploreFragment extends Fragment implements CallbackTask {
 	// task to do when scroll to the end
 	private class OnScrollLoadingTask implements CallbackTask{
 		@Override
-		public Object onTaskInProgress(Object... param) {return null;}
+		public Object onTaskInProgress(Object... param) {
+			wfExpoLoader.LoadWorkflows(expoSortBy, order);
+			return null;
+		}
 
 		@Override
 		public Object onTaskComplete(Object... result) {
-			wfExpoLoader.LoadWorkflows(expoSortBy, order);
 			return null;
 		}
 	}

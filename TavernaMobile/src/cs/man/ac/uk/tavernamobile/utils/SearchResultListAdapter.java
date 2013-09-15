@@ -21,13 +21,15 @@ public class SearchResultListAdapter extends BaseAdapter {
 	private ArrayList<Workflow> data;
 	private Activity mContext;
 	
-	public int animationStartPosition;
+	public int animationStartPosition = -1;
+	public boolean noMoreData;
 	
 	public SearchResultListAdapter(Activity context, ArrayList<Workflow> listData)
 	{
 		data = listData;
 		mContext = context;
 		myInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		noMoreData = false;
 	}
 
 	public int getCount() {
@@ -43,7 +45,6 @@ public class SearchResultListAdapter extends BaseAdapter {
 	}
 
 	public View getView(int position, View convertView, ViewGroup parent) {
-
 		if (convertView == null)
 		{
 			convertView = myInflater.inflate(R.layout.search_result_single_row, null);
@@ -52,7 +53,7 @@ public class SearchResultListAdapter extends BaseAdapter {
 		TextView workflowTitle = (TextView) convertView.findViewById(R.id.wfTitle);
 		TextView workflowVersion = (TextView) convertView.findViewById(R.id.wfVersion);
 		TextView workflowUploader = (TextView) convertView.findViewById(R.id.wfUploader);
-		
+
 		Workflow wfData = getItem(position);
 		
 		workflowUploader.setText(wfData.getUploader().getValue());
@@ -72,4 +73,5 @@ public class SearchResultListAdapter extends BaseAdapter {
 
 		return convertView;
 	}
+	
 }

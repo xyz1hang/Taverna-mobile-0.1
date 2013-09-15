@@ -5,12 +5,12 @@
     android:layout_gravity="center"
     android:gravity="center"
     android:orientation="horizontal"
-    android:padding="5dp" >
+    android:padding="10dp" >
 
     <ProgressBar
         android:id="@+id/listfooterProgressBar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
         android:layout_gravity="center"
         android:layout_marginRight="5dp" />
 
@@ -20,6 +20,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:text="@string/List_Footer_Text"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textSize="15sp"
+        android:textStyle="bold" />
 
 </LinearLayout>

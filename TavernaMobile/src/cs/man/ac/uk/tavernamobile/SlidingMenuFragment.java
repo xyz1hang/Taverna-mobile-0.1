@@ -1,5 +1,6 @@
 package cs.man.ac.uk.tavernamobile;
 
+import android.app.ActionBar.LayoutParams;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -15,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import cs.man.ac.uk.tavernamobile.datamodels.User;
@@ -27,13 +29,18 @@ public class SlidingMenuFragment extends Fragment {
 	private FragmentActivity parentActivity;
 	private TextView myExperimentLoginText;
 	private View menuView;
-	private ListView list, settingList;
+	private LinearLayout listRoot;
+	
+	// Utilities.
+	// try to reuse object
+	private LayoutInflater layoutInflater;
 
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		menuView = inflater.inflate(R.layout.sliding_list, null);
 		myExperimentLoginText = (TextView) menuView.findViewById(R.id.myExperimentLoginState);
-		list = (ListView) menuView.findViewById(R.id.tobe_added_list);
-		settingList = (ListView) menuView.findViewById(R.id.sliding_menu_setting_list);
+		// list = (ListView) menuView.findViewById(R.id.tobe_added_list);
+		// settingList = (ListView) menuView.findViewById(R.id.sliding_menu_setting_list);
+		listRoot = (LinearLayout) menuView.findViewById(R.id.slidingMenuListsRoot);
 		refreshLoginState();
 		return menuView;
 	}
@@ -41,40 +48,10 @@ public class SlidingMenuFragment extends Fragment {
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		parentActivity = this.getActivity();
+		layoutInflater = ((LayoutInflater) parentActivity
+							.getSystemService(Context.LAYOUT_INFLATER_SERVICE));
 		
-		SimpleAdapter tobeAdapter = new SimpleAdapter(getActivity());
-		for (int i = 0; i < 5; i++) {
-			listObject obj = new listObject();
-			obj.setText("to be added...");
-			obj.setResID(R.drawable.ic_action_overflow);
-			tobeAdapter.add(obj);
-		}
-		setupList(list, tobeAdapter, "Data sources");
-		
-		SimpleAdapter settingAdapter = new SimpleAdapter(getActivity());
-		listObject obj1 = new listObject();
-		obj1.setText("Setting");
-		obj1.setResID(R.drawable.ic_action_overflow);
-		listObject obj2 = new listObject();
-		obj2.setText("CopyRight Info");
-		obj2.setResID(R.drawable.ic_action_search);
-		listObject[] listObjects = new listObject[]{obj1, obj2};
-		settingAdapter.addAll(listObjects);
-		setupList(settingList, settingAdapter, "Other");
-		
-		settingList.setOnItemClickListener(new OnItemClickListener(){
-			@Override
-			public void onItemClick(AdapterView<?> theListView, View parentView, 
-					int itemIndex, long arg3) {
-				if(itemIndex == 1){
-					((MainActivity) parentActivity).getMenu().toggle();
-					Intent goToSetting = new Intent(parentActivity, SettingsActivity.class);
-					parentActivity.startActivity(goToSetting);
-					
-				}
-			}
-			
-		});
+		refreshMenus();
 		
 		myExperimentLoginText.setOnClickListener(new android.view.View.OnClickListener() {
 				@Override
@@ -121,20 +98,143 @@ public class SlidingMenuFragment extends Fragment {
 			});
 	}
 
+	private void refreshMenus() {
+		// myExperiment Account Menu
+		User userloggedIn = TavernaAndroid.getMyEUserLoggedin();
+		ListView myExpMenuList = null;
+		if(userloggedIn != null){
+			String[] myExpMenuNames = new String[] {"My Workflows", "Favourite Workflows"};
+			int[] myExpMenuIcons = new int[] {R.drawable.gear_icon, R.drawable.bookmark_icon};
+			myExpMenuList = setupList("myExperiment Account", myExpMenuNames, myExpMenuIcons);
+		}
+		
+		// DataSourc Menu
+		String[] dataSourceNames = new String[] {"Dropbox", "Google Drive"};
+		int[] dataSourceIcons = new int[] {R.drawable.dropbox_icon, R.drawable.google_drive_icon};
+		ListView dataSourceList = setupList("Data Source", dataSourceNames, dataSourceIcons);
+		
+		// Other Menu
+		String[] otherMenuNames = null;
+		int[] otherMenuIcons = null;
+		if(userloggedIn == null){
+			otherMenuNames = new String[] {"Settings"};
+			otherMenuIcons = new int[] {R.drawable.settings_icon_dark};
+		}
+		else{
+			otherMenuNames = new String[] {"Settings", "Sign Out"};
+			otherMenuIcons = new int[] {R.drawable.settings_icon_dark, R.drawable.sign_out_icon};
+		}
+		ListView settingList = setupList("Others", otherMenuNames, otherMenuIcons);
+		
+		settingList.setOnItemClickListener(new OnItemClickListener(){
+			@Override
+			public void onItemClick(AdapterView<?> theListView, View parentView, 
+					int itemIndex, long arg3) {
+				if(itemIndex == 1){
+					((MainActivity) parentActivity).getMenu().toggle();
+					Intent goToSetting = new Intent(parentActivity, SettingsActivity.class);
+					parentActivity.startActivity(goToSetting);
+				}
+				else if(itemIndex == 2){
+					MessageHelper.showOptionsDialog(parentActivity,
+						"Do you wish to log out ?", 
+						"Attention",
+						new CallbackTask() {
+							@Override
+							public Object onTaskInProgress(
+									Object... param) {
+								// Clear user logged-in and cookie
+								TavernaAndroid.setMyEUserLoggedin(null);
+								TavernaAndroid.setMyExperimentSessionCookies(null);
+								refreshLoginState();
+								clearLoginPreference();
+								refreshMenus();
+								return null;
+							}
+
+							@Override
+							public Object onTaskComplete(Object... result) {
+								return null;
+							}
+						}, null);
+				}// end of else if
+			}
+		});
+		
+		if(myExpMenuList != null){
+			myExpMenuList.setOnItemClickListener(new OnItemClickListener(){
+				@Override
+				public void onItemClick(AdapterView<?> theListView, View parentView, 
+						int itemIndex, long arg3) {
+					if(itemIndex == 1){
+						((MainActivity) parentActivity).getMenu().toggle();
+						Intent goToSetting = new Intent(parentActivity, SettingsActivity.class);
+						parentActivity.startActivity(goToSetting);
+					}
+					else if(itemIndex == 2){
+						((MainActivity) parentActivity).getMenu().toggle();
+						Intent goToSetting = new Intent(parentActivity, SettingsActivity.class);
+						parentActivity.startActivity(goToSetting);
+					}
+				}
+			});
+		}
+		
+		dataSourceList.setOnItemClickListener(new OnItemClickListener(){
+			@Override
+			public void onItemClick(AdapterView<?> theListView, View parentView, 
+					int itemIndex, long arg3) {
+				if(itemIndex == 1){
+					((MainActivity) parentActivity).getMenu().toggle();
+					Intent goToSetting = new Intent(parentActivity, SettingsActivity.class);
+					parentActivity.startActivity(goToSetting);
+				}
+				else if(itemIndex == 2){
+					((MainActivity) parentActivity).getMenu().toggle();
+					Intent goToSetting = new Intent(parentActivity, SettingsActivity.class);
+					parentActivity.startActivity(goToSetting);
+				}
+			}
+		});
+	}
+
 	@Override
 	public void onStart() {
 		refreshLoginState();
 		super.onStart();
 	}
 
-	private void setupList(ListView list, SimpleAdapter tobeAdapter, String listTitle) {
-		View headerview = 
-				((LayoutInflater) parentActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE))
-				.inflate(R.layout.sliding_menu_list_header, null);
-		TextView listHeaderName = (TextView)headerview.findViewById(R.id.sliding_menu_list_name);
+	
+	/**
+	 * method to populate one menu list
+	 * 
+	 * @param menuList
+	 * @param listTitle
+	 * @param menuNames
+	 * @param menuIcons
+	 */
+	private ListView setupList(String listTitle, String[] menuNames, int[] menuIcons) {
+		SimpleAdapter menuAdapter = new SimpleAdapter(getActivity());
+		for(int i = 0; i < menuNames.length; i++){
+			listObject menuObject = new listObject();
+			menuObject.setText(menuNames[i]);
+			menuObject.setResID(menuIcons[i]);
+			menuAdapter.add(menuObject);
+		}
+		
+		View headerview = layoutInflater.inflate(R.layout.sliding_menu_list_header, null);
+		TextView listHeaderName = (TextView) headerview.findViewById(R.id.sliding_menu_list_name);
 		listHeaderName.setText(listTitle);
-		list.addHeaderView(headerview);
-		list.setAdapter(tobeAdapter);
+		ListView menuList = new ListView(parentActivity);
+		menuList.setLayoutParams(new LinearLayout.LayoutParams(
+					                LinearLayout.LayoutParams.MATCH_PARENT,
+					                LinearLayout.LayoutParams.WRAP_CONTENT));
+		menuList.setPadding(R.dimen.list_padding, 0, R.dimen.list_padding, 0);
+		menuList.addHeaderView(headerview);
+		menuList.setAdapter(menuAdapter);
+		
+		listRoot.addView(menuList, LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+		return menuList;
 	}
 	
 	private void refreshLoginState() {
@@ -196,8 +296,7 @@ public class SlidingMenuFragment extends Fragment {
 			if (convertView == null) {
 				convertView = LayoutInflater.from(getContext()).inflate(R.layout.sliding_row, null);
 			}
-			/*ImageView icon = (ImageView) convertView.findViewById(R.id.row_icon);
-			icon.setImageResource(getItem(position).iconRes);*/
+			
 			TextView title = (TextView) convertView.findViewById(R.id.row_title);
 			title.setText(getItem(position).getText());
 			Drawable drawable = getResources().getDrawable(getItem(position).getResID());

@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/slidingMenuListsRoot"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content" >
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
 
     <TextView
         android:id="@+id/myExperimentLoginState"
@@ -18,21 +20,4 @@
         android:textStyle="bold"
         android:visibility="visible" />
 
-    <ListView
-        android:id="@+id/tobe_added_list"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/myExperimentLoginState"
-        android:paddingLeft="@dimen/list_padding"
-        android:paddingRight="@dimen/list_padding" />
-    
-    <ListView
-        android:id="@+id/sliding_menu_setting_list"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_below="@+id/tobe_added_list"
-        android:paddingLeft="@dimen/list_padding"
-        android:paddingRight="@dimen/list_padding" />
-
-</RelativeLayout>
+</LinearLayout>
