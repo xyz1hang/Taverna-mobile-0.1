@@ -4,12 +4,12 @@ import java.io.Serializable;
 
 import org.simpleframework.xml.Attribute;
 
-public class ElementBase implements Serializable {
+public abstract class ElementBase implements Serializable {
 
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 2714534885121529677L;
+	private static final long serialVersionUID = -2302471292632857881L;
 
 	@Attribute(required = false)
 	protected String resource;
@@ -19,7 +19,7 @@ public class ElementBase implements Serializable {
 	
 	@Attribute(required = false)
 	protected String version;
-	
+
 	public String getResource() {
 		return resource;
 	}

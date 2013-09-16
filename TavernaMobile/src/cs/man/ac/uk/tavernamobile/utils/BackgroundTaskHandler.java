@@ -1,6 +1,8 @@
 package cs.man.ac.uk.tavernamobile.utils;
 
+import uk.org.taverna.server.client.NetworkConnectionException;
 import android.content.Context;
+import android.widget.Toast;
 
 public class BackgroundTaskHandler {
 	
@@ -43,11 +45,15 @@ public class BackgroundTaskHandler {
 
 		@Override
 		protected Object doInBackground(Object... params) {
+			Object result = null;
 			if (taskListener != null) {
-				return taskListener.onTaskInProgress(params);
+				try{
+					result = taskListener.onTaskInProgress(params);
+				} catch (NetworkConnectionException e){
+					Toast.makeText(currentContext, e.getMessage(), Toast.LENGTH_LONG).show();
+				}
 			}
-
-			return null;
+			return result;
 		}
 
 		@Override

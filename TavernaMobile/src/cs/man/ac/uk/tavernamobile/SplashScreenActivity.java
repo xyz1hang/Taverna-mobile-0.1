@@ -70,12 +70,6 @@ public class SplashScreenActivity extends Activity implements CallbackTask {
 	}
 
 	@Override
-	public void finish() {
-		this.overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
-		super.finish();
-	}
-
-	@Override
 	public Object onTaskInProgress(Object... param) {
 		// Check the correctness of username and password first
 		String whoAmI = "http://www.myexperiment.org/whoami.xml";

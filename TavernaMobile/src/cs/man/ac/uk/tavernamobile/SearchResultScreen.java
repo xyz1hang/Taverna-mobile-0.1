@@ -74,8 +74,8 @@ public class SearchResultScreen extends Activity implements CallbackTask {
 		iniLoadingListener = new InitialSearchResultHandler();
 		moreResultsLoadingListener = new AutoLoadMoreListener();
 		// case 1:
-		// when navigate to result screen the loading mode should be
-		// "auto-load more result" by
+		// execute the search before navigating to result screen. 
+		// hence the loading mode should be "load more result"
 		// search = new WorkflowsLoader(currentActivity, moreResultsLoadingListener);
 		
 		// case 2:

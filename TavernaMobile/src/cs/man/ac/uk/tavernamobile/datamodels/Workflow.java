@@ -13,7 +13,7 @@ public class Workflow extends ElementBase implements Serializable {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 4742092124269485712L;
+	private static final long serialVersionUID = 7527575847911861358L;
 
 	@Element(required = false)
 	protected String id;
@@ -57,7 +57,14 @@ public class Workflow extends ElementBase implements Serializable {
 	@ElementList(required = false)
 	protected List<Rating> ratings;
 	
-	@ElementList(required = false, entry = "user")
+	/*@ElementList(required = false, name = "credits")
+	@ElementListUnion({
+	  @ElementList(entry = "user", inline = true, type = CreditUser.class, required = false),
+	  @ElementList(entry = "group", inline = true, type = CreditGroup.class, required = false)
+	})
+	protected List<ElementBase> credits;*/
+	
+	@ElementList(required = false)
 	protected List<Credit> credits;
 	
 	@ElementList(required = false)
@@ -185,20 +192,28 @@ public class Workflow extends ElementBase implements Serializable {
 	public void setRatings(List<Rating> ratings) {
 		this.ratings = ratings;
 	}
-
-	public List<Credit> getCredits() {
-		return credits;
-	}
-
-	public void setCredits(List<Credit> credits) {
-		this.credits = credits;
-	}
-
+	
 	public List<Privilege> getPrivileges() {
 		return privileges;
 	}
 
 	public void setPrivileges(List<Privilege> privileges) {
 		this.privileges = privileges;
+	}
+
+	/*public List<ElementBase> getCredits() {
+		return credits;
+	}
+
+	public void setCredits(List<ElementBase> credits) {
+		this.credits = credits;
+	}*/
+	
+	public List<Credit> getCredits() {
+		return credits;
+	}
+
+	public void setCredits(List<Credit> credits) {
+		this.credits = credits;
 	}
 }

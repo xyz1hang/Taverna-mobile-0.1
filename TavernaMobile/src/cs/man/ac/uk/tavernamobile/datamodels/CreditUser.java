@@ -4,12 +4,12 @@ import org.simpleframework.xml.Root;
 import org.simpleframework.xml.Text;
 
 @Root(name = "user")
-public class Credit extends ElementBase {
+public class CreditUser extends ElementBase {
 	
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 487693226708437235L;
+	private static final long serialVersionUID = -5172493207959592922L;
 	@Text
 	protected String value;
 	

@@ -6,6 +6,8 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import uk.org.taverna.server.client.NetworkConnectionException;
+
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -18,13 +20,14 @@ public class ImageRetriever {
 		imageCache = TavernaAndroid.getmMemoryCache();
 	}
 
-	public Bitmap retrieveAvatarImage(String imageUri) {
+	public Bitmap retrieveAvatarImage(String imageUri) throws NetworkConnectionException {
 
 		Bitmap bitmap = null;
+		InputStream is = null;
 		try {
 			URL url = new URL(imageUri);
 			Object content = url.getContent();
-			InputStream is = (InputStream) content;
+			is = (InputStream) content;
 			Drawable image = Drawable.createFromStream(is, "src");
 			
 			bitmap = ((BitmapDrawable) image).getBitmap();
@@ -37,7 +40,14 @@ public class ImageRetriever {
 		} catch(FileNotFoundException e){
 			// swallow - image not available notice should be shown
 		} catch (IOException e) {
-			e.printStackTrace();
+			throw new NetworkConnectionException();
+		} finally{
+			try {
+				is.close();
+			} catch (IOException e) {
+				// swallow - irrelevant exception message
+				e.printStackTrace();
+			}
 		}
 		
 		return bitmap;

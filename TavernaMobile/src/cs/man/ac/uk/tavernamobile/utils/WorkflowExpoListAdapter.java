@@ -15,16 +15,21 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import cs.man.ac.uk.tavernamobile.R;
 import cs.man.ac.uk.tavernamobile.WorkflowDetail;
 import cs.man.ac.uk.tavernamobile.datamodels.Credit;
+import cs.man.ac.uk.tavernamobile.datamodels.CreditGroup;
+import cs.man.ac.uk.tavernamobile.datamodels.CreditUser;
+import cs.man.ac.uk.tavernamobile.datamodels.ElementBase;
 import cs.man.ac.uk.tavernamobile.datamodels.Privilege;
 import cs.man.ac.uk.tavernamobile.datamodels.Rating;
 import cs.man.ac.uk.tavernamobile.datamodels.User;
@@ -96,6 +101,7 @@ public class WorkflowExpoListAdapter extends BaseAdapter {
 		Button viewButton = (Button) convertView.findViewById(R.id.wfExpo_view_button);
 		Button downloadButton = (Button) convertView.findViewById(R.id.wfExpo_download_button);
 		TextView creditValue = (TextView) convertView.findViewById(R.id.wfExpoCreditText);
+		LinearLayout creditLayout = (LinearLayout) convertView.findViewById(R.id.wfExpoSingleRowCreditLayout);
 		TextView ratingValue = (TextView) convertView.findViewById(R.id.wfExpoRatingText);
 		
 		thumbnailNotAvailableView = 
@@ -193,7 +199,25 @@ public class WorkflowExpoListAdapter extends BaseAdapter {
 		if(credits != null && credits.size() > 0){
 			String creditText = "";
 			for(Credit c : credits){
-				creditText += c.getValue() + " ";
+				TextView creditView = new TextView(mContext);
+				//creditText += c.getValue() + " ";
+				
+				int iconResID = R.drawable.user_icon;
+				/*int iconResID = 0;
+				if (c instanceof CreditUser){
+					creditView.setText(((CreditUser)c).getValue());
+					iconResID = R.drawable.user_icon;
+				}else if(c instanceof CreditGroup){
+					creditView.setText(((CreditGroup)c).getValue());
+					iconResID = R.drawable.group_icon;
+				}*/
+				creditView.setText(c.getValue());
+				creditValue.setCompoundDrawablesWithIntrinsicBounds(iconResID, 0, 0, 0);
+				//creditValue.setCompoundDrawablePadding(3);
+				LayoutParams params = 
+						new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+				creditView.setLayoutParams(params);
+				creditLayout.addView(creditView, params);
 			}
 			creditValue.setText(creditText);
 		}else{
@@ -213,7 +237,7 @@ public class WorkflowExpoListAdapter extends BaseAdapter {
 			numOfRatings = ratings.size();
 		}
 		averageString = String.format(Locale.getDefault(), "%.1f", average);
-		ratingValue.setText(averageString + " / 5 ("+numOfRatings+") ratings");
+		ratingValue.setText(averageString + " / 5 ("+numOfRatings+" ratings)");
 		
 		//String thumbnailUri = expo.getThumbnail();
 		//String desctiption = expo.getDescription();

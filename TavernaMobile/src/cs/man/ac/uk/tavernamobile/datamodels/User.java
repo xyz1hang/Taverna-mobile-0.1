@@ -9,7 +9,7 @@ public class User extends ElementBase {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 678605471092080009L;
+	private static final long serialVersionUID = 8016991312788927755L;
 
 	@Element(required = false)
 	protected String id;

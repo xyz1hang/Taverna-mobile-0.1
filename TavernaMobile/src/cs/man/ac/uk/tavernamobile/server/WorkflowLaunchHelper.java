@@ -187,7 +187,7 @@ public class WorkflowLaunchHelper {
 					if (fileName.matches(".*\\.t2flow")) {
 						checkAndDownload(downloadURL);
 					} else {
-						String message = "The workflow document is not a \".t2flow\" file,"
+						String message = "The workflow document is not a \".t2flow\" file, "
 								+ "which is currently not supported";
 						MessageHelper.showMessageDialog(currentActivity, null, message, null);
 					}

@@ -102,7 +102,7 @@ public class HttpRequestHandler {
 			result = serializer.read(classType, data, false);
 		} catch (Exception e) {
 			// TODO: log has be removed in the release version
-			Log.e("HTTP request / serialization error", e.getMessage());
+			Log.e("serialization error", e.getMessage());
 		}
 
 		return result;

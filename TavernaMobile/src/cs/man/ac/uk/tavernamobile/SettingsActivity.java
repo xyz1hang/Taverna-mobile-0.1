@@ -37,4 +37,10 @@ public class SettingsActivity extends PreferenceActivity {
 			addPreferencesFromResource(R.xml.settings_screen);
 		}
 	}
+	
+	@Override
+	public void finish(){
+		super.finish();
+		this.overridePendingTransition(R.anim.push_right_in, R.anim.push_right_out);
+	}
 }

@@ -206,8 +206,8 @@ public class MainActivity extends FragmentActivity {
 	
 	@Override
 	protected void onPause(){
-		this.overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
 		super.onPause();
+		this.overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
 	}
 	
 	/**

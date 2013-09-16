@@ -227,7 +227,13 @@ public class SlidingMenuFragment extends Fragment {
 		listHeaderName.setText(listTitle);
 		ListView menuList = new ListView(parentActivity);
 		menuList.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+		
+		int sizeInPx = 10;
+		float scale = getResources().getDisplayMetrics().density;
+		int sizeInDp = (int) (sizeInPx*scale + 0.5f);
+		menuList.setPadding(sizeInDp, 0, sizeInDp, 0);
 		//menuList.setPadding(R.dimen.list_padding, 0, R.dimen.list_padding, 0);
+		
 		menuList.addHeaderView(headerview);
 		menuList.setAdapter(menuAdapter);
 		LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
