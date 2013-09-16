@@ -1,6 +1,5 @@
 package cs.man.ac.uk.tavernamobile;
 
-import android.app.ActionBar.LayoutParams;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -13,6 +12,7 @@ import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
@@ -37,10 +37,10 @@ public class SlidingMenuFragment extends Fragment {
 
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		menuView = inflater.inflate(R.layout.sliding_list, null);
+		listRoot = (LinearLayout) menuView.findViewById(R.id.slidingMenuListsRoot);
 		myExperimentLoginText = (TextView) menuView.findViewById(R.id.myExperimentLoginState);
 		// list = (ListView) menuView.findViewById(R.id.tobe_added_list);
 		// settingList = (ListView) menuView.findViewById(R.id.sliding_menu_setting_list);
-		listRoot = (LinearLayout) menuView.findViewById(R.id.slidingMenuListsRoot);
 		refreshLoginState();
 		return menuView;
 	}
@@ -50,7 +50,6 @@ public class SlidingMenuFragment extends Fragment {
 		parentActivity = this.getActivity();
 		layoutInflater = ((LayoutInflater) parentActivity
 							.getSystemService(Context.LAYOUT_INFLATER_SERVICE));
-		
 		refreshMenus();
 		
 		myExperimentLoginText.setOnClickListener(new android.view.View.OnClickListener() {
@@ -146,9 +145,10 @@ public class SlidingMenuFragment extends Fragment {
 								// Clear user logged-in and cookie
 								TavernaAndroid.setMyEUserLoggedin(null);
 								TavernaAndroid.setMyExperimentSessionCookies(null);
-								refreshLoginState();
+								parentActivity.recreate();
+								/*refreshLoginState();
 								clearLoginPreference();
-								refreshMenus();
+								refreshMenus();*/
 								return null;
 							}
 
@@ -226,14 +226,12 @@ public class SlidingMenuFragment extends Fragment {
 		TextView listHeaderName = (TextView) headerview.findViewById(R.id.sliding_menu_list_name);
 		listHeaderName.setText(listTitle);
 		ListView menuList = new ListView(parentActivity);
-		menuList.setLayoutParams(new LinearLayout.LayoutParams(
-					                LinearLayout.LayoutParams.MATCH_PARENT,
-					                LinearLayout.LayoutParams.WRAP_CONTENT));
-		menuList.setPadding(R.dimen.list_padding, 0, R.dimen.list_padding, 0);
+		menuList.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+		//menuList.setPadding(R.dimen.list_padding, 0, R.dimen.list_padding, 0);
 		menuList.addHeaderView(headerview);
 		menuList.setAdapter(menuAdapter);
-		
-		listRoot.addView(menuList, LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+		LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+		listRoot.addView(menuList, params);
 		return menuList;
 	}
 	
