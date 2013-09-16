@@ -654,8 +654,8 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int wfExpoCriteriaLinearLayout=0x7f060037;
         public static final int wfExpoLoadingProgressBar=0x7f06003c;
         public static final int wfExpoRatingText=0x7f0600b0;
-        public static final int wfExpoSingleRowCreditLayout=0x7f0600ac;
-        public static final int wfExpoSingleRowCreditText=0x7f0600ad;
+        public static final int wfExpoSingleRowCreditLayout=0x7f0600ad;
+        public static final int wfExpoSingleRowCreditText=0x7f0600ac;
         public static final int wfExpoSingleRowRatingText=0x7f0600af;
         public static final int wfExpoSortOrderRadioButton=0x7f06003a;
         public static final int wfExpoSortSpinner=0x7f060039;

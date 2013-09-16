@@ -10,6 +10,7 @@ public class CreditUser extends ElementBase {
 	 * 
 	 */
 	private static final long serialVersionUID = -5172493207959592922L;
+	
 	@Text
 	protected String value;
 	

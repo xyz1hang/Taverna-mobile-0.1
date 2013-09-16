@@ -1036,7 +1036,7 @@ public class RunsFragment extends Fragment {
 						@Override
 						public Object onTaskComplete(Object... result) {return null;}
 				 }, null);
-			} else if (runState == "Deleted") {
+			} else if (runState == "Deleted" || runState == null) {
 				MessageHelper.showMessageDialog(parentActivity, 
 						"Run state changed", 
 						"The run has been deleted, please refresh the list.",  null);

@@ -419,8 +419,8 @@ int id wfExpoCreditText 0x7f0600ae
 int id wfExpoCriteriaLinearLayout 0x7f060037
 int id wfExpoLoadingProgressBar 0x7f06003c
 int id wfExpoRatingText 0x7f0600b0
-int id wfExpoSingleRowCreditLayout 0x7f0600ac
-int id wfExpoSingleRowCreditText 0x7f0600ad
+int id wfExpoSingleRowCreditLayout 0x7f0600ad
+int id wfExpoSingleRowCreditText 0x7f0600ac
 int id wfExpoSingleRowRatingText 0x7f0600af
 int id wfExpoSortOrderRadioButton 0x7f06003a
 int id wfExpoSortSpinner 0x7f060039

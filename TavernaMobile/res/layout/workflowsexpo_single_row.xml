@@ -113,7 +113,6 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/wfExpoSingleRowCreditLayout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" >
 
@@ -129,15 +128,24 @@
                     android:textSize="12sp"
                     android:textStyle="bold" />
 
-                <TextView
-                    android:id="@+id/wfExpoCreditText"
+                <LinearLayout
+                    android:id="@+id/wfExpoSingleRowCreditLayout"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="5dp"
-                    android:gravity="center_vertical"
-                    android:textColor="@color/Black"
-                    android:textSize="12sp" />
+                    android:layout_gravity="center"
+                    android:orientation="vertical" >
 
+                    <TextView
+                        android:id="@+id/wfExpoCreditText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="5dp"
+                        android:gravity="center_vertical"
+                        android:textColor="@color/Black"
+                        android:textSize="12sp"
+                        android:visibility="gone" />
+
+                </LinearLayout>
             </LinearLayout>
 
             <LinearLayout
@@ -217,14 +225,6 @@
                     android:textColor="@color/Black"
                     android:textSize="12sp" />
             </LinearLayout>
-
-            <!--
-                     <View
-                    style="@style/Divider"
-                    android:layout_width="1dp"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center" />
-            -->
         </LinearLayout>
     </LinearLayout>
 

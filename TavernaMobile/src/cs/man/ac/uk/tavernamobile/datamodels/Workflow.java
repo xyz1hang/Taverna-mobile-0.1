@@ -13,7 +13,7 @@ public class Workflow extends ElementBase implements Serializable {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 7527575847911861358L;
+	private static final long serialVersionUID = 1362419013689221100L;
 
 	@Element(required = false)
 	protected String id;
@@ -57,15 +57,8 @@ public class Workflow extends ElementBase implements Serializable {
 	@ElementList(required = false)
 	protected List<Rating> ratings;
 	
-	/*@ElementList(required = false, name = "credits")
-	@ElementListUnion({
-	  @ElementList(entry = "user", inline = true, type = CreditUser.class, required = false),
-	  @ElementList(entry = "group", inline = true, type = CreditGroup.class, required = false)
-	})
-	protected List<ElementBase> credits;*/
-	
-	@ElementList(required = false)
-	protected List<Credit> credits;
+	@Element(required = false)
+	protected Credits credits;
 	
 	@ElementList(required = false)
 	protected List<Tag> tags;
@@ -201,19 +194,11 @@ public class Workflow extends ElementBase implements Serializable {
 		this.privileges = privileges;
 	}
 
-	/*public List<ElementBase> getCredits() {
+	public Credits getCredits() {
 		return credits;
 	}
 
-	public void setCredits(List<ElementBase> credits) {
-		this.credits = credits;
-	}*/
-	
-	public List<Credit> getCredits() {
-		return credits;
-	}
-
-	public void setCredits(List<Credit> credits) {
+	public void setCredits(Credits credits) {
 		this.credits = credits;
 	}
 }

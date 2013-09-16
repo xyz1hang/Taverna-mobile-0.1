@@ -26,7 +26,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 import cs.man.ac.uk.tavernamobile.R;
 import cs.man.ac.uk.tavernamobile.WorkflowDetail;
-import cs.man.ac.uk.tavernamobile.datamodels.Credit;
 import cs.man.ac.uk.tavernamobile.datamodels.CreditGroup;
 import cs.man.ac.uk.tavernamobile.datamodels.CreditUser;
 import cs.man.ac.uk.tavernamobile.datamodels.ElementBase;
@@ -195,32 +194,29 @@ public class WorkflowExpoListAdapter extends BaseAdapter {
 		updatedView.setText(expo.getUpdated_at());
 		typeView.setText(expo.getType().getValue());
 		
-		List<Credit> credits = expo.getCredits();
+		List<ElementBase> credits = expo.getCredits().getCreditEntity();
 		if(credits != null && credits.size() > 0){
-			String creditText = "";
-			for(Credit c : credits){
+			for(ElementBase c : credits){
 				TextView creditView = new TextView(mContext);
-				//creditText += c.getValue() + " ";
-				
-				int iconResID = R.drawable.user_icon;
-				/*int iconResID = 0;
+				String creditText = "";
+				int iconResID = 0;
 				if (c instanceof CreditUser){
-					creditView.setText(((CreditUser)c).getValue());
+					creditText = ((CreditUser)c).getValue();
 					iconResID = R.drawable.user_icon;
 				}else if(c instanceof CreditGroup){
-					creditView.setText(((CreditGroup)c).getValue());
+					creditText = ((CreditGroup)c).getValue();
 					iconResID = R.drawable.group_icon;
-				}*/
-				creditView.setText(c.getValue());
-				creditValue.setCompoundDrawablesWithIntrinsicBounds(iconResID, 0, 0, 0);
-				//creditValue.setCompoundDrawablePadding(3);
+				}
+				
+				creditView.setCompoundDrawablesWithIntrinsicBounds(iconResID, 0, 0, 0);
+				//creditView.setCompoundDrawablePadding(3);
+				creditView.setText(creditText);
 				LayoutParams params = 
 						new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-				creditView.setLayoutParams(params);
 				creditLayout.addView(creditView, params);
 			}
-			creditValue.setText(creditText);
 		}else{
+			creditValue.setVisibility(0);
 			creditValue.setText("not available");
 		}
 
