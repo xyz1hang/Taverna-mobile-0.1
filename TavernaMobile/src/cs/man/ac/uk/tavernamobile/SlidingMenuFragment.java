@@ -7,8 +7,10 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,8 +41,6 @@ public class SlidingMenuFragment extends Fragment {
 		menuView = inflater.inflate(R.layout.sliding_list, null);
 		listRoot = (LinearLayout) menuView.findViewById(R.id.slidingMenuListsRoot);
 		myExperimentLoginText = (TextView) menuView.findViewById(R.id.myExperimentLoginState);
-		// list = (ListView) menuView.findViewById(R.id.tobe_added_list);
-		// settingList = (ListView) menuView.findViewById(R.id.sliding_menu_setting_list);
 		refreshLoginState();
 		return menuView;
 	}
@@ -78,34 +78,35 @@ public class SlidingMenuFragment extends Fragment {
 								}
 							}, null);
 					}else{
-						/*FragmentTransaction ft =
-								parentActivity.getSupportFragmentManager().beginTransaction();
-						ft.setCustomAnimations(R.anim.push_left_in, R.anim.push_left_out);
-						Fragment newFragment = new MyExperimentLogin();
-						ft.addToBackStack("myExpLogin");
-						ft.replace(R.id.main_panel_root, newFragment).commit();
-						// close the menu
-						((MainActivity) parentActivity).getMenu().toggle();*/
-						
-						((MainActivity) parentActivity).getMenu().toggle();
-						((MainActivity) parentActivity).getMenu().setSlidingEnabled(false);
-						Intent gotoMyexperimentLogin = new Intent(
-								parentActivity, MyExperimentLogin.class);
+						((MainPanelActivity) parentActivity).getMenu().toggle();
+						((MainPanelActivity) parentActivity).getMenu().setSlidingEnabled(false);
+						Intent gotoMyexperimentLogin = new Intent(parentActivity, MyExperimentLogin.class);
 						parentActivity.startActivity(gotoMyexperimentLogin);
 					}
 				}
 			});
 	}
 
+	@Override
+	public void onStart() {
+		refreshLoginState();
+		super.onStart();
+	}
+
 	private void refreshMenus() {
-		// myExperiment Account Menu
-		User userloggedIn = TavernaAndroid.getMyEUserLoggedin();
-		ListView myExpMenuList = null;
+		// Navigation Menu
+		final User userloggedIn = TavernaAndroid.getMyEUserLoggedin();
+		ListView navigationMenuList = null;
+		String[] navigationMenuNames = null;
+		int[] navigationMenuIcons =  null;
 		if(userloggedIn != null){
-			String[] myExpMenuNames = new String[] {"My Workflows", "Favourite Workflows"};
-			int[] myExpMenuIcons = new int[] {R.drawable.gear_icon, R.drawable.bookmark_icon};
-			myExpMenuList = setupList("myExperiment Account", myExpMenuNames, myExpMenuIcons);
+			navigationMenuNames = new String[] {"My Workflows", "Workflow Run Control", "Explore Workflows", };
+			navigationMenuIcons = new int[] {R.drawable.bookmark_icon, R.drawable.gear_icon, R.drawable.myexperiment_logo_small};
+		}else{
+			navigationMenuNames = new String[] {"Workflow Run Control", "Explore Workflows"};
+			navigationMenuIcons = new int[] {R.drawable.gear_icon, R.drawable.myexperiment_logo_small};
 		}
+		navigationMenuList = setupList("Navigation", navigationMenuNames, navigationMenuIcons);
 		
 		// DataSourc Menu
 		String[] dataSourceNames = new String[] {"Dropbox", "Google Drive"};
@@ -125,12 +126,61 @@ public class SlidingMenuFragment extends Fragment {
 		}
 		ListView settingList = setupList("Others", otherMenuNames, otherMenuIcons);
 		
+		// list item click event setting
+		if(navigationMenuList != null){
+			navigationMenuList.setOnItemClickListener(new OnItemClickListener(){
+				@Override
+				public void onItemClick(AdapterView<?> theListView, View parentView, int itemIndex, long arg3) {
+					if(userloggedIn != null){
+						if(itemIndex == 1){
+							/** integer representation of fragments
+							 *	0 - ExploreFragment, 1 - SearchResultFragment, 2 - RunsFragments
+							 *  3 - LaunchHistoryFragments, 4 - MyWorkflowFragment, 5 - FavouriteWorkflowFragment
+							 */
+							// beginFragmentTransaction(new int[] {4, 5}, "MyWorkflowsFragment")
+						}
+						else if(itemIndex == 2){
+							beginFragmentTransaction(new int[] {2, 3}, "RunsControlFragment");
+						}
+						else if(itemIndex == 3){
+							beginFragmentTransaction(new int[] {0, 1}, "WorkflowsFragment");
+						}
+					}
+					else{
+						if(itemIndex == 1){
+							beginFragmentTransaction(new int[] {2, 3}, "RunsControlFragment");
+						}
+						else if(itemIndex == 2){
+							beginFragmentTransaction(new int[] {0, 1}, "WorkflowsFragment");
+						}
+					}
+				}
+			});
+		}
+		
+		dataSourceList.setOnItemClickListener(new OnItemClickListener(){
+			@Override
+			public void onItemClick(AdapterView<?> theListView, View parentView, 
+					int itemIndex, long arg3) {
+				if(itemIndex == 1){
+					((MainPanelActivity) parentActivity).getMenu().toggle();
+					Intent goToSetting = new Intent(parentActivity, SettingsActivity.class);
+					parentActivity.startActivity(goToSetting);
+				}
+				else if(itemIndex == 2){
+					((MainPanelActivity) parentActivity).getMenu().toggle();
+					Intent goToSetting = new Intent(parentActivity, SettingsActivity.class);
+					parentActivity.startActivity(goToSetting);
+				}
+			}
+		});
+		
 		settingList.setOnItemClickListener(new OnItemClickListener(){
 			@Override
 			public void onItemClick(AdapterView<?> theListView, View parentView, 
 					int itemIndex, long arg3) {
 				if(itemIndex == 1){
-					((MainActivity) parentActivity).getMenu().toggle();
+					((MainPanelActivity) parentActivity).getMenu().toggle();
 					Intent goToSetting = new Intent(parentActivity, SettingsActivity.class);
 					parentActivity.startActivity(goToSetting);
 				}
@@ -160,50 +210,7 @@ public class SlidingMenuFragment extends Fragment {
 				}// end of else if
 			}
 		});
-		
-		if(myExpMenuList != null){
-			myExpMenuList.setOnItemClickListener(new OnItemClickListener(){
-				@Override
-				public void onItemClick(AdapterView<?> theListView, View parentView, 
-						int itemIndex, long arg3) {
-					if(itemIndex == 1){
-						((MainActivity) parentActivity).getMenu().toggle();
-						Intent goToSetting = new Intent(parentActivity, SettingsActivity.class);
-						parentActivity.startActivity(goToSetting);
-					}
-					else if(itemIndex == 2){
-						((MainActivity) parentActivity).getMenu().toggle();
-						Intent goToSetting = new Intent(parentActivity, SettingsActivity.class);
-						parentActivity.startActivity(goToSetting);
-					}
-				}
-			});
-		}
-		
-		dataSourceList.setOnItemClickListener(new OnItemClickListener(){
-			@Override
-			public void onItemClick(AdapterView<?> theListView, View parentView, 
-					int itemIndex, long arg3) {
-				if(itemIndex == 1){
-					((MainActivity) parentActivity).getMenu().toggle();
-					Intent goToSetting = new Intent(parentActivity, SettingsActivity.class);
-					parentActivity.startActivity(goToSetting);
-				}
-				else if(itemIndex == 2){
-					((MainActivity) parentActivity).getMenu().toggle();
-					Intent goToSetting = new Intent(parentActivity, SettingsActivity.class);
-					parentActivity.startActivity(goToSetting);
-				}
-			}
-		});
 	}
-
-	@Override
-	public void onStart() {
-		refreshLoginState();
-		super.onStart();
-	}
-
 	
 	/**
 	 * method to populate one menu list
@@ -288,6 +295,25 @@ public class SlidingMenuFragment extends Fragment {
 	        	loginPrefsEditor.commit();
 	        }
 		}
+	}
+	
+	private void beginFragmentTransaction(int[] fragmentsToInt, String backStackTag){
+		FragmentTransaction ft =
+				parentActivity.getSupportFragmentManager().beginTransaction();
+		// ft.setCustomAnimations(R.anim.push_left_in, R.anim.push_left_out);
+		Fragment newFragment = new FragmentsContainer();
+		Bundle args = new Bundle();
+		args.putIntArray("fragmentsToInstantiate", fragmentsToInt);
+		newFragment.setArguments(args);
+		ft.addToBackStack(backStackTag);
+		ft.replace(R.id.main_panel_root, newFragment).commit();
+		// smooth transaction
+		new Handler().postDelayed(new Runnable() {
+			public void run() {
+				// close the menu
+				((MainPanelActivity) parentActivity).getMenu().toggle();
+			}},500);
+		
 	}
 
 	private class SimpleAdapter extends ArrayAdapter<listObject> {

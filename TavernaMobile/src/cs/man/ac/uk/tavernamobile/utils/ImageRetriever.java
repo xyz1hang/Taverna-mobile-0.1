@@ -22,6 +22,10 @@ public class ImageRetriever {
 
 	public Bitmap retrieveAvatarImage(String imageUri) throws NetworkConnectionException {
 
+		if(imageUri == null){
+			return null;
+		}
+		
 		Bitmap bitmap = null;
 		InputStream is = null;
 		try {
@@ -29,11 +33,12 @@ public class ImageRetriever {
 			Object content = url.getContent();
 			is = (InputStream) content;
 			Drawable image = Drawable.createFromStream(is, "src");
-			
-			bitmap = ((BitmapDrawable) image).getBitmap();
-			// cache the image
-			imageCache.put(imageUri, bitmap);
-			TavernaAndroid.setmMemoryCache(imageCache);
+			if(image != null){
+				bitmap = ((BitmapDrawable) image).getBitmap();
+				// cache the image
+				imageCache.put(imageUri, bitmap);
+				TavernaAndroid.setmMemoryCache(imageCache);
+			}
 			
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
@@ -41,6 +46,9 @@ public class ImageRetriever {
 			// swallow - image not available notice should be shown
 		} catch (IOException e) {
 			throw new NetworkConnectionException();
+		} catch (Exception e){
+			// swallow - any other exception happened here should never reflect to UI
+			e.printStackTrace();
 		} finally{
 			try {
 				is.close();

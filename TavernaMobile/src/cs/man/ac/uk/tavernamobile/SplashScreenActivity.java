@@ -40,7 +40,7 @@ public class SplashScreenActivity extends Activity implements CallbackTask {
 		
 		loginPreferences = getSharedPreferences("loginPreference", MODE_PRIVATE);
 		if (loginPreferences == null){
-			navigateToActivity(MainActivity.class);
+			navigateToActivity(MainPanelActivity.class);
 			return;
 		}
 		
@@ -65,7 +65,8 @@ public class SplashScreenActivity extends Activity implements CallbackTask {
 		else if (username != null && passwords == null){
 			navigateToActivity(MyExperimentLogin.class);
 		} else{
-			navigateToActivity(MainActivity.class);
+			//navigateToActivity(MainActivity.class);
+			navigateToActivity(MainPanelActivity.class);
 		}
 	}
 
@@ -147,7 +148,7 @@ public class SplashScreenActivity extends Activity implements CallbackTask {
 					new CallbackTask(){
 						@Override
 						public Object onTaskInProgress(Object... param) {
-							navigateToActivity(MainActivity.class);
+							navigateToActivity(MainPanelActivity.class);
 							return null;
 						}
 						@Override
@@ -156,7 +157,7 @@ public class SplashScreenActivity extends Activity implements CallbackTask {
 			}
 			MessageHelper.showMessageDialog(this, null, responseMessage, null);
 		} else {
-			navigateToActivity(MainActivity.class);
+			navigateToActivity(MainPanelActivity.class);
 		}
 		return null;
 	}

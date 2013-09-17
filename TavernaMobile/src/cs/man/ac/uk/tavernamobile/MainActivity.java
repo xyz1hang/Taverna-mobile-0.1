@@ -23,7 +23,7 @@ import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 
 import cs.man.ac.uk.tavernamobile.fragments.ExploreFragment;
 import cs.man.ac.uk.tavernamobile.fragments.RunsFragment;
-import cs.man.ac.uk.tavernamobile.fragments.WorkflowsFragment;
+import cs.man.ac.uk.tavernamobile.fragments.LaunchHistoryFragment;
 
 public class MainActivity extends FragmentActivity {
 	
@@ -86,7 +86,7 @@ public class MainActivity extends FragmentActivity {
 	    mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 				
 		ExploreFragment searchFragment = new ExploreFragment();
-		WorkflowsFragment wfFragment = new WorkflowsFragment();
+		LaunchHistoryFragment wfFragment = new LaunchHistoryFragment();
 		RunsFragment runsFragment = new RunsFragment();
 		
 		mSectionsPagerAdapter.addFragment(searchFragment);

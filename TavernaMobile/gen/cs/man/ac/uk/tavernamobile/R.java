@@ -500,8 +500,8 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int wfexpo_selector=0x7f02003f;
     }
     public static final class id {
-        public static final int PoweredBy=0x7f060046;
-        public static final int PoweredByCont=0x7f060047;
+        public static final int PoweredBy=0x7f060045;
+        public static final int PoweredByCont=0x7f060046;
         public static final int SlashScreenText=0x7f060092;
         public static final int both=0x7f060008;
         public static final int cancelButton=0x7f06001c;
@@ -541,8 +541,8 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int loginScreenTitle=0x7f06002e;
         public static final int loginUsername=0x7f06002f;
         public static final int loginUsernameValue=0x7f060030;
-        public static final int mainViewPager=0x7f060044;
-        public static final int main_panel_root=0x7f060043;
+        public static final int mainViewPager=0x7f060043;
+        public static final int main_panel_root=0x7f060047;
         public static final int main_panel_setting_menu=0x7f0600b9;
         public static final int manualOnly=0x7f060009;
         public static final int margin=0x7f060002;
@@ -572,7 +572,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int output_text=0x7f060060;
         public static final int output_wfTitle=0x7f06005f;
         public static final int pagerTabStrip=0x7f06009d;
-        public static final int pager_title_strip=0x7f060045;
+        public static final int pager_title_strip=0x7f060044;
         public static final int pullDownFromTop=0x7f06000a;
         public static final int pullFromEnd=0x7f060007;
         public static final int pullFromStart=0x7f060006;
@@ -711,32 +711,34 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int main_inputs_history=0x7f03000c;
         public static final int main_inputs_history_singlerow=0x7f03000d;
         public static final int main_panel=0x7f03000e;
-        public static final int main_runs=0x7f03000f;
-        public static final int main_runs_child=0x7f030010;
-        public static final int main_runs_child_singlerow=0x7f030011;
-        public static final int main_runs_group=0x7f030012;
-        public static final int main_workflows=0x7f030013;
-        public static final int main_workflows_single_row=0x7f030014;
-        public static final int outputs=0x7f030015;
-        public static final int outputs_single_row=0x7f030016;
-        public static final int pull_to_refresh_header_horizontal=0x7f030017;
-        public static final int pull_to_refresh_header_vertical=0x7f030018;
-        public static final int run_monitor_screen=0x7f030019;
-        public static final int search_layout=0x7f03001a;
-        public static final int search_result_screen=0x7f03001b;
-        public static final int search_result_single_row=0x7f03001c;
-        public static final int show_image=0x7f03001d;
-        public static final int sliding_list=0x7f03001e;
-        public static final int sliding_menu=0x7f03001f;
-        public static final int sliding_menu_list_header=0x7f030020;
-        public static final int sliding_row=0x7f030021;
-        public static final int slidingmenumain=0x7f030022;
-        public static final int splash_screen=0x7f030023;
-        public static final int workflow_detail=0x7f030024;
-        public static final int workflow_detail_description=0x7f030025;
-        public static final int workflow_detail_license=0x7f030026;
-        public static final int workflow_detail_preview=0x7f030027;
-        public static final int workflowsexpo_single_row=0x7f030028;
+        public static final int main_panel_content=0x7f03000f;
+        public static final int main_panel_frame=0x7f030010;
+        public static final int main_runs=0x7f030011;
+        public static final int main_runs_child=0x7f030012;
+        public static final int main_runs_child_singlerow=0x7f030013;
+        public static final int main_runs_group=0x7f030014;
+        public static final int main_workflows=0x7f030015;
+        public static final int main_workflows_single_row=0x7f030016;
+        public static final int outputs=0x7f030017;
+        public static final int outputs_single_row=0x7f030018;
+        public static final int pull_to_refresh_header_horizontal=0x7f030019;
+        public static final int pull_to_refresh_header_vertical=0x7f03001a;
+        public static final int run_monitor_screen=0x7f03001b;
+        public static final int search_layout=0x7f03001c;
+        public static final int search_result_screen=0x7f03001d;
+        public static final int search_result_single_row=0x7f03001e;
+        public static final int show_image=0x7f03001f;
+        public static final int sliding_list=0x7f030020;
+        public static final int sliding_menu=0x7f030021;
+        public static final int sliding_menu_list_header=0x7f030022;
+        public static final int sliding_row=0x7f030023;
+        public static final int slidingmenumain=0x7f030024;
+        public static final int splash_screen=0x7f030025;
+        public static final int workflow_detail=0x7f030026;
+        public static final int workflow_detail_description=0x7f030027;
+        public static final int workflow_detail_license=0x7f030028;
+        public static final int workflow_detail_preview=0x7f030029;
+        public static final int workflowsexpo_single_row=0x7f03002a;
     }
     public static final class menu {
         public static final int input_history_action_mode_menu=0x7f0d0000;
@@ -746,70 +748,70 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int search_results_screen=0x7f0d0004;
     }
     public static final class string {
-        public static final int BackButtonLabel=0x7f08003c;
+        public static final int BackButtonLabel=0x7f08003d;
         public static final int Default_avatar=0x7f08000a;
-        public static final int First_Launch_Text=0x7f08001c;
+        public static final int First_Launch_Text=0x7f08001d;
         /**  Main screen Workflows fragments String  
          */
-        public static final int Last_Launch_Text=0x7f08001b;
+        public static final int Last_Launch_Text=0x7f08001c;
         /**  Setting screen 
          */
-        public static final int Launch_history_limit=0x7f080047;
-        public static final int List_Footer_Text=0x7f080033;
-        public static final int Live_run_list_mode_setting=0x7f080050;
-        public static final int LoginButtonLabel=0x7f08003b;
-        public static final int LoginPassWordText=0x7f080039;
-        public static final int LoginSaveUsrPwdText=0x7f080037;
-        public static final int LoginUserNameText=0x7f080038;
-        public static final int MonitorScreen_CurrentState=0x7f080042;
-        public static final int MonitorScreen_DefaultMessage=0x7f080046;
-        public static final int MonitorScreen_EndTime=0x7f080044;
-        public static final int MonitorScreen_RunningTime=0x7f080045;
-        public static final int MonitorScreen_StartTime=0x7f080043;
+        public static final int Launch_history_limit=0x7f080048;
+        public static final int List_Footer_Text=0x7f080034;
+        public static final int Live_run_list_mode_setting=0x7f080051;
+        public static final int LoginButtonLabel=0x7f08003c;
+        public static final int LoginPassWordText=0x7f08003a;
+        public static final int LoginSaveUsrPwdText=0x7f080038;
+        public static final int LoginUserNameText=0x7f080039;
+        public static final int MonitorScreen_CurrentState=0x7f080043;
+        public static final int MonitorScreen_DefaultMessage=0x7f080047;
+        public static final int MonitorScreen_EndTime=0x7f080045;
+        public static final int MonitorScreen_RunningTime=0x7f080046;
+        public static final int MonitorScreen_StartTime=0x7f080044;
         /**  Monitor Screen 
          */
-        public static final int MonitorScreen_Username=0x7f080041;
-        public static final int Monitoring_setting=0x7f08004c;
-        public static final int Run_Lists_mode_setting=0x7f08004f;
-        public static final int Run_Lists_mode_setting_summary=0x7f080051;
-        public static final int ServerText=0x7f08003a;
-        public static final int SplashScreenImageDescription=0x7f080032;
+        public static final int MonitorScreen_Username=0x7f080042;
+        public static final int Monitoring_setting=0x7f08004d;
+        public static final int Run_Lists_mode_setting=0x7f080050;
+        public static final int Run_Lists_mode_setting_summary=0x7f080052;
+        public static final int ServerText=0x7f08003b;
+        public static final int SplashScreenImageDescription=0x7f080033;
         /**  Taverna Server Login page 
          */
-        public static final int Taverna_Server_login_title=0x7f080036;
-        public static final int Workflow_frag_default_message=0x7f08001d;
-        public static final int Workflow_history_default_message=0x7f08001e;
+        public static final int Taverna_Server_login_title=0x7f080037;
+        public static final int Workflow_frag_default_message=0x7f08001e;
+        public static final int Workflow_history_default_message=0x7f08001f;
         public static final int app_name=0x7f080006;
         public static final int authority=0x7f080007;
-        public static final int crash_dialog_comment_prompt=0x7f080058;
-        public static final int crash_dialog_ok_toast=0x7f080059;
-        public static final int crash_dialog_text=0x7f080057;
-        public static final int crash_dialog_title=0x7f080056;
-        public static final int crash_toast_text=0x7f080055;
+        public static final int crash_dialog_comment_prompt=0x7f080059;
+        public static final int crash_dialog_ok_toast=0x7f08005a;
+        public static final int crash_dialog_text=0x7f080058;
+        public static final int crash_dialog_title=0x7f080057;
+        public static final int crash_toast_text=0x7f080056;
         /**  menu titles 
          */
-        public static final int delete_all_runs_menu=0x7f080022;
-        public static final int delete_run_menu=0x7f080023;
-        public static final int dialog_button_option1_default_text=0x7f080053;
-        public static final int dialog_button_option2_default_text=0x7f080054;
-        public static final int input_detail_title_section1=0x7f080034;
-        public static final int input_detail_title_section2=0x7f080035;
-        public static final int input_history_screen_nav_icon=0x7f08001f;
+        public static final int delete_all_runs_menu=0x7f080023;
+        public static final int delete_run_menu=0x7f080024;
+        public static final int dialog_button_option1_default_text=0x7f080054;
+        public static final int dialog_button_option2_default_text=0x7f080055;
+        public static final int input_detail_title_section1=0x7f080035;
+        public static final int input_detail_title_section2=0x7f080036;
+        public static final int input_history_screen_nav_icon=0x7f080020;
         public static final int main_activity_title=0x7f080008;
-        public static final int max_num_records=0x7f080048;
-        public static final int max_num_records_default_value=0x7f08004a;
-        public static final int max_num_records_dialog_message=0x7f08004b;
-        public static final int max_num_records_summary=0x7f080049;
-        public static final int menu_settings=0x7f080026;
-        public static final int myExp_login_menu_title=0x7f080027;
+        public static final int max_num_records=0x7f080049;
+        public static final int max_num_records_default_value=0x7f08004b;
+        public static final int max_num_records_dialog_message=0x7f08004c;
+        public static final int max_num_records_summary=0x7f08004a;
+        public static final int menu_settings=0x7f080027;
+        public static final int myExp_login_menu_title=0x7f080028;
         /**  myExperiment Login page 
          */
-        public static final int myExperiment_login_title=0x7f08003d;
-        public static final int myExperiment_logo_description=0x7f080031;
+        public static final int myExperiment_login_title=0x7f08003e;
+        public static final int myExperiment_logo_description=0x7f080032;
         /**  dialog text 
          */
-        public static final int netrual_dialog_button_text=0x7f080052;
-        public static final int order_radio_button_text=0x7f080011;
+        public static final int netrual_dialog_button_text=0x7f080053;
+        public static final int order_radio_button_text=0x7f080012;
         /**  Main screen 
          */
         public static final int powered_by=0x7f08000b;
@@ -823,52 +825,53 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int pull_to_refresh_pull_label=0x7f080000;
         public static final int pull_to_refresh_refreshing_label=0x7f080002;
         public static final int pull_to_refresh_release_label=0x7f080001;
-        public static final int runList_row_ended_at=0x7f080021;
+        public static final int runList_row_ended_at=0x7f080022;
         /**  Main screen RunList Fragemtns 
          */
-        public static final int runList_row_started_at=0x7f080020;
-        public static final int run_refresh_rate_setting=0x7f08004d;
-        public static final int run_refresh_rate_setting_summary=0x7f08004e;
+        public static final int runList_row_started_at=0x7f080021;
+        public static final int run_refresh_rate_setting=0x7f08004e;
+        public static final int run_refresh_rate_setting_summary=0x7f08004f;
         /**  Search screen 
          */
-        public static final int search_for_it=0x7f08002e;
-        public static final int search_hints=0x7f08002f;
-        public static final int search_image_button_description=0x7f080030;
+        public static final int search_for_it=0x7f08002f;
+        public static final int search_hints=0x7f080030;
+        public static final int search_image_button_description=0x7f080031;
         /**  main panel menu titles 
          */
-        public static final int search_results_menu=0x7f080025;
+        public static final int search_results_menu=0x7f080026;
         /**  Main screen Explore fragments Strings 
          */
-        public static final int sort_text=0x7f080010;
+        public static final int sort_text=0x7f080011;
         public static final int test_button_name=0x7f080009;
-        public static final int thumbnail_not_available_text=0x7f08001a;
+        public static final int thumbnail_not_available_text=0x7f08001b;
+        public static final int title_section0=0x7f080010;
         public static final int title_section1=0x7f08000f;
         public static final int title_section2=0x7f08000e;
         public static final int title_section3=0x7f08000d;
-        public static final int view_run_menu=0x7f080024;
-        public static final int wfDetail_preview_not_available_text=0x7f08002d;
+        public static final int view_run_menu=0x7f080025;
+        public static final int wfDetail_preview_not_available_text=0x7f08002e;
         /**  expo single row strings 
          */
-        public static final int wfexpo_sr_created_on=0x7f080012;
-        public static final int wfexpo_sr_credit=0x7f080014;
-        public static final int wfexpo_sr_download_button=0x7f080018;
-        public static final int wfexpo_sr_last_update=0x7f080013;
-        public static final int wfexpo_sr_mediam_wf_thumbnail=0x7f080019;
-        public static final int wfexpo_sr_rating=0x7f080016;
-        public static final int wfexpo_sr_type=0x7f080015;
-        public static final int wfexpo_sr_view_button=0x7f080017;
-        public static final int wfpreview_default_created_at=0x7f08002b;
-        public static final int wfpreview_image_contentDescription=0x7f08002c;
+        public static final int wfexpo_sr_created_on=0x7f080013;
+        public static final int wfexpo_sr_credit=0x7f080015;
+        public static final int wfexpo_sr_download_button=0x7f080019;
+        public static final int wfexpo_sr_last_update=0x7f080014;
+        public static final int wfexpo_sr_mediam_wf_thumbnail=0x7f08001a;
+        public static final int wfexpo_sr_rating=0x7f080017;
+        public static final int wfexpo_sr_type=0x7f080016;
+        public static final int wfexpo_sr_view_button=0x7f080018;
+        public static final int wfpreview_default_created_at=0x7f08002c;
+        public static final int wfpreview_image_contentDescription=0x7f08002d;
         /**  Workflow Details fragments Strings 
          */
-        public static final int workflow_detail_title_section1=0x7f080028;
-        public static final int workflow_detail_title_section2=0x7f080029;
-        public static final int workflow_detail_title_section3=0x7f08002a;
-        public static final int workflow_launch_button_label=0x7f080040;
+        public static final int workflow_detail_title_section1=0x7f080029;
+        public static final int workflow_detail_title_section2=0x7f08002a;
+        public static final int workflow_detail_title_section3=0x7f08002b;
+        public static final int workflow_launch_button_label=0x7f080041;
         /**  Workflow Detail description 
          */
-        public static final int workflow_premission_1=0x7f08003e;
-        public static final int workflow_premission_2=0x7f08003f;
+        public static final int workflow_premission_1=0x7f08003f;
+        public static final int workflow_premission_2=0x7f080040;
     }
     public static final class style {
         public static final int AppTheme=0x7f0c0000;
