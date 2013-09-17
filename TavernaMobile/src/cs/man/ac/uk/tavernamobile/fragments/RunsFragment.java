@@ -131,8 +131,8 @@ public class RunsFragment extends Fragment {
 	
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		inflater.inflate(R.menu.runlist_menu, menu);
 		super.onCreateOptionsMenu(menu, inflater);
+		inflater.inflate(R.menu.runlist_menu, menu);
 	}
 
 	@Override

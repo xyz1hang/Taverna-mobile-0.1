@@ -49,7 +49,7 @@ public class SearchResultFragment extends Fragment implements CallbackTask {
 	private View footerView;
 	private ProgressBar loadingProBar;
 	private TextView searchQueryQuote;
-	private LinearLayout searchResultsTopLayout;
+	// private LinearLayout searchResultsTopLayout;
 
 	private String searchQuery;
 	private String sortedBy;
@@ -74,7 +74,7 @@ public class SearchResultFragment extends Fragment implements CallbackTask {
 		loadingProBar = (ProgressBar) mainView.findViewById(R.id.wfSearchProgressBar);
 		searchQueryQuote = (TextView) mainView.findViewById(R.id.searchQueryQuote);
 		resultList = (ListView) mainView.findViewById(R.id.searchResultList);
-		searchResultsTopLayout = (LinearLayout) mainView.findViewById(R.id.searchResultsTopLayout);
+		// searchResultsTopLayout = (LinearLayout) mainView.findViewById(R.id.searchResultsTopLayout);
 		setHasOptionsMenu(true);
 		return mainView;
 	}
@@ -370,7 +370,6 @@ public class SearchResultFragment extends Fragment implements CallbackTask {
 			// display results
 			resultList.setVisibility(0);
 			loadingProBar.setVisibility(8);
-			searchResultsTopLayout.setVisibility(0);
 
 			// when initial loading complete
 			// change the loading listener back to "auto-load-more"

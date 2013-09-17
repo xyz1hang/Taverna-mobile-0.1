@@ -20,6 +20,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import cs.man.ac.uk.tavernamobile.datamodels.User;
 import cs.man.ac.uk.tavernamobile.utils.CallbackTask;
@@ -32,6 +33,7 @@ public class SlidingMenuFragment extends Fragment {
 	private TextView myExperimentLoginText;
 	private View menuView;
 	private LinearLayout listRoot;
+	//private ScrollView menuScroll;
 	
 	// Utilities.
 	// try to reuse object
@@ -39,7 +41,8 @@ public class SlidingMenuFragment extends Fragment {
 
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		menuView = inflater.inflate(R.layout.sliding_list, null);
-		listRoot = (LinearLayout) menuView.findViewById(R.id.slidingMenuListsRoot);
+		listRoot = (LinearLayout) menuView.findViewById(R.id.slidingMenuRoot);
+		//menuScroll = (ScrollView) menuView.findViewById(R.id.slidingMenuScroll);
 		myExperimentLoginText = (TextView) menuView.findViewById(R.id.myExperimentLoginState);
 		refreshLoginState();
 		return menuView;
@@ -67,8 +70,9 @@ public class SlidingMenuFragment extends Fragment {
 									// Clear user logged-in and cookie
 									TavernaAndroid.setMyEUserLoggedin(null);
 									TavernaAndroid.setMyExperimentSessionCookies(null);
-									refreshLoginState();
 									clearLoginPreference();
+									parentActivity.recreate();
+									//refreshLoginState();
 									return null;
 								}
 	
@@ -100,8 +104,8 @@ public class SlidingMenuFragment extends Fragment {
 		String[] navigationMenuNames = null;
 		int[] navigationMenuIcons =  null;
 		if(userloggedIn != null){
-			navigationMenuNames = new String[] {"My Workflows", "Workflow Run Control", "Explore Workflows", };
-			navigationMenuIcons = new int[] {R.drawable.bookmark_icon, R.drawable.gear_icon, R.drawable.myexperiment_logo_small};
+			navigationMenuNames = new String[] {"Workflow Run Control", "Explore Workflows", "My Workflows"};
+			navigationMenuIcons = new int[] {R.drawable.gear_icon, R.drawable.myexperiment_logo_small, R.drawable.bookmark_icon};
 		}else{
 			navigationMenuNames = new String[] {"Workflow Run Control", "Explore Workflows"};
 			navigationMenuIcons = new int[] {R.drawable.gear_icon, R.drawable.myexperiment_logo_small};
@@ -131,28 +135,12 @@ public class SlidingMenuFragment extends Fragment {
 			navigationMenuList.setOnItemClickListener(new OnItemClickListener(){
 				@Override
 				public void onItemClick(AdapterView<?> theListView, View parentView, int itemIndex, long arg3) {
-					if(userloggedIn != null){
-						if(itemIndex == 1){
-							/** integer representation of fragments
-							 *	0 - ExploreFragment, 1 - SearchResultFragment, 2 - RunsFragments
-							 *  3 - LaunchHistoryFragments, 4 - MyWorkflowFragment, 5 - FavouriteWorkflowFragment
-							 */
-							// beginFragmentTransaction(new int[] {4, 5}, "MyWorkflowsFragment")
-						}
-						else if(itemIndex == 2){
+					if(itemIndex == 1){
 							beginFragmentTransaction(new int[] {2, 3}, "RunsControlFragment");
-						}
-						else if(itemIndex == 3){
+					} else if(itemIndex == 2){
 							beginFragmentTransaction(new int[] {0, 1}, "WorkflowsFragment");
-						}
-					}
-					else{
-						if(itemIndex == 1){
-							beginFragmentTransaction(new int[] {2, 3}, "RunsControlFragment");
-						}
-						else if(itemIndex == 2){
-							beginFragmentTransaction(new int[] {0, 1}, "WorkflowsFragment");
-						}
+					} else if(itemIndex == 3){
+						// beginFragmentTransaction(new int[] {4, 5}, "MyWorkflowsFragment")
 					}
 				}
 			});
@@ -297,6 +285,13 @@ public class SlidingMenuFragment extends Fragment {
 		}
 	}
 	
+	/**
+	 * @param fragmentsToInt - integer representation of fragments
+	 *			0 - ExploreFragment, 1 - SearchResultFragment, 2 - RunsFragments
+	 *  		3 - LaunchHistoryFragments, 4 - MyWorkflowFragment, 5 - FavouriteWorkflowFragment
+	 *  
+	 * @param backStackTag
+	 */
 	private void beginFragmentTransaction(int[] fragmentsToInt, String backStackTag){
 		FragmentTransaction ft =
 				parentActivity.getSupportFragmentManager().beginTransaction();

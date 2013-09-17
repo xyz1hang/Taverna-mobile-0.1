@@ -86,9 +86,6 @@ public class SplashScreenActivity extends Activity implements CallbackTask {
 				// when needed rather than over network request
 				String avatarURI = currentUser.getAvatar().getResource();
 				Bitmap avatar = new ImageRetriever().retrieveAvatarImage(avatarURI);
-				LruCache<String, Bitmap> imageCache = TavernaAndroid.getmMemoryCache();
-				imageCache.put(avatarURI, avatar);
-				TavernaAndroid.setmMemoryCache(imageCache);
 
 				// store the name of the user in "Application"
 				// the Get will throw exception if the login
