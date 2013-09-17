@@ -52,8 +52,7 @@ public class HttpRequestHandler {
 		return os.toByteArray();
 	}
 
-	public Object Post(String uri, Object data, String contentType) 
-			throws NetworkConnectionException {
+	public Object Post(String uri, Object data, String contentType) throws NetworkConnectionException {
 		Object serverResponse = null;
 
 		HttpClient httpClient = new DefaultHttpClient();
@@ -109,8 +108,7 @@ public class HttpRequestHandler {
 	}
 
 	// handle HTTP requests.
-	public <T> Object Get(String uri, Class<T> classType, String username,
-			String password) throws NetworkConnectionException {
+	public <T> Object Get(String uri, Class<T> classType, String username, String password) throws NetworkConnectionException {
 		Object targetClass = null;
 
 		HttpClient httpClient = new DefaultHttpClient();

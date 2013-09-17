@@ -273,7 +273,7 @@ int id cancelButton 0x7f06001c
 int id cancelRunButton 0x7f06007a
 int id chooseServer 0x7f060034
 int id created_at 0x7f0600a7
-int id delete_all_run_menu 0x7f0600bc
+int id delete_all_run_menu 0x7f0600bd
 int id disabled 0x7f060005
 int id exploreSearchButton 0x7f06003d
 int id fileSelectButton 0x7f060021
@@ -290,8 +290,8 @@ int id inputList 0x7f06001a
 int id inputName 0x7f06001e
 int id inputValue 0x7f06001f
 int id inputValueText 0x7f060020
-int id input_history_delete 0x7f0600b7
-int id input_history_launch 0x7f0600b6
+int id input_history_delete 0x7f0600b8
+int id input_history_launch 0x7f0600b7
 int id input_wfNumber 0x7f060019
 int id input_wfTitle 0x7f060018
 int id left 0x7f060000
@@ -308,7 +308,7 @@ int id loginUsername 0x7f06002f
 int id loginUsernameValue 0x7f060030
 int id mainViewPager 0x7f060044
 int id main_panel_root 0x7f060043
-int id main_panel_setting_menu 0x7f0600b8
+int id main_panel_setting_menu 0x7f0600b9
 int id manualOnly 0x7f060009
 int id margin 0x7f060002
 int id monitorCurrentState 0x7f060070
@@ -357,9 +357,9 @@ int id runEndStatLayout 0x7f060075
 int id runEndTimeValue 0x7f060051
 int id runGroupHeaderTextView 0x7f060053
 int id runList_run_checkbox 0x7f060052
-int id runList_run_delete 0x7f0600bb
-int id runList_run_start 0x7f0600b9
-int id runList_run_stop 0x7f0600ba
+int id runList_run_delete 0x7f0600bc
+int id runList_run_start 0x7f0600ba
+int id runList_run_stop 0x7f0600bb
 int id runMonitorOutputButton 0x7f06007b
 int id runProgressBar 0x7f060074
 int id runStartTimeValue 0x7f06004f
@@ -393,7 +393,7 @@ int id searchQueryText 0x7f06007c
 int id searchResultList 0x7f060085
 int id searchResultSortLayout 0x7f060080
 int id searchResultsTopLayout 0x7f06007e
-int id search_results_search 0x7f0600bd
+int id search_results_search 0x7f0600be
 int id selectedFileName 0x7f060022
 int id selected_view 0x7f060004
 int id serverListSpinner 0x7f060035
@@ -417,6 +417,7 @@ int id wfDetailsTopLayout 0x7f060095
 int id wfExpoCreated 0x7f0600aa
 int id wfExpoCreditText 0x7f0600ae
 int id wfExpoCriteriaLinearLayout 0x7f060037
+int id wfExpoFavouriteButtom 0x7f0600b6
 int id wfExpoLoadingProgressBar 0x7f06003c
 int id wfExpoRatingText 0x7f0600b0
 int id wfExpoSingleRowCreditLayout 0x7f0600ad

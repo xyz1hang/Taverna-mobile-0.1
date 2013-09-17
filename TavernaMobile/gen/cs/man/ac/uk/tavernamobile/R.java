@@ -508,7 +508,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int cancelRunButton=0x7f06007a;
         public static final int chooseServer=0x7f060034;
         public static final int created_at=0x7f0600a7;
-        public static final int delete_all_run_menu=0x7f0600bc;
+        public static final int delete_all_run_menu=0x7f0600bd;
         public static final int disabled=0x7f060005;
         public static final int exploreSearchButton=0x7f06003d;
         public static final int fileSelectButton=0x7f060021;
@@ -525,8 +525,8 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int inputName=0x7f06001e;
         public static final int inputValue=0x7f06001f;
         public static final int inputValueText=0x7f060020;
-        public static final int input_history_delete=0x7f0600b7;
-        public static final int input_history_launch=0x7f0600b6;
+        public static final int input_history_delete=0x7f0600b8;
+        public static final int input_history_launch=0x7f0600b7;
         public static final int input_wfNumber=0x7f060019;
         public static final int input_wfTitle=0x7f060018;
         public static final int left=0x7f060000;
@@ -543,7 +543,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int loginUsernameValue=0x7f060030;
         public static final int mainViewPager=0x7f060044;
         public static final int main_panel_root=0x7f060043;
-        public static final int main_panel_setting_menu=0x7f0600b8;
+        public static final int main_panel_setting_menu=0x7f0600b9;
         public static final int manualOnly=0x7f060009;
         public static final int margin=0x7f060002;
         public static final int monitorCurrentState=0x7f060070;
@@ -592,9 +592,9 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int runEndTimeValue=0x7f060051;
         public static final int runGroupHeaderTextView=0x7f060053;
         public static final int runList_run_checkbox=0x7f060052;
-        public static final int runList_run_delete=0x7f0600bb;
-        public static final int runList_run_start=0x7f0600b9;
-        public static final int runList_run_stop=0x7f0600ba;
+        public static final int runList_run_delete=0x7f0600bc;
+        public static final int runList_run_start=0x7f0600ba;
+        public static final int runList_run_stop=0x7f0600bb;
         public static final int runMonitorOutputButton=0x7f06007b;
         public static final int runProgressBar=0x7f060074;
         public static final int runStartTimeValue=0x7f06004f;
@@ -628,7 +628,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int searchResultList=0x7f060085;
         public static final int searchResultSortLayout=0x7f060080;
         public static final int searchResultsTopLayout=0x7f06007e;
-        public static final int search_results_search=0x7f0600bd;
+        public static final int search_results_search=0x7f0600be;
         public static final int selectedFileName=0x7f060022;
         public static final int selected_view=0x7f060004;
         public static final int serverListSpinner=0x7f060035;
@@ -652,6 +652,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int wfExpoCreated=0x7f0600aa;
         public static final int wfExpoCreditText=0x7f0600ae;
         public static final int wfExpoCriteriaLinearLayout=0x7f060037;
+        public static final int wfExpoFavouriteButtom=0x7f0600b6;
         public static final int wfExpoLoadingProgressBar=0x7f06003c;
         public static final int wfExpoRatingText=0x7f0600b0;
         public static final int wfExpoSingleRowCreditLayout=0x7f0600ad;
