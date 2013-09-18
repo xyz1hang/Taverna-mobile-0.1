@@ -6,10 +6,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.Window;
 import cs.man.ac.uk.tavernamobile.datamodels.MyExperimentSession;
 import cs.man.ac.uk.tavernamobile.datamodels.User;
 import cs.man.ac.uk.tavernamobile.myexperiment.HttpRequestHandler;
-import cs.man.ac.uk.tavernamobile.myexperiment.WorkflowsLoader;
 import cs.man.ac.uk.tavernamobile.utils.BackgroundTaskHandler;
 import cs.man.ac.uk.tavernamobile.utils.CallbackTask;
 import cs.man.ac.uk.tavernamobile.utils.ImageRetriever;
@@ -32,6 +32,8 @@ public class SplashScreenActivity extends Activity implements CallbackTask {
 	@Override
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
+		//Remove title bar
+		this.requestWindowFeature(Window.FEATURE_NO_TITLE);		
 		setContentView(R.layout.splash_screen);
 		
 		thisActivity = this;
@@ -149,12 +151,21 @@ public class SplashScreenActivity extends Activity implements CallbackTask {
 						public Object onTaskComplete(Object... result) { return null; }
 					});
 			}
-			MessageHelper.showMessageDialog(this, null, responseMessage, null);
-		} else {
-			// load user workflows and user's favourite workflows
-			WorkflowsLoader wfListLoader = new WorkflowsLoader(thisActivity, null);
-			wfListLoader.LoadMyWorkflows(currentUser.getId());
 			
+			MessageHelper.showMessageDialog(this, null, responseMessage, new CallbackTask(){
+				@Override
+				public Object onTaskInProgress(Object... param) {
+					navigateToActivity(MainPanelActivity.class);
+					return null;
+				}
+
+				@Override
+				public Object onTaskComplete(Object... result) {
+					return null;
+				}
+			});
+		} else {
+
 			navigateToActivity(MainPanelActivity.class);
 		}
 		return null;

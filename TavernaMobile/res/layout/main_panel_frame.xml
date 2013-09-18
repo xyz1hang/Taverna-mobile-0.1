@@ -9,5 +9,4 @@
     android:focusableInTouchMode="true"
     android:gravity="center" >
 
-    <requestFocus />
 </FrameLayout>

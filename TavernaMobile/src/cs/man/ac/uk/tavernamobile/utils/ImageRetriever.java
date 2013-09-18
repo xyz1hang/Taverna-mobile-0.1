@@ -93,7 +93,9 @@ public class ImageRetriever {
 			e.printStackTrace();
 		} finally{
 			try {
-				is.close();
+				if(is != null){
+					is.close();
+				}
 			} catch (IOException e) {
 				// swallow - irrelevant exception message
 				e.printStackTrace();

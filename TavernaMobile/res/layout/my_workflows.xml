@@ -16,28 +16,53 @@
         android:layout_alignParentTop="true"
         android:layout_gravity="left"
         android:background="@drawable/top_bg"
-        android:padding="5dp"
+        android:gravity="center"
+        android:padding="10dp"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textColor="@color/Gray"
         android:textSize="15sp"
         android:textStyle="italic"
         android:visibility="visible" />
 
-    <ListView
+    <TextView
+        android:id="@+id/myWorkflowNoticeText"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/myWorkflowText"
+        android:paddingBottom="3dp"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:paddingTop="5dp"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="@color/Gray"
+        android:textSize="12sp"
+        android:textStyle="italic"
+        android:visibility="visible" />
+
+    <com.handmark.pulltorefresh.library.PullToRefreshListView
         android:id="@+id/myWorkflowList"
         android:layout_width="match_parent"
         android:layout_height="fill_parent"
-        android:layout_below="@+id/myWorkflowText"
+        android:layout_below="@+id/myWorkflowNoticeText"
+        android:layout_centerHorizontal="true"
         android:layout_gravity="center"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:divider="@android:color/transparent"
         android:dividerHeight="5dp"
         android:footerDividersEnabled="false"
-        android:headerDividersEnabled="false"
-        android:visibility="gone" >
+        android:headerDividersEnabled="false" />
 
-    </ListView>
+    <TextView
+        android:id="@+id/myWorkflowDefaultText"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="@color/DarkGray"
+        android:textStyle="bold|italic"
+        android:visibility="gone" />
 
     <ProgressBar
         android:id="@+id/myWorkflowLoadingProgressBar"
@@ -48,6 +73,6 @@
         android:layout_gravity="center"
         android:indeterminate="true"
         android:indeterminateBehavior="repeat"
-        android:visibility="visible" />
+        android:visibility="gone" />
 
 </RelativeLayout>

@@ -1,64 +1,107 @@
 package cs.man.ac.uk.tavernamobile.fragments;
 
-import java.util.ArrayList;
-
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-import android.widget.ProgressBar;
-import android.widget.TextView;
-import cs.man.ac.uk.tavernamobile.R;
-import cs.man.ac.uk.tavernamobile.datamodels.Workflow;
+
+import com.handmark.pulltorefresh.library.PullToRefreshBase;
+
+import cs.man.ac.uk.tavernamobile.utils.CallbackTask;
 import cs.man.ac.uk.tavernamobile.utils.TavernaAndroid;
-import cs.man.ac.uk.tavernamobile.utils.WorkflowsListAdapter;
 
-public class MyWorkflowsFragment extends Fragment {
-
-	private FragmentActivity parentActivity;
-	private ListView workflowList;
-	private ProgressBar loadingProBar;
-	private TextView myWorkflowText;
-	
-	// utilities
-	//private WorkflowsLoader wfListLoader;
+public class MyWorkflowsFragment extends MyWorkflowsBase {
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		super.onCreateView(inflater, container, savedInstanceState);
-		View searchView = inflater.inflate(R.layout.my_workflows, container, false);
-		workflowList = (ListView) searchView.findViewById(R.id.myWorkflowList);
-		loadingProBar = (ProgressBar) searchView.findViewById(R.id.myWorkflowLoadingProgressBar);
-		myWorkflowText = (TextView) searchView.findViewById(R.id.myWorkflowText);
-		return searchView;
+		return myWorkflowsMainView;
 	}
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		
-		parentActivity = getActivity();
-		myWorkflowText.setText("Note: some items may not be visible to you, due to viewing permissions.");
-		ArrayList<Workflow> myWorkflows = TavernaAndroid.getMyWorkflows();
-		// hide progress bar
-		loadingProBar.setVisibility(8);
-		workflowList.setVisibility(0);
-		
-		WorkflowsListAdapter resultListAdapter = 
-				new WorkflowsListAdapter(parentActivity, myWorkflows);
-		workflowList.setAdapter(resultListAdapter);
+		workflowList.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener<ListView>(){
+            @Override
+            public void onRefresh(PullToRefreshBase<ListView> refreshView) {
+            	refreshTheList(new CallbackTask(){
+					@Override
+					public Object onTaskInProgress(Object... param) {
+						return null;
+					}
+
+					@Override
+					public Object onTaskComplete(Object... result) {
+						// change the data set of the listView adapter of super class
+		        		workflows.clear();
+		        		workflows.addAll(TavernaAndroid.getMyWorkflows());
+		        		resultListAdapter.notifyDataSetChanged();
+						return null;
+					}
+            	});
+            }
+        });
 	}
 	
-	/*private void refreshTheList() {
-		workflowList.setVisibility(8);
-		workflowList.removeFooterView(footerView);
-		loadingProBar.setVisibility(0);
-		// set up a loader for loading indexed workflows
-		wfListLoader = new WorkflowsLoader(parentActivity, new WorkflowExpoLoadingListener());
-		wfListLoader.LoadWorkflows(expoSortBy, order);
+	/*@Override
+	protected void refreshTheList() {
+		super.refreshTheList();
+		if(myWorkflows == null){
+			// start fetching workflow data
+			BackgroundTaskHandler handler = new BackgroundTaskHandler();
+			handler.StartBackgroundTask(parentActivity, new MyWorkflowsDetailsFetcher(), null);
+		}else{
+			WorkflowsListAdapter resultListAdapter = new WorkflowsListAdapter(parentActivity, myWorkflows);
+			workflowList.setAdapter(resultListAdapter);
+			// hide progress bar
+			loadingProBar.setVisibility(8);
+			workflowList.setVisibility(0);
+			workflowList.onRefreshComplete();
+		}
+	}
+	
+	private class MyWorkflowsDetailsFetcher implements CallbackTask{
+
+		@Override
+		public Object onTaskInProgress(Object... param) {
+			ArrayList<Workflow> myWorkflows = TavernaAndroid.getMyWorkflows();
+			while(myWorkflows == null){
+				if(needRetry || noResults){
+					break;
+				}
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				myWorkflows = TavernaAndroid.getMyWorkflows();
+			}
+			return myWorkflows;
+		}
+
+		@Override
+		public Object onTaskComplete(Object... result) {
+			myWorkflows = (ArrayList<Workflow>) result[0];
+			if(myWorkflows == null){
+				if(noResults){
+					defaultText.setText("No workflow data found");
+				}
+				else if(needRetry){
+					defaultText.setText("Fail to load workflows data, please try again.");
+				}
+				return null;
+			}
+			
+			WorkflowsListAdapter resultListAdapter = new WorkflowsListAdapter(parentActivity, myWorkflows);
+			workflowList.setAdapter(resultListAdapter);
+			// hide progress bar
+			loadingProBar.setVisibility(8);
+			workflowList.setVisibility(0);
+			workflowList.onRefreshComplete();
+			return null;
+		}	
 	}*/
 }

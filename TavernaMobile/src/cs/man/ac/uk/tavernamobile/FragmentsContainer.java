@@ -4,14 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import cs.man.ac.uk.tavernamobile.fragments.ExploreFragment;
-import cs.man.ac.uk.tavernamobile.fragments.FavouriteWorkflowsFragment;
-import cs.man.ac.uk.tavernamobile.fragments.LaunchHistoryFragment;
-import cs.man.ac.uk.tavernamobile.fragments.MyWorkflowsFragment;
-import cs.man.ac.uk.tavernamobile.fragments.RunsFragment;
-import cs.man.ac.uk.tavernamobile.fragments.SearchResultFragment;
-
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -21,11 +15,21 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.LinearLayout;
+import cs.man.ac.uk.tavernamobile.fragments.ExploreFragment;
+import cs.man.ac.uk.tavernamobile.fragments.FavouriteWorkflowsFragment;
+import cs.man.ac.uk.tavernamobile.fragments.LaunchHistoryFragment;
+import cs.man.ac.uk.tavernamobile.fragments.MyWorkflowsFragment;
+import cs.man.ac.uk.tavernamobile.fragments.RunsFragment;
+import cs.man.ac.uk.tavernamobile.fragments.SearchResultFragment;
 
 public class FragmentsContainer extends Fragment {
 	
 	private FragmentActivity parentActivity;
 	
+	private LinearLayout poweredByLayout;
 	private View mainView;
 	private List<Fragment> subFragments;
 	private List<String> fragmentTitles;
@@ -53,6 +57,7 @@ public class FragmentsContainer extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		mainView = inflater.inflate(R.layout.main_panel_content, null);
+		poweredByLayout = (LinearLayout) mainView.findViewById(R.id.poweredByLayout);
 		return mainView;
 	}
 	
@@ -107,6 +112,27 @@ public class FragmentsContainer extends Fragment {
 	    mViewPager.setCurrentItem(0);
 	    
 	    mfragmentStatePagerAdapter.notifyDataSetChanged();
+	}
+	
+	@Override
+	public void onStart() {
+		super.onStart();
+		hidePoweredBy();
+	}
+
+	public void hidePoweredBy(){
+		/*DisplayMetrics metrics = new DisplayMetrics();
+		parentActivity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
+		Animation animation = new TranslateAnimation(0, 0, 0, -metrics.heightPixels);*/
+		Animation animation = AnimationUtils.loadAnimation(parentActivity, R.anim.push_down_out);
+		animation.setDuration(1000);
+		poweredByLayout.startAnimation(animation);
+		new Handler().postDelayed(new Runnable() {
+			public void run() {
+				poweredByLayout.setVisibility(8);
+			}
+		},1000);
+		
 	}
 
 	/**

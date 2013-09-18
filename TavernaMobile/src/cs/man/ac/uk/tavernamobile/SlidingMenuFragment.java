@@ -69,6 +69,8 @@ public class SlidingMenuFragment extends Fragment {
 									// Clear user logged-in and cookie
 									TavernaAndroid.setMyEUserLoggedin(null);
 									TavernaAndroid.setMyExperimentSessionCookies(null);
+									TavernaAndroid.setMyWorkflows(null);
+									TavernaAndroid.setFavouriteWorkflows(null);
 									clearLoginPreference();
 									parentActivity.recreate();
 									//refreshLoginState();
@@ -182,6 +184,8 @@ public class SlidingMenuFragment extends Fragment {
 								// Clear user logged-in and cookie
 								TavernaAndroid.setMyEUserLoggedin(null);
 								TavernaAndroid.setMyExperimentSessionCookies(null);
+								TavernaAndroid.setMyWorkflows(null);
+								TavernaAndroid.setFavouriteWorkflows(null);
 								parentActivity.recreate();
 								/*refreshLoginState();
 								clearLoginPreference();
