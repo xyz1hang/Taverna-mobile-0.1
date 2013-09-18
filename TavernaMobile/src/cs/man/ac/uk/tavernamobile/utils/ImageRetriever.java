@@ -21,7 +21,7 @@ public class ImageRetriever {
 		imageCache = TavernaAndroid.getmMemoryCache();
 	}
 
-	public Bitmap retrieveAvatarImage(String imageUri) throws NetworkConnectionException {
+	public Bitmap retrieveImage(String imageUri) throws NetworkConnectionException {
 
 		if(imageUri == null){
 			return null;
@@ -55,7 +55,7 @@ public class ImageRetriever {
 	        o.inJustDecodeBounds = true;
 	        BitmapFactory.decodeStream(is1, null, o);
 
-	        final int REQUIRED_SIZE = 100;
+	        final int REQUIRED_SIZE = 200;
 
 	        int width_tmp = o.outWidth, height_tmp = o.outHeight;
 	        int scale = 1;

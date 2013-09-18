@@ -9,12 +9,12 @@ public class User extends ElementBase {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = -3920706964603770420L;
+	private static final long serialVersionUID = 3467195671046297377L;
 
 	@Element(required = false)
 	protected String id;
 	
-	@Element(name = "created-at")
+	@Element(name = "created-at", required = false)
 	protected String created_at;
 	
 	@Element(required = false)
@@ -42,7 +42,7 @@ public class User extends ElementBase {
 	protected UserFavourited favourited;
 	
 	@Element(required = false)
-	protected WorkflowCollection workflows;
+	protected WorkflowBriefCollection workflows;
 
 	public String getId() {
 		return id;
@@ -124,11 +124,11 @@ public class User extends ElementBase {
 		this.favourited = favourited;
 	}
 
-	public WorkflowCollection getWorkflows() {
+	public WorkflowBriefCollection getWorkflows() {
 		return workflows;
 	}
 
-	public void setWorkflows(WorkflowCollection workflows) {
+	public void setWorkflows(WorkflowBriefCollection workflows) {
 		this.workflows = workflows;
 	}
 }

@@ -24,9 +24,7 @@ import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
 
 import uk.org.taverna.server.client.NetworkConnectionException;
-
 import android.app.Activity;
-import android.util.Log;
 import cs.man.ac.uk.tavernamobile.utils.TavernaAndroid;
 
 public class HttpRequestHandler {
@@ -92,17 +90,12 @@ public class HttpRequestHandler {
 	}
 
 	// method to deserialise XML data to target class type
-	private <T> Object deSerialize(Class<T> classType, String data) {
+	private <T> Object deSerialize(Class<T> classType, String data) throws Exception {
 
 		Serializer serializer = new Persister();
 
 		Object result = null;
-		try {
-			result = serializer.read(classType, data, false);
-		} catch (Exception e) {
-			// TODO: log has be removed in the release version
-			Log.e("serialization error", e.getMessage());
-		}
+		result = serializer.read(classType, data, false);
 
 		return result;
 	}

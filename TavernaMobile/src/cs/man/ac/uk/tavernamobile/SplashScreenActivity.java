@@ -1,21 +1,20 @@
 package cs.man.ac.uk.tavernamobile;
 
 import uk.org.taverna.server.client.NetworkConnectionException;
+import android.app.Activity;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.os.Handler;
 import cs.man.ac.uk.tavernamobile.datamodels.MyExperimentSession;
 import cs.man.ac.uk.tavernamobile.datamodels.User;
 import cs.man.ac.uk.tavernamobile.myexperiment.HttpRequestHandler;
+import cs.man.ac.uk.tavernamobile.myexperiment.WorkflowsLoader;
 import cs.man.ac.uk.tavernamobile.utils.BackgroundTaskHandler;
 import cs.man.ac.uk.tavernamobile.utils.CallbackTask;
 import cs.man.ac.uk.tavernamobile.utils.ImageRetriever;
 import cs.man.ac.uk.tavernamobile.utils.MessageHelper;
 import cs.man.ac.uk.tavernamobile.utils.TavernaAndroid;
-import android.app.Activity;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.os.Bundle;
-import android.os.Handler;
-import android.support.v4.util.LruCache;
 
 public class SplashScreenActivity extends Activity implements CallbackTask {
 
@@ -28,6 +27,7 @@ public class SplashScreenActivity extends Activity implements CallbackTask {
 	private SharedPreferences loginPreferences;
 	private static HttpRequestHandler requestHandler;
 	private String username, passwords;
+	private User currentUser;
 
 	@Override
 	public void onCreate(Bundle icicle) {
@@ -38,13 +38,13 @@ public class SplashScreenActivity extends Activity implements CallbackTask {
 		thisClass = this;
 		requestHandler = new HttpRequestHandler(thisActivity);
 		
+		// try to retrieve saved login details
 		loginPreferences = getSharedPreferences("loginPreference", MODE_PRIVATE);
 		if (loginPreferences == null){
 			navigateToActivity(MainPanelActivity.class);
 			return;
 		}
 		
-		// retrieving saved login details
 		boolean usernameSaved = loginPreferences.getBoolean("usernameSaved",false);
 		if (usernameSaved) {
 			username = loginPreferences.getString("username", "");
@@ -54,14 +54,13 @@ public class SplashScreenActivity extends Activity implements CallbackTask {
 			}
 		}
 		
-		// username and password both not null
-		// try to automatically login
+		// checking saved login details
+		// if username and password both not null, try to automatically login
 		if (username != null && passwords != null) {
 			BackgroundTaskHandler handler = new BackgroundTaskHandler();
 			handler.StartBackgroundTask(thisActivity, thisClass, null);
 		}
-		// else if passwords is null
-		// let user type in passwords
+		// else if passwords is null let user type in passwords
 		else if (username != null && passwords == null){
 			navigateToActivity(MyExperimentLogin.class);
 		} else{
@@ -72,7 +71,7 @@ public class SplashScreenActivity extends Activity implements CallbackTask {
 
 	@Override
 	public Object onTaskInProgress(Object... param) {
-		// Check the correctness of username and password first
+		// valid username and password first
 		String whoAmI = "http://www.myexperiment.org/whoami.xml";
 		Object response = null;
 		String responseMessage = null;
@@ -80,16 +79,14 @@ public class SplashScreenActivity extends Activity implements CallbackTask {
 			response = requestHandler.Get(whoAmI, User.class, username, passwords);
 
 			if (response instanceof User) {
-				User currentUser = (User) response;
+				currentUser = (User) response;
 				// load and cache the user avatar
 				// so that it can be retrieved from cache
 				// when needed rather than over network request
 				String avatarURI = currentUser.getAvatar().getResource();
-				Bitmap avatar = new ImageRetriever().retrieveAvatarImage(avatarURI);
+				new ImageRetriever().retrieveImage(avatarURI);
 
-				// store the name of the user in "Application"
-				// the Get will throw exception if the login
-				// details are not correct
+				// store the user object in "Application" global context
 				TavernaAndroid.setMyEUserLoggedin(currentUser);
 
 				// then try to get cookies
@@ -154,6 +151,10 @@ public class SplashScreenActivity extends Activity implements CallbackTask {
 			}
 			MessageHelper.showMessageDialog(this, null, responseMessage, null);
 		} else {
+			// load user workflows and user's favourite workflows
+			WorkflowsLoader wfListLoader = new WorkflowsLoader(thisActivity, null);
+			wfListLoader.LoadMyWorkflows(currentUser.getId());
+			
 			navigateToActivity(MainPanelActivity.class);
 		}
 		return null;

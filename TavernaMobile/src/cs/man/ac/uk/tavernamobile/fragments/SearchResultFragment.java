@@ -24,8 +24,8 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import cs.man.ac.uk.tavernamobile.R;
 import cs.man.ac.uk.tavernamobile.MainPanelActivity;
+import cs.man.ac.uk.tavernamobile.R;
 import cs.man.ac.uk.tavernamobile.WorkflowDetail;
 import cs.man.ac.uk.tavernamobile.datamodels.Workflow;
 import cs.man.ac.uk.tavernamobile.myexperiment.HttpRequestHandler;
@@ -34,15 +34,15 @@ import cs.man.ac.uk.tavernamobile.utils.BackgroundTaskHandler;
 import cs.man.ac.uk.tavernamobile.utils.CallbackTask;
 import cs.man.ac.uk.tavernamobile.utils.ListViewOnScrollTaskHandler;
 import cs.man.ac.uk.tavernamobile.utils.MessageHelper;
-import cs.man.ac.uk.tavernamobile.utils.SearchResultListAdapter;
 import cs.man.ac.uk.tavernamobile.utils.SystemStatesChecker;
+import cs.man.ac.uk.tavernamobile.utils.WorkflowsListAdapter;
 
 public class SearchResultFragment extends Fragment implements CallbackTask {
 
 	private FragmentActivity parentActivity;
 	
 	private ArrayList<Workflow> workflowResults;
-	private SearchResultListAdapter resultListAdapter;
+	private WorkflowsListAdapter resultListAdapter;
 
 	private View mainView;
 	private ListView resultList;
@@ -126,7 +126,7 @@ public class SearchResultFragment extends Fragment implements CallbackTask {
 		/*Spinner sortCriteriaSpinner = (Spinner) currentActivity
 				.findViewById(R.id.wfSearchSortSpinner);
 		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
-				currentActivity, R.array.wfExpo_sort_criteria,
+				currentActivity, R.array.wfList_sort_criteria,
 				android.R.layout.simple_spinner_item);
 		// Sets the layout resource to create the drop down views
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -242,7 +242,6 @@ public class SearchResultFragment extends Fragment implements CallbackTask {
 			loadingProBar.setVisibility(0);
 			// change to initial loading listener
 			search.registerLoadingListener(iniLoadingListener);
-			searchQueryQuote.setText("Search results for : \"" + searchQuery + "\"");
 			onScrollTaskHandler.initializeSearchState();
 			// reset page index
 			search.searchResultsPageCount = 1;
@@ -329,8 +328,7 @@ public class SearchResultFragment extends Fragment implements CallbackTask {
 				// newly added items
 				workflowResults = new ArrayList<Workflow>();
 				workflowResults.addAll(newResults);
-				resultListAdapter = new SearchResultListAdapter(
-						parentActivity, workflowResults);
+				resultListAdapter = new WorkflowsListAdapter(parentActivity, workflowResults);
 				resultList.addFooterView(footerView);
 				resultList.setAdapter(resultListAdapter);
 
@@ -370,6 +368,7 @@ public class SearchResultFragment extends Fragment implements CallbackTask {
 			// display results
 			resultList.setVisibility(0);
 			loadingProBar.setVisibility(8);
+			searchQueryQuote.setText("Search results for : \"" + searchQuery + "\"");
 
 			// when initial loading complete
 			// change the loading listener back to "auto-load-more"

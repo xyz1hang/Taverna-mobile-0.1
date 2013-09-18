@@ -20,7 +20,6 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import cs.man.ac.uk.tavernamobile.datamodels.User;
 import cs.man.ac.uk.tavernamobile.utils.CallbackTask;
@@ -140,7 +139,7 @@ public class SlidingMenuFragment extends Fragment {
 					} else if(itemIndex == 2){
 							beginFragmentTransaction(new int[] {0, 1}, "WorkflowsFragment");
 					} else if(itemIndex == 3){
-						// beginFragmentTransaction(new int[] {4, 5}, "MyWorkflowsFragment")
+							beginFragmentTransaction(new int[] {4, 5}, "MyWorkflowsFragment");
 					}
 				}
 			});

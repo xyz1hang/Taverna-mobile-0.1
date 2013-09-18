@@ -36,7 +36,7 @@ import cs.man.ac.uk.tavernamobile.datamodels.Workflow;
 import cs.man.ac.uk.tavernamobile.myexperiment.HttpRequestHandler;
 import cs.man.ac.uk.tavernamobile.myexperiment.WorkflowDownloadHelper;
 
-public class WorkflowExpoListAdapter extends BaseAdapter {
+public class WorkflowsListAdapter extends BaseAdapter {
 	
 	private LayoutInflater myInflater;
 	private ArrayList<Workflow> data;
@@ -47,7 +47,7 @@ public class WorkflowExpoListAdapter extends BaseAdapter {
 	
 	public int animationStartPosition;
 	
-	public WorkflowExpoListAdapter(Activity context, ArrayList<Workflow> listData)
+	public WorkflowsListAdapter(Activity context, ArrayList<Workflow> listData)
 	{
 		data = listData;
 		mContext = context;
@@ -84,24 +84,25 @@ public class WorkflowExpoListAdapter extends BaseAdapter {
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		// TODO: prevent the view being recycled which will display the 
+		// TODO: view holder pattern
 		// wrong avatar image (temporary solution)
 		//if (convertView == null)
 		//{
-			convertView = myInflater.inflate(R.layout.workflowsexpo_single_row, null);
+			convertView = myInflater.inflate(R.layout.workflowslist_single_row, null);
 		//}
 		
 		// UI elements
-		TextView uploaderNameView = (TextView) convertView.findViewById(R.id.wfExpoUploaderName);
-		TextView titleView = (TextView) convertView.findViewById(R.id.wfExpoTitleVersion);
-		TextView createdView = (TextView) convertView.findViewById(R.id.wfExpoCreated);
-		TextView updatedView = (TextView) convertView.findViewById(R.id.wfExpoUpdateText);
-		ImageView thumbnailView = (ImageView) convertView.findViewById(R.id.wfExpoThumbnail);
-		TextView typeView = (TextView) convertView.findViewById(R.id.wfExpoTypeText);
-		Button viewButton = (Button) convertView.findViewById(R.id.wfExpo_view_button);
-		Button downloadButton = (Button) convertView.findViewById(R.id.wfExpo_download_button);
-		TextView creditValue = (TextView) convertView.findViewById(R.id.wfExpoCreditText);
-		LinearLayout creditLayout = (LinearLayout) convertView.findViewById(R.id.wfExpoSingleRowCreditLayout);
-		TextView ratingValue = (TextView) convertView.findViewById(R.id.wfExpoRatingText);
+		TextView uploaderNameView = (TextView) convertView.findViewById(R.id.wfListUploaderName);
+		TextView titleView = (TextView) convertView.findViewById(R.id.wfListTitleVersion);
+		TextView createdView = (TextView) convertView.findViewById(R.id.wfListCreated);
+		TextView updatedView = (TextView) convertView.findViewById(R.id.wfListUpdateText);
+		ImageView thumbnailView = (ImageView) convertView.findViewById(R.id.wfListThumbnail);
+		TextView typeView = (TextView) convertView.findViewById(R.id.wfListTypeText);
+		Button viewButton = (Button) convertView.findViewById(R.id.wfList_view_button);
+		Button downloadButton = (Button) convertView.findViewById(R.id.wfList_download_button);
+		TextView creditValue = (TextView) convertView.findViewById(R.id.wfListCreditText);
+		LinearLayout creditLayout = (LinearLayout) convertView.findViewById(R.id.wfListSingleRowCreditLayout);
+		TextView ratingValue = (TextView) convertView.findViewById(R.id.wfListRatingText);
 		
 		thumbnailNotAvailableView = 
 				(TextView) convertView.findViewById(R.id.thumbnail_not_available_text);
@@ -290,7 +291,7 @@ public class WorkflowExpoListAdapter extends BaseAdapter {
 				try {
 					 uploader = (User) requestHandler.Get(resourceURI, User.class, null, null);
 					 String imageURI = uploader.getAvatar().getResource();
-					 avatar = new ImageRetriever().retrieveAvatarImage(imageURI);
+					 avatar = new ImageRetriever().retrieveImage(imageURI);
 					 
 					 // cache avatar with uploader URI
 					 // imageCacheKey = uploader.getUri();
@@ -300,7 +301,7 @@ public class WorkflowExpoListAdapter extends BaseAdapter {
 				return avatar;
 			}
 			else if(imageHolder instanceof ImageView){
-				Bitmap wfImage = new ImageRetriever().retrieveAvatarImage(resourceURI);
+				Bitmap wfImage = new ImageRetriever().retrieveImage(resourceURI);
 				return wfImage;
 			}
 			

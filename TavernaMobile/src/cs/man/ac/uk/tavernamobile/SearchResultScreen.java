@@ -139,7 +139,7 @@ public class SearchResultScreen extends Activity implements CallbackTask {
 		ArrayAdapter<CharSequence> adapter = 
 				ArrayAdapter.createFromResource(
 						currentActivity, 
-						R.array.wfExpo_sort_criteria, 
+						R.array.wfList_sort_criteria, 
 						android.R.layout.simple_spinner_item);
 		// Sets the layout resource to create the drop down views
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);

@@ -5,7 +5,9 @@ import java.util.List;
 import java.util.Locale;
 
 import cs.man.ac.uk.tavernamobile.fragments.ExploreFragment;
+import cs.man.ac.uk.tavernamobile.fragments.FavouriteWorkflowsFragment;
 import cs.man.ac.uk.tavernamobile.fragments.LaunchHistoryFragment;
+import cs.man.ac.uk.tavernamobile.fragments.MyWorkflowsFragment;
 import cs.man.ac.uk.tavernamobile.fragments.RunsFragment;
 import cs.man.ac.uk.tavernamobile.fragments.SearchResultFragment;
 
@@ -81,10 +83,12 @@ public class FragmentsContainer extends Fragment {
 					fragmentTitles.add("History");
 					break;
 				case 4:
-					// subFragments.add(new ExploreFragment());
+					subFragments.add(new MyWorkflowsFragment());
+					fragmentTitles.add("My Workflow");
 					break;
 				case 5:
-					// subFragments.add(new ExploreFragment());
+					subFragments.add(new FavouriteWorkflowsFragment());
+					fragmentTitles.add("Favourite");
 					break;
 			}
 		}
@@ -101,7 +105,8 @@ public class FragmentsContainer extends Fragment {
 		mViewPager.setAdapter(mfragmentStatePagerAdapter);
 		mViewPager.setOffscreenPageLimit(1);
 	    mViewPager.setCurrentItem(0);
-		
+	    
+	    mfragmentStatePagerAdapter.notifyDataSetChanged();
 	}
 
 	/**
@@ -120,7 +125,6 @@ public class FragmentsContainer extends Fragment {
 		
 		public void addFragment(Fragment fragment) {
 	        mFragments.add(fragment);
-	        notifyDataSetChanged();
 	    }
 
 		@Override
