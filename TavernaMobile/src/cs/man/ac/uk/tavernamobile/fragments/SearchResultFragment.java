@@ -10,7 +10,6 @@ import android.support.v4.app.FragmentActivity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -70,7 +69,8 @@ public class SearchResultFragment extends Fragment implements CallbackTask {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		mainView = inflater.inflate(R.layout.search_result_screen, null);
+		super.onCreateView(inflater, container, savedInstanceState);
+		mainView = inflater.inflate(R.layout.search_result_screen, container, false);
 		loadingProBar = (ProgressBar) mainView.findViewById(R.id.wfSearchProgressBar);
 		searchQueryQuote = (TextView) mainView.findViewById(R.id.searchQueryQuote);
 		resultList = (ListView) mainView.findViewById(R.id.searchResultList);
@@ -198,8 +198,12 @@ public class SearchResultFragment extends Fragment implements CallbackTask {
 		search.DoSearch(searchQuery, sortedBy, order, false);
 	}*/
 
-	@Override
+	/*@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		// remove menu added by previous fragment
+		for(int i = 1; i < menu.size(); i ++){
+			menu.removeItem(menu.getItem(i).getItemId());
+		}
 		inflater.inflate(R.menu.search_results_screen, menu);
 		LinearLayout searchView = (LinearLayout) menu.findItem(R.id.search_results_search).getActionView();
 
@@ -225,6 +229,53 @@ public class SearchResultFragment extends Fragment implements CallbackTask {
 					search(searchQuery);
 				}
 			});
+	
+		super.onCreateOptionsMenu(menu, inflater);
+	}*/
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case android.R.id.home:
+			((MainPanelActivity) parentActivity).getMenu().toggle();
+			return true;
+		default:
+			return super.onOptionsItemSelected(item);
+		}
+	}
+	
+	@Override
+	public void onPrepareOptionsMenu(Menu menu) {
+		// remove menu added by previous fragment
+		for(int i = 1; i < menu.size(); i ++){
+			menu.removeItem(menu.getItem(i).getItemId());
+		}
+		parentActivity.getMenuInflater().inflate(R.menu.search_results_screen, menu);
+		LinearLayout searchView = (LinearLayout) menu.findItem(R.id.search_results_search).getActionView();
+
+		final EditText query = (EditText) searchView.getChildAt(0);
+		query.requestFocus();
+		query.setOnEditorActionListener(new EditText.OnEditorActionListener() {
+			@Override
+			public boolean onEditorAction(TextView v, int actionId,
+					KeyEvent event) {
+				if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+					searchQuery = query.getText().toString();
+					search(searchQuery);
+					return true;
+				}
+				return false;
+			}
+		});
+		ImageButton searchButton = (ImageButton) searchView.getChildAt(1);
+
+		searchButton.setOnClickListener(new android.view.View.OnClickListener() {
+				public void onClick(android.view.View v) {
+					searchQuery = query.getText().toString();
+					search(searchQuery);
+				}
+			});
+		super.onPrepareOptionsMenu(menu);
 	}
 
 	private void search(String query) {
@@ -246,17 +297,6 @@ public class SearchResultFragment extends Fragment implements CallbackTask {
 			// reset page index
 			search.searchResultsPageCount = 1;
 			search.DoSearch(query, sortedBy, order, true);
-		}
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		case android.R.id.home:
-			((MainPanelActivity) parentActivity).getMenu().toggle();
-			return true;
-		default:
-			return super.onOptionsItemSelected(item);
 		}
 	}
 

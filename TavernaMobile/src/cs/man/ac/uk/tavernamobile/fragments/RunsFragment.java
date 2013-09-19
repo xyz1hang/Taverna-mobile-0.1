@@ -95,8 +95,12 @@ public class RunsFragment extends Fragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		super.onCreateView(inflater, container, savedInstanceState);
-		View wfRunsView = inflater.inflate(R.layout.main_runs, container, false);
+		// super.onCreateView(inflater, container, savedInstanceState);
+		View wfRunsView = inflater.inflate(R.layout.main_runs, null); //container, false);
+		TextView barText = (TextView) wfRunsView.findViewById(R.id.runsList_bar_text);
+		barText.setText("Pull to refresh");
+		refreshableList = (PullToRefreshExpandableListView) wfRunsView
+				.findViewById(R.id.pull_to_refresh_listview);
 		// display action bar menu
 		setHasOptionsMenu(true);
 		return wfRunsView;
@@ -107,8 +111,6 @@ public class RunsFragment extends Fragment {
 		parentActivity = this.getActivity();
 		runManager = new WorkflowRunManager(parentActivity);
 		systemStateChecker = new SystemStatesChecker(parentActivity);
-		refreshableList = (PullToRefreshExpandableListView) parentActivity.findViewById(
-						R.id.pull_to_refresh_listview);
 		
 		refreshableList.setOnRefreshListener(new OnRefreshListener<ExpandableListView>() {
 		    @Override
@@ -129,11 +131,15 @@ public class RunsFragment extends Fragment {
 		super.onActivityCreated(savedInstanceState);
 	}
 	
-	@Override
+	/*@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		super.onCreateOptionsMenu(menu, inflater);
+		// remove menu added by previous fragment
+		for(int i = 1; i < menu.size(); i ++){
+			menu.removeItem(menu.getItem(i).getItemId());
+		}
 		inflater.inflate(R.menu.runlist_menu, menu);
-	}
+		super.onCreateOptionsMenu(menu, inflater);
+	}*/
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -157,6 +163,16 @@ public class RunsFragment extends Fragment {
 		return super.onOptionsItemSelected(item);
 	}
 	
+	@Override
+	public void onPrepareOptionsMenu(Menu menu) {
+		// remove menu added by previous fragment
+		for(int i = 1; i < menu.size(); i ++){
+			menu.removeItem(menu.getItem(i).getItemId());
+		}
+		parentActivity.getMenuInflater().inflate(R.menu.runlist_menu, menu);
+		super.onPrepareOptionsMenu(menu);
+	}
+
 	@Override
 	public void onPause() {
 		if(mActionMode != null){

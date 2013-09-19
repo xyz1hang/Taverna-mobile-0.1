@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,11 +33,10 @@ public class SlidingMenuFragment extends Fragment {
 	private TextView myExperimentLoginText;
 	private View menuView;
 	private LinearLayout listRoot;
-	//private ScrollView menuScroll;
-	
-	// Utilities.
-	// try to reuse object
 	private LayoutInflater layoutInflater;
+	
+	private int previouslySelectedFragIndex;
+	private String previousSelectedFragTag;
 
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		menuView = inflater.inflate(R.layout.sliding_list, null);
@@ -84,7 +84,6 @@ public class SlidingMenuFragment extends Fragment {
 							}, null);
 					}else{
 						((MainPanelActivity) parentActivity).getMenu().toggle();
-						((MainPanelActivity) parentActivity).getMenu().setSlidingEnabled(false);
 						Intent gotoMyexperimentLogin = new Intent(parentActivity, MyExperimentLogin.class);
 						parentActivity.startActivity(gotoMyexperimentLogin);
 					}
@@ -136,12 +135,17 @@ public class SlidingMenuFragment extends Fragment {
 			navigationMenuList.setOnItemClickListener(new OnItemClickListener(){
 				@Override
 				public void onItemClick(AdapterView<?> theListView, View parentView, int itemIndex, long arg3) {
-					if(itemIndex == 1){
-							beginFragmentTransaction(new int[] {2, 3}, "RunsControlFragment");
-					} else if(itemIndex == 2){
-							beginFragmentTransaction(new int[] {0, 1}, "WorkflowsFragment");
-					} else if(itemIndex == 3){
-							beginFragmentTransaction(new int[] {4, 5}, "MyWorkflowsFragment");
+					if(previouslySelectedFragIndex == itemIndex){
+						((MainPanelActivity) parentActivity).getMenu().toggle();
+					} else{
+						previouslySelectedFragIndex = itemIndex;
+						if(itemIndex == 1){
+								beginFragmentTransaction(new int[] {2, 3}, "RunsControlFragment");
+						} else if(itemIndex == 2){
+								beginFragmentTransaction(new int[] {0, 1}, "WorkflowsFragment");
+						} else if(itemIndex == 3){
+								beginFragmentTransaction(new int[] {4, 5}, "MyWorkflowsFragment");
+						}
 					}
 				}
 			});
@@ -296,22 +300,30 @@ public class SlidingMenuFragment extends Fragment {
 	 * @param backStackTag
 	 */
 	private void beginFragmentTransaction(int[] fragmentsToInt, String backStackTag){
-		FragmentTransaction ft =
-				parentActivity.getSupportFragmentManager().beginTransaction();
+		FragmentManager fm = parentActivity.getSupportFragmentManager();
+		FragmentTransaction ft = fm.beginTransaction();
 		// ft.setCustomAnimations(R.anim.push_left_in, R.anim.push_left_out);
-		Fragment newFragment = new FragmentsContainer();
-		Bundle args = new Bundle();
-		args.putIntArray("fragmentsToInstantiate", fragmentsToInt);
-		newFragment.setArguments(args);
-		ft.addToBackStack(backStackTag);
-		ft.replace(R.id.main_panel_root, newFragment).commit();
-		// smooth transaction
+        //boolean successfullypopped = fm.popBackStackImmediate(backStackTag, 1);
+        //if(!successfullypopped){
+        	Fragment newFragment = new FragmentsContainer();
+    		Bundle args = new Bundle();
+    		args.putIntArray("fragmentsToInstantiate", fragmentsToInt);
+    		newFragment.setArguments(args);
+    		ft.addToBackStack(backStackTag);
+    		if(previousSelectedFragTag == null){
+    			fm.beginTransaction().hide(fm.findFragmentByTag("StarterFragments")).commit();
+    		}else{
+    			fm.beginTransaction().hide(fm.findFragmentByTag(previousSelectedFragTag)).commit();
+    		}
+    		previousSelectedFragTag = backStackTag;
+    		ft.replace(R.id.main_panel_root, newFragment, backStackTag).commit();
+        //}
+        // smooth transaction
 		new Handler().postDelayed(new Runnable() {
 			public void run() {
 				// close the menu
 				((MainPanelActivity) parentActivity).getMenu().toggle();
 			}},500);
-		
 	}
 
 	private class SimpleAdapter extends ArrayAdapter<listObject> {

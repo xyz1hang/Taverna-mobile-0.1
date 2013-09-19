@@ -66,6 +66,7 @@ public class FragmentsContainer extends Fragment {
 		super.onActivityCreated(savedInstanceState);
 		subFragments = new ArrayList<Fragment>();
 		fragmentTitles = new ArrayList<String>();
+		parentActivity = getActivity();
 		
 		Bundle args = this.getArguments();
 		int[] fragmentsToInstantiate = args.getIntArray("fragmentsToInstantiate");
@@ -98,7 +99,6 @@ public class FragmentsContainer extends Fragment {
 			}
 		}
 		
-		parentActivity = getActivity();
 		mfragmentStatePagerAdapter = 
 				new WorkflowsPagerAdapter(parentActivity.getSupportFragmentManager(), fragmentTitles);
 		for(Fragment f : subFragments){
