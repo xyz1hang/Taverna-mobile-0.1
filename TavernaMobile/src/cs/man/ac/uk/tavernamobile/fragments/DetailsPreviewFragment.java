@@ -80,7 +80,7 @@ public class DetailsPreviewFragment extends DetailsFragmentsBase implements Call
 
 	/** network task **/
 	public Object onTaskInProgress(Object... params) {
-		Bitmap imageBitmap = new ImageRetriever().retrieveAvatarImage(workflow.getPreview());
+		Bitmap imageBitmap = new ImageRetriever().retrieveImage(workflow.getPreview());
 		// cache image - use image URI as key
 		// String imageCacheKey = workflow.getPreview();//"workflowPreview";
 		// addBitmapToMemoryCache(imageCacheKey, imageBitmap);

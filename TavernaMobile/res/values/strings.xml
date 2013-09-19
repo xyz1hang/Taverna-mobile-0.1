@@ -11,12 +11,14 @@
     <string name="powered_by_cont">Taverna</string>
     <string name="title_section3">Runs</string>
     <string name="title_section2">Workflows</string>
+    
     <string name="title_section1">Explore</string>
+    <string name="title_section0">Search</string>
     
     <!-- Main screen Explore fragments Strings -->
     <string name="sort_text">Sort by :</string>
    	<string name="order_radio_button_text">Ascending order</string>
-    <string-array name="wfExpo_sort_criteria">
+    <string-array name="wfList_sort_criteria">
         <item>Creation time</item>
         <item>Update time</item>
         <item>Title</item>
@@ -24,14 +26,14 @@
     </string-array>
     
     <!-- expo single row strings -->
-    <string name="wfexpo_sr_created_on">Created on:</string>
-    <string name="wfexpo_sr_last_update">Last update:</string>
-    <string name="wfexpo_sr_credit">Credit:</string>
-    <string name="wfexpo_sr_type">Type:</string>
-    <string name="wfexpo_sr_rating">Rating:</string>
-    <string name="wfexpo_sr_view_button">view</string>
-    <string name="wfexpo_sr_download_button">download</string>
-    <string name="wfexpo_sr_mediam_wf_thumbnail">Mediam Workflow thumbnail</string>
+    <string name="wfList_sr_created_on">Created on:</string>
+    <string name="wfList_sr_last_update">Last update:</string>
+    <string name="wfList_sr_credit">Credit:</string>
+    <string name="wfList_sr_type">Type:</string>
+    <string name="wfList_sr_rating">Rating:</string>
+    <string name="wfList_sr_view_button">view</string>
+    <string name="wfList_sr_download_button">download</string>
+    <string name="wfList_sr_mediam_wf_thumbnail">Mediam Workflow thumbnail</string>
     <string name="thumbnail_not_available_text">Thumbnail not available</string>
    
     <!-- Main screen Workflows fragments String  -->

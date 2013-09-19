@@ -1,6 +1,7 @@
 package cs.man.ac.uk.tavernamobile.utils;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.apache.http.client.CookieStore;
@@ -13,6 +14,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.support.v4.util.LruCache;
 import cs.man.ac.uk.tavernamobile.datamodels.User;
+import cs.man.ac.uk.tavernamobile.datamodels.Workflow;
 
 //@ReportsCrashes(formKey = "dFg0OHU2alo1VDZpYUFud3JwMzFsMnc6MQ", mode = ReportingInteractionMode.DIALOG,
 //// displayed as soon as the crash occurs, before collecting data which can take
@@ -52,6 +54,8 @@ public class TavernaAndroid extends Application {
 	private static HashMap<String, Object> mCache;
 
 	private static User myEUserLoggedin;
+	private static ArrayList<Workflow> myWorkflows = new ArrayList<Workflow>();
+	private static ArrayList<Workflow> favouriteWorkflows = new ArrayList<Workflow>();
 	private static CookieStore myExperimentSessionCookies;
 
 	/**** for testing purpose ****/
@@ -146,6 +150,18 @@ public class TavernaAndroid extends Application {
 	 this.uploader = uploader;
 	 }*/
 
+	public static ArrayList<Workflow> getMyWorkflows() {
+		return myWorkflows;
+	}
+	public static void setMyWorkflows(ArrayList<Workflow> myWorkflows) {
+		TavernaAndroid.myWorkflows = myWorkflows;
+	}
+	public static ArrayList<Workflow> getFavouriteWorkflows() {
+		return favouriteWorkflows;
+	}
+	public static void setFavouriteWorkflows(ArrayList<Workflow> favouriteWorkflows) {
+		TavernaAndroid.favouriteWorkflows = favouriteWorkflows;
+	}
 	public static CookieStore getMyExperimentSessionCookies() {
 		return myExperimentSessionCookies;
 	}

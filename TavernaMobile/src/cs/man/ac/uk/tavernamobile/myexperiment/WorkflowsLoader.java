@@ -7,12 +7,18 @@ import uk.org.taverna.server.client.NetworkConnectionException;
 
 import android.app.Activity;
 
+import cs.man.ac.uk.tavernamobile.datamodels.ElementBase;
+import cs.man.ac.uk.tavernamobile.datamodels.User;
+import cs.man.ac.uk.tavernamobile.datamodels.UserFavourited;
 import cs.man.ac.uk.tavernamobile.datamodels.Workflow;
-import cs.man.ac.uk.tavernamobile.datamodels.WorkflowExpoResults;
+import cs.man.ac.uk.tavernamobile.datamodels.WorkflowBrief;
+import cs.man.ac.uk.tavernamobile.datamodels.WorkflowBriefCollection;
+import cs.man.ac.uk.tavernamobile.datamodels.WorkflowCollection;
 import cs.man.ac.uk.tavernamobile.datamodels.WorkflowSearchResults;
 import cs.man.ac.uk.tavernamobile.utils.CallbackTask;
 import cs.man.ac.uk.tavernamobile.utils.BackgroundTaskHandler;
 import cs.man.ac.uk.tavernamobile.utils.SystemStatesChecker;
+import cs.man.ac.uk.tavernamobile.utils.TavernaAndroid;
 
 public class WorkflowsLoader implements CallbackTask{
 	
@@ -53,20 +59,22 @@ public class WorkflowsLoader implements CallbackTask{
 			String finalString = searchQuery.replace(" ", "+");
 			// start searching background task
 			BackgroundTaskHandler handler = new BackgroundTaskHandler();
-			String theQuery = "http://www.myexperiment.org/search.xml?query=" + finalString + sort + order
-							+"&type=workflow&num=25&page=" + searchResultsPageCount + "&elements=title,uploader";
+			String uri = "http://www.myexperiment.org/search.xml?query=" + finalString + sort + order
+							+"&type=workflow&num=15&page=" + searchResultsPageCount
+							+"&elements=title,content-uri,uploader,preview,privileges,license-type,"
+							+"created-at,updated-at,thumbnail-big,credits,ratings,type";
 			if(hasMessage){
 				handler.StartBackgroundTask(
 						CallingActivity, 
 						this, 
 						"Searching for "+ "\"" + searchQuery+ "\""+ "...", 
-						theQuery, WorkflowSearchResults.class);
+						uri, WorkflowSearchResults.class);
 			}else{
 				handler.StartBackgroundTask(
 						CallingActivity, 
 						this, 
 						null, 
-						theQuery, WorkflowSearchResults.class);
+						uri, WorkflowSearchResults.class);
 			}
 			
 		}
@@ -86,22 +94,39 @@ public class WorkflowsLoader implements CallbackTask{
 			order = order != null ? "&order="+order : "";
 			sort = sort != null ? "&sort="+sort : "";
 			
-			String theQuery = "http://www.myexperiment.org/workflows.xml?"
+			String uri = "http://www.myexperiment.org/workflows.xml?"
 							 +"&num=10&page=" + searchResultsPageCount + sort + order
 							 +"&elements=title,content-uri,uploader,preview,privileges,license-type,"
 							 +"created-at,updated-at,thumbnail-big,credits,ratings,type";
-			// start searching background task
+			// start background loading task
 			BackgroundTaskHandler handler = new BackgroundTaskHandler();
 			handler.StartBackgroundTask(
 					CallingActivity, 
 					this, 
 					null,
-					theQuery, WorkflowExpoResults.class);
+					uri, WorkflowCollection.class);
 		}
+	}
+	
+	public void LoadMyWorkflows(String userID){
+		// check for Internet connection
+		if (!sysStatesChecker.isNetworkConnected()){
+			return;
+		}
+		
+		String uri = "http://www.myexperiment.org/user.xml?id="+userID+"&elements=workflows,favourited";
+		// start background loading task
+		BackgroundTaskHandler handler = new BackgroundTaskHandler();
+		handler.StartBackgroundTask(
+				CallingActivity, 
+				new UserWorkflowsLoadingTask(),
+				null,
+				uri);
+		
 	}
 
 	public Object onTaskInProgress(Object... params) {
-		String searchQuery = (String)params[0];
+		String searchUri = (String)params[0];
 		Class<?> targetClass = (Class<?>) params[1];
 		// when searching by using same instance i.e loading more results,
 		// we load result from following pages
@@ -111,13 +136,13 @@ public class WorkflowsLoader implements CallbackTask{
 		try{
 			if(targetClass == WorkflowSearchResults.class){
 				WorkflowSearchResults results = 
-						(WorkflowSearchResults) requestHandler.Get(searchQuery, targetClass, null, null);
+						(WorkflowSearchResults) requestHandler.Get(searchUri, targetClass, null, null);
 
 				retrievedWorkflows = results.getWorkflows();
 			}
-			else if(targetClass == WorkflowExpoResults.class){
-				WorkflowExpoResults results = 
-						(WorkflowExpoResults) requestHandler.Get(searchQuery, targetClass, null, null);
+			else if(targetClass == WorkflowCollection.class){
+				WorkflowCollection results = 
+						(WorkflowCollection) requestHandler.Get(searchUri, targetClass, null, null);
 				
 				retrievedWorkflows = results.getWorkflows();
 			}
@@ -137,5 +162,64 @@ public class WorkflowsLoader implements CallbackTask{
 	public Object onTaskComplete(Object... result) {
 		loadingListener.onTaskComplete(result);
 		return null;
+	}
+	
+	/**
+	 * Background Task loading user's workflow and their favorite workflow
+	 * 
+	 * @author hyde zhang
+	 *
+	 */
+	private class UserWorkflowsLoadingTask implements CallbackTask{
+
+		@Override
+		public Object onTaskInProgress(Object... param) {
+			String searchUri = (String)param[0];
+			ArrayList<Workflow> myWorkflows = new ArrayList<Workflow>();
+			ArrayList<Workflow> favouriteWorkflows = new ArrayList<Workflow>();
+			
+			try{
+				User results = (User) requestHandler.Get(searchUri, User.class, null, null);
+				WorkflowBriefCollection myWf = results.getWorkflows();
+				if(myWf != null){
+					for(WorkflowBrief wfb: myWf.getWorkflowBrief()){
+						String uri = wfb.getUri() + "&elements=title,content-uri,uploader,preview,privileges,"
+									+"license-type,created-at,updated-at,thumbnail-big,credits,ratings,type";
+						Workflow workflow = (Workflow) requestHandler.Get(uri, Workflow.class, null, null);
+						myWorkflows.add(workflow);
+					}
+				}
+				
+				UserFavourited favourite = results.getFavourited();
+				if(favourite != null){
+					List<ElementBase> favouritedWf = favourite.getFavouritedEntity();
+					for(ElementBase wfb: favouritedWf){
+						if(wfb instanceof WorkflowBrief){
+							String uri = wfb.getUri() + "&elements=title,content-uri,uploader,preview,privileges,"
+									+"license-type,created-at,updated-at,thumbnail-big,credits,ratings,type";
+							Workflow workflow = (Workflow) requestHandler.Get(uri, Workflow.class, null, null);
+							favouriteWorkflows.add(workflow);
+						}
+					}
+				}				
+			} catch(NetworkConnectionException e){
+				return e.getMessage();
+			} catch(Exception e) {
+				return e.getMessage();
+			}
+			
+			// save workflow details in the global context
+			// alone with user detail
+			TavernaAndroid.setMyWorkflows(myWorkflows);
+			TavernaAndroid.setFavouriteWorkflows(favouriteWorkflows);
+			
+			return null;
+		}
+
+		@Override
+		public Object onTaskComplete(Object... result) {
+			loadingListener.onTaskComplete(result);
+			return null;
+		}
 	}
 }

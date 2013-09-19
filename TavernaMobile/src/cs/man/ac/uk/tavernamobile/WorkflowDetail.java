@@ -229,6 +229,8 @@ public class WorkflowDetail extends FragmentActivity implements CallbackTask {
 					}
 				}
 			});*/
+		
+		this.overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
 	}
 
 	@Override
@@ -268,7 +270,7 @@ public class WorkflowDetail extends FragmentActivity implements CallbackTask {
 
 		try {
 			uploader = (User) requestHandler.Get(userprofileUri, User.class, null, null);
-			avatarBitmap = new ImageRetriever().retrieveAvatarImage(uploader.getAvatar().getResource());
+			avatarBitmap = new ImageRetriever().retrieveImage(uploader.getAvatar().getResource());
 
 			// cache avatar image - use avatar image URI as key
 			/*String imageCacheKey = uploader.getAvatar().getUri();// "workflowPreview";
@@ -387,5 +389,11 @@ public class WorkflowDetail extends FragmentActivity implements CallbackTask {
 			}
 			return null;
 		}
+	}
+	
+	@Override
+	public void finish(){
+		this.overridePendingTransition(R.anim.push_right_in, R.anim.push_left_out);
+		super.finish();
 	}
 }

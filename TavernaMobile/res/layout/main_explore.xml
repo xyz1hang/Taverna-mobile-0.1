@@ -1,75 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
+    android:id="@+id/wfListRootLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:layout_gravity="center"
-    android:background="@drawable/gradient2"
-    android:focusable="true"
-    android:focusableInTouchMode="true"
-    android:gravity="fill_vertical"
     android:orientation="vertical" >
 
-    <LinearLayout
-        android:id="@+id/wfExpoToolsLayout"
+    <RelativeLayout
+        android:id="@+id/wfListToolsLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
+        android:layout_alignParentTop="true"
         android:background="@drawable/top_bg"
         android:baselineAligned="false"
-        android:orientation="vertical"
-        android:padding="5dp" >
+        android:orientation="horizontal"
+        android:padding="10dp" >
 
-        <RelativeLayout
+        <LinearLayout
+            android:id="@+id/wfListCriteriaLinearLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:padding="5dp" >
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_gravity="left|center_vertical"
+            android:orientation="horizontal" >
 
-            <LinearLayout
-                android:id="@+id/wfExpoCriteriaLinearLayout"
+            <TextView
+                android:id="@+id/sortByText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentTop="true"
                 android:layout_gravity="left|center_vertical"
-                android:orientation="horizontal" >
+                android:layout_marginLeft="10dp"
+                android:text="@string/sort_text"
+                android:textAppearance="?android:attr/textAppearanceSmall" />
 
-                <TextView
-                    android:id="@+id/sortByText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="left|center_vertical"
-                    android:layout_marginLeft="10dp"
-                    android:text="@string/sort_text"
-                    android:textAppearance="?android:attr/textAppearanceSmall" />
-
-                <Spinner
-                    android:id="@+id/wfExpoSortSpinner"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="left"
-                    android:gravity="center" />
-            </LinearLayout>
-
-            <CheckBox
-                android:id="@+id/wfExpoSortOrderRadioButton"
+            <Spinner
+                android:id="@+id/wfListSortSpinner"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:layout_gravity="center"
-                android:layout_toRightOf="@+id/wfExpoCriteriaLinearLayout"
-                android:text="@string/order_radio_button_text"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textSize="12sp" />
-        </RelativeLayout>
-    </LinearLayout>
+                android:layout_gravity="left"
+                android:gravity="center" />
+        </LinearLayout>
+
+        <CheckBox
+            android:id="@+id/wfListSortOrderRadioButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center"
+            android:text="@string/order_radio_button_text"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textSize="12sp" />
+    </RelativeLayout>
 
     <ListView
         android:id="@+id/workflowExpoList"
         android:layout_width="match_parent"
         android:layout_height="fill_parent"
-        android:layout_below="@+id/wfExpoToolsLayout"
+        android:layout_below="@+id/wfListToolsLayout"
         android:layout_gravity="center"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
@@ -81,11 +70,10 @@
     </ListView>
 
     <ProgressBar
-        android:id="@+id/wfExpoLoadingProgressBar"
+        android:id="@+id/wfListLoadingProgressBar"
         style="?android:attr/progressBarStyleLarge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/wfExpoToolsLayout"
         android:layout_centerInParent="true"
         android:layout_gravity="center"
         android:indeterminateBehavior="repeat"
@@ -99,6 +87,7 @@
         android:layout_marginBottom="30dp"
         android:padding="20dp"
         android:src="@drawable/search"
-        android:text="Button" />
+        android:text="Button"
+        android:visibility="gone" />
 
 </RelativeLayout>

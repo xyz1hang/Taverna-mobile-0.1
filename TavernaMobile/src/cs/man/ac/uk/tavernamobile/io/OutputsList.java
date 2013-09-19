@@ -17,8 +17,8 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
-import cs.man.ac.uk.tavernamobile.MainActivity;
 import cs.man.ac.uk.tavernamobile.R;
+import cs.man.ac.uk.tavernamobile.MainPanelActivity;
 import cs.man.ac.uk.tavernamobile.WorkflowDetail;
 import cs.man.ac.uk.tavernamobile.datamodels.WorkflowBE;
 import cs.man.ac.uk.tavernamobile.utils.TavernaAndroid;
@@ -100,7 +100,7 @@ public class OutputsList extends Activity{
 			startActivity(goBackToMain);
 			break;
 		case 2:
-			Intent goBackWfDetail = new Intent(currentActivity, MainActivity.class);
+			Intent goBackWfDetail = new Intent(currentActivity, MainPanelActivity.class);
 			//goBackWfDetail.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 			startActivity(goBackWfDetail);
 			break;

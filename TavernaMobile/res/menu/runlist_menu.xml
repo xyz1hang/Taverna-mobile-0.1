@@ -5,6 +5,6 @@
         android:id="@+id/delete_all_run_menu"
         android:icon="@drawable/trash_bin"
         android:title="@string/delete_all_runs_menu"
-        android:showAsAction="never"/>
+        android:showAsAction="always"/>
 
 </menu>

@@ -5,9 +5,7 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.support.v4.util.LruCache;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -30,6 +28,7 @@ public class MyExperimentLogin extends Activity implements CallbackTask {
 	// references
 	private Activity currentActivity;
 	private MyExperimentLogin currentClass;
+	private User userLoggedin;
 	
 	// utilities
 	private SharedPreferences loginPreferences;
@@ -114,14 +113,12 @@ public class MyExperimentLogin extends Activity implements CallbackTask {
 		
 		btnBack.setOnClickListener(new android.view.View.OnClickListener() {
 			public void onClick(View v) {
-				Intent goBackToMain = new Intent(currentActivity, MainActivity.class);
+				Intent goBackToMain = new Intent(currentActivity, MainPanelActivity.class);
 				goBackToMain.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 				startActivity(goBackToMain);
 				currentActivity.overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
 			}
 		});
-		
-		username.requestFocus();
 		
 		saveUserNameCb.setOnCheckedChangeListener(new OnCheckedChangeListener(){
 			@Override
@@ -140,9 +137,10 @@ public class MyExperimentLogin extends Activity implements CallbackTask {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case android.R.id.home:
-			Intent goBackToMain = new Intent(this, MainActivity.class);
+			Intent goBackToMain = new Intent(this, MainPanelActivity.class);
 			goBackToMain.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 			startActivity(goBackToMain);
+			this.overridePendingTransition(R.anim.push_right_in, R.anim.push_right_out);
 		default:
 			return super.onOptionsItemSelected(item);
 		}
@@ -161,20 +159,15 @@ public class MyExperimentLogin extends Activity implements CallbackTask {
 			response = requestHandler.Get(whoAmI, User.class, username, password);
 			
 			if(response instanceof User){
-				User currentUser = (User) response;
+				userLoggedin = (User) response;
 				// load and cache the user avatar
 				// so that it can be retrieved from cache
 				// when needed rather than over network request
-				String avatarURI = currentUser.getAvatar().getResource();
-				Bitmap avatar = new ImageRetriever().retrieveAvatarImage(avatarURI);
-				LruCache<String, Bitmap> imageCache = TavernaAndroid.getmMemoryCache();
-				imageCache.put(avatarURI, avatar);
-				TavernaAndroid.setmMemoryCache(imageCache);
+				String avatarURI = userLoggedin.getAvatar().getResource();
+				new ImageRetriever().retrieveImage(avatarURI);
 
-				// store the name of the user in "Application"
-				// the Get will throw exception if the login
-				// details are not correct
-				TavernaAndroid.setMyEUserLoggedin(currentUser);
+				// store the user object in "Application" global context
+				TavernaAndroid.setMyEUserLoggedin(userLoggedin);
 				
 				// prepare to save username and password
 				loginPreferences = getSharedPreferences("loginPreference", MODE_PRIVATE);
@@ -227,35 +220,13 @@ public class MyExperimentLogin extends Activity implements CallbackTask {
 		if (responseMessage != null) {
 			MessageHelper.showMessageDialog(this, null, responseMessage, null);
 		} else {
-			/*menu.setSlidingEnabled(true);
-			FragmentTransaction ft =
-					parentActivity.getSupportFragmentManager().beginTransaction();
-			ft.setCustomAnimations(R.anim.push_left_in, R.anim.push_left_out);
-			ft.remove(currentClass).commit();*/
-			
-			/*FragmentTransaction ft =
-					parentActivity.getSupportFragmentManager().beginTransaction();
-			ft.setCustomAnimations(R.anim.push_left_in, R.anim.push_left_out);
-			Fragment newFragment = new MainFragment();
-			ft.addToBackStack("mainFragment");
-			ft.replace(R.id.main_panel_root, newFragment).commit();*/
-			
-			Intent goBackToMain = new Intent(this, MainActivity.class);
+			Intent goBackToMain = new Intent(this, MainPanelActivity.class);
 			goBackToMain.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 			startActivity(goBackToMain);
 			this.overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
 		}
 		return null;
 	}
-	
-	/*// method that hide the soft keyboard
-	private void hideKeyboard(){
-		InputMethodManager inputManager = (InputMethodManager)
-				currentActivity.getSystemService(Context.INPUT_METHOD_SERVICE); 
-
-		inputManager.hideSoftInputFromWindow(currentActivity.getCurrentFocus().getWindowToken(),
-				InputMethodManager.HIDE_NOT_ALWAYS);
-	}*/
 
 	@Override
 	public void finish() {

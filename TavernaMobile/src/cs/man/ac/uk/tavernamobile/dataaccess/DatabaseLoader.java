@@ -24,13 +24,14 @@ public class DatabaseLoader implements LoaderManager.LoaderCallbacks<Cursor> {
 		String selection = (String) args.get("selection");
 		String[] selectionArgs = (String[]) args.get("selectionArgs");
 		String tableUriString = (String) args.get("tableURI");
+		String orderBy = (String) args.get("orderBy");
 		Uri tableUri = Uri.parse(tableUriString);
 		
 		CursorLoader loader = new CursorLoader(currentActivity,
 				tableUri, 
 				projection, 
 				selection,
-				selectionArgs, null);
+				selectionArgs, orderBy);
 		return loader;
 	}
 

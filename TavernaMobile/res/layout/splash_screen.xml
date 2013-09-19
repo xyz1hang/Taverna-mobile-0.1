@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#49ADF5"
+    android:background="@drawable/splash_screen"
     android:gravity="center"
     android:orientation="vertical" >
 

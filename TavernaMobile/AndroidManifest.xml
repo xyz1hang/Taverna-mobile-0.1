@@ -24,13 +24,18 @@
         android:allowBackup="true"
         android:icon="@drawable/taverna_wheel_logo"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
-        <activity android:name="SplashScreenActivity" >
+        android:theme="@style/AppTheme">
+        <activity
+            android:name="SplashScreenActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name="MainPanelActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait" >
         </activity>
         <activity
             android:name="LoginScreenActivity"
@@ -45,7 +50,7 @@
             android:configChanges="orientation|keyboardHidden"
             android:noHistory="true"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden|adjustPan" >
+            android:windowSoftInputMode="stateHidden|adjustPan">
         </activity>
         <activity
             android:name="MainActivity"
@@ -56,7 +61,8 @@
         <activity
             android:name="SearchResultScreen"
             android:configChanges="orientation"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateAlwaysVisible" />
         <activity
             android:name="WorkflowDetail"
             android:configChanges="orientation|keyboardHidden"
@@ -69,7 +75,9 @@
             android:name=".io.InputsList"
             android:configChanges="orientation|keyboardHidden"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden|adjustPan" /><activity android:name=".io.InputsHistoryActivity"></activity>
+            android:windowSoftInputMode="stateHidden|adjustPan" />
+        <activity android:name=".io.InputsHistoryActivity" >
+        </activity>
         <activity android:name=".io.FilePickerActivity" >
         </activity>
         <activity
@@ -91,7 +99,6 @@
             android:name="cs.man.ac.uk.tavernamobile.dataaccess.RunHistoryHelper"
             android:authorities="@string/authority"
             android:exported="false" />
-        
     </application>
 
 </manifest>

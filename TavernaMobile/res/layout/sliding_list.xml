@@ -1,23 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/slidingMenuListsRoot"
-    android:layout_width="wrap_content"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/slidingMenuScroll"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical" >
+    android:fillViewport="true" >
 
-    <TextView
-        android:id="@+id/myExperimentLoginState"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/slidingMenuRoot"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="20dp"
-        android:background="@drawable/general_selector"
-        android:drawableLeft="@drawable/myexperiment_logo_small"
-        android:drawablePadding="5dp"
-        android:gravity="center"
-        android:padding="10dp"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:textColor="@color/Gray"
-        android:textStyle="bold"
-        android:visibility="visible" />
+        android:orientation="vertical" >
 
-</LinearLayout>
+        <TextView
+            android:id="@+id/myExperimentLoginState"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:background="@drawable/general_selector"
+            android:drawableLeft="@drawable/myexperiment_logo_small"
+            android:drawablePadding="5dp"
+            android:gravity="center"
+            android:padding="10dp"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="@color/Gray"
+            android:textStyle="bold"
+            android:visibility="visible" />
+    </LinearLayout>
+    <requestFocus />
+
+</ScrollView>

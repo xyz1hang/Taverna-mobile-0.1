@@ -2,12 +2,12 @@ package cs.man.ac.uk.tavernamobile.fragments;
 
 import java.util.ArrayList;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -16,33 +16,30 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
-import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import cs.man.ac.uk.tavernamobile.R;
-import cs.man.ac.uk.tavernamobile.SearchResultScreen;
 import cs.man.ac.uk.tavernamobile.datamodels.Workflow;
 import cs.man.ac.uk.tavernamobile.myexperiment.WorkflowsLoader;
 import cs.man.ac.uk.tavernamobile.utils.CallbackTask;
 import cs.man.ac.uk.tavernamobile.utils.ListViewOnScrollTaskHandler;
 import cs.man.ac.uk.tavernamobile.utils.MessageHelper;
-import cs.man.ac.uk.tavernamobile.utils.WorkflowExpoListAdapter;
+import cs.man.ac.uk.tavernamobile.utils.WorkflowsListAdapter;
 
-public class ExploreFragment extends Fragment implements CallbackTask {
+public class ExploreFragment extends Fragment {
 
-	private Activity parentActivity;
-	//private TextView myExperimentLoginText;
+	private FragmentActivity parentActivity;
 	private View footerView;
 	private ListView expoList;
 	private ProgressBar loadingProBar;
+	private CheckBox reverseRadioButton;
+	private Spinner sortCriteriaSpinner;
 	
 	// utilities
-	// private WorkflowsLoader wfSearchLoader;
-	private WorkflowsLoader wfExpoLoader;
+	private WorkflowsLoader wfListLoader;
 	private ListViewOnScrollTaskHandler onScrollTaskHandler;
 	
-	private String searchQuery;
 	private String expoSortBy;
 	private String order = "reverse";
 	
@@ -50,8 +47,13 @@ public class ExploreFragment extends Fragment implements CallbackTask {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		super.onCreateView(inflater, container, savedInstanceState);
-		View searchView = inflater.inflate(R.layout.main_explore, container, false);
-		return searchView;
+		View expoView = inflater.inflate(R.layout.main_explore, container, false);
+		loadingProBar = (ProgressBar) expoView.findViewById(R.id.wfListLoadingProgressBar);
+		expoList = (ListView) expoView.findViewById(R.id.workflowExpoList);
+		reverseRadioButton = (CheckBox) expoView.findViewById(R.id.wfListSortOrderRadioButton);
+		sortCriteriaSpinner = (Spinner) expoView.findViewById(R.id.wfListSortSpinner);
+		setHasOptionsMenu(true);
+		return expoView;
 	}
 
 	@Override
@@ -59,14 +61,7 @@ public class ExploreFragment extends Fragment implements CallbackTask {
 		super.onActivityCreated(savedInstanceState);
 		
 		parentActivity = getActivity();
-		// set up a loader for search
-		// wfSearchLoader = new WorkflowsLoader(parentActivity, this);
 		
-		// UI components
-		loadingProBar = (ProgressBar)parentActivity.findViewById(R.id.wfExpoLoadingProgressBar);
-		expoList = (ListView) parentActivity.findViewById(R.id.workflowExpoList);
-		CheckBox reverseRadioButton = 
-				(CheckBox) parentActivity.findViewById(R.id.wfExpoSortOrderRadioButton);
 		reverseRadioButton.setOnCheckedChangeListener(new OnCheckedChangeListener(){
 
 			@Override
@@ -84,13 +79,13 @@ public class ExploreFragment extends Fragment implements CallbackTask {
 			}
 		});
 		
-		ImageButton searchButton = (ImageButton) parentActivity.findViewById(R.id.exploreSearchButton);
-		searchButton.setOnClickListener(new android.view.View.OnClickListener() {
+		//ImageButton searchButton = (ImageButton) parentActivity.findViewById(R.id.exploreSearchButton);
+		/*searchButton.setOnClickListener(new android.view.View.OnClickListener() {
 			public void onClick(android.view.View v) {
 
 				Intent goToSearchResultScreen = new Intent(parentActivity, SearchResultScreen.class);
 				parentActivity.startActivity(goToSearchResultScreen);
-				/*searchQuery = searchQueryText.getText().toString();
+				searchQuery = searchQueryText.getText().toString();
 				if (searchQuery.isEmpty()) {
 					MessageHelper
 							.showMessageDialog(parentActivity,
@@ -98,15 +93,14 @@ public class ExploreFragment extends Fragment implements CallbackTask {
 				} else {
 					// start with default search sorting and order
 					wfSearchLoader.DoSearch(searchQuery, null, null, true);
-				}*/
+				}
 			}
-		});
-		
-		Spinner sortCriteriaSpinner = (Spinner) parentActivity.findViewById(R.id.wfExpoSortSpinner);
+		});*/
+
 		ArrayAdapter<CharSequence> adapter = 
 				ArrayAdapter.createFromResource(
 						parentActivity, 
-						R.array.wfExpo_sort_criteria, 
+						R.array.wfList_sort_criteria, 
 						android.R.layout.simple_spinner_item);
 		// Sets the layout resource to create the drop down views
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -140,135 +134,24 @@ public class ExploreFragment extends Fragment implements CallbackTask {
 			@Override
 			public void onNothingSelected(AdapterView<?> parent) {}
 		});
-		
-		/*final EditText searchQueryText = (EditText) parentActivity.findViewById(R.id.searchQueryText);
-		ImageButton searchButton = (ImageButton) parentActivity.findViewById(R.id.searchButton);
-		searchButton.setOnClickListener(new android.view.View.OnClickListener() {
-					public void onClick(android.view.View v) {
-
-						searchQuery = searchQueryText.getText().toString();
-						if (searchQuery.isEmpty()) {
-							MessageHelper
-									.showMessageDialog(parentActivity,
-											"Oops! You haven't told me what you would like to search !");
-						} else {
-							// start with default search sorting and order
-							wfSearchLoader.DoSearch(searchQuery, null, null, true);
-						}
-					}
-				});*/
-		
-		/*myExperimentLoginText = (TextView) getActivity().findViewById(R.id.myExperimentLoginState);
-		myExperimentLoginText.setOnClickListener(new android.view.View.OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						User user = TavernaAndroid.getMyEUserLoggedin();
-						if (user != null) {
-							MessageHelper.showOptionsDialog(parentActivity,
-									"Do you wish to log out ?", 
-									"Attention",
-									new CallbackTask() {
-
-										@Override
-										public Object onTaskInProgress(
-												Object... param) {
-											// Clear user logged-in and cookie
-											TavernaAndroid.setMyEUserLoggedin(null);
-											TavernaAndroid.setMyExperimentSessionCookies(null);
-											refreshLoginState();
-											return null;
-										}
-
-										@Override
-										public Object onTaskComplete(
-												Object... result) {
-											// TODO Auto-generated method stub
-											return null;
-										}
-									}, null);
-						}
-						else{
-							Intent gotoMyexperimentLogin = new Intent(
-									parentActivity, MyExperimentLogin.class);
-							parentActivity.startActivity(gotoMyexperimentLogin);
-						}
-					}
-				});*/
 	}
-
-	/*@Override
-	public void onStart() {
-		refreshLoginState();
-		super.onStart();
-	}
-
-	private void refreshLoginState() {
-		User userLoggedin = TavernaAndroid.getMyEUserLoggedin();
-		String userName = null;
-		if (userLoggedin != null) {
-			userName = userLoggedin.getName();
-			Bitmap avatarBitmap = 
-			 	TavernaAndroid.getmMemoryCache().get(userLoggedin.getAvatar().getResource());
-			if(avatarBitmap != null){
-				Drawable avatarDrawable = new BitmapDrawable(getResources(),
-						Bitmap.createBitmap(avatarBitmap));
-				Rect outRect = new Rect();
-				myExperimentLoginText.getDrawingRect(outRect);
-				// resize the Rect
-				//outRect.inset(-10, 10);
-				avatarDrawable.setBounds(outRect);
-				myExperimentLoginText.setCompoundDrawables(avatarDrawable, null, null, null);
-			}
-			myExperimentLoginText.setText("Logged in as: "+ userName);
-		}else{
-			myExperimentLoginText.setText("Log in to myExperiment");
-		}
-	}*/
 	
+	@Override
+	public void onPrepareOptionsMenu(Menu menu) {
+		super.onPrepareOptionsMenu(menu);
+		// remove menu added by previous fragment
+		for(int i = 1; i < menu.size(); i ++){
+			menu.removeItem(menu.getItem(i).getItemId());
+		}
+	}
+
 	private void refreshTheList() {
 		expoList.setVisibility(8);
 		expoList.removeFooterView(footerView);
 		loadingProBar.setVisibility(0);
 		// set up a loader for loading indexed workflows
-		wfExpoLoader = new WorkflowsLoader(parentActivity, new WorkflowExpoLoadingListener());
-		wfExpoLoader.LoadWorkflows(expoSortBy, order);
-	}
-
-	public Object onTaskInProgress(Object... param) {
-		return null;
-	}
-
-	public Object onTaskComplete(Object... result) {
-		// if there was an (error) message
-		if (result[0] instanceof String) {
-			String message = (String) result[0];
-			MessageHelper.showMessageDialog(parentActivity, "Attention", message, null);
-		} else {
-			ArrayList<Workflow> workflowResults = (ArrayList<Workflow>) result[0];
-
-			// If no element has been added into the list 
-			// i.e search return no results
-			if (workflowResults == null || workflowResults.size() < 1) {
-				String dialogMessage = null;
-				String errorMessage = (String)result[0];
-				if (errorMessage != null) {
-					dialogMessage = errorMessage;
-				} else {
-					dialogMessage = "No workflow found for " + "\""
-							+ searchQuery + "\"";
-				}
-				MessageHelper.showMessageDialog(parentActivity, null, dialogMessage, null);
-			} else {
-				Intent intent = new Intent(parentActivity, SearchResultScreen.class);
-				Bundle extras = new Bundle();
-				extras.putSerializable("wfSearch_Result_list", workflowResults);
-				extras.putString("searchQuery", this.searchQuery);
-				intent.putExtras(extras);
-				parentActivity.startActivity(intent);
-			}
-		}
-
-		return null;
+		wfListLoader = new WorkflowsLoader(parentActivity, new WorkflowExpoLoadingListener());
+		wfListLoader.LoadWorkflows(expoSortBy, order);
 	}
 	
 	// class that handle the initial workflow data loaded by index request
@@ -297,8 +180,8 @@ public class ExploreFragment extends Fragment implements CallbackTask {
 										.inflate(R.layout.list_footer_loading, null, false);
 			expoList.addFooterView(footerView);
 			
-			WorkflowExpoListAdapter resultListAdapter = 
-					new WorkflowExpoListAdapter(parentActivity, workflows);
+			WorkflowsListAdapter resultListAdapter = 
+					new WorkflowsListAdapter(parentActivity, workflows);
 			expoList.setAdapter(resultListAdapter);
 			
 			expoList.post(new Runnable() {
@@ -316,7 +199,7 @@ public class ExploreFragment extends Fragment implements CallbackTask {
 			// the initial loading is finished 
 			// now change to the "auto-load-more"
 			WorkflowExpoAutoLoader autoloader = new WorkflowExpoAutoLoader(resultListAdapter);
-			wfExpoLoader.registerLoadingListener(autoloader);
+			wfListLoader.registerLoadingListener(autoloader);
 
 			return null;
 		}
@@ -325,9 +208,9 @@ public class ExploreFragment extends Fragment implements CallbackTask {
 	// class that handle more workflow data loaded when user scroll
 	private class WorkflowExpoAutoLoader implements CallbackTask{
 		
-		private WorkflowExpoListAdapter listAdaptor;
+		private WorkflowsListAdapter listAdaptor;
 
-		public WorkflowExpoAutoLoader(WorkflowExpoListAdapter adaptor){
+		public WorkflowExpoAutoLoader(WorkflowsListAdapter adaptor){
 			listAdaptor = adaptor;
 		}
 
@@ -364,7 +247,7 @@ public class ExploreFragment extends Fragment implements CallbackTask {
 	private class OnScrollLoadingTask implements CallbackTask{
 		@Override
 		public Object onTaskInProgress(Object... param) {
-			wfExpoLoader.LoadWorkflows(expoSortBy, order);
+			wfListLoader.LoadWorkflows(expoSortBy, order);
 			return null;
 		}
 

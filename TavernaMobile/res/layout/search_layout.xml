@@ -2,10 +2,10 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:layout_gravity="top|center"
+    android:layout_gravity="center"
     android:gravity="center"
     android:orientation="horizontal"
-    android:padding="5dp" >
+    android:padding="5dp">
 
     <EditText
         android:id="@+id/searchQueryText"
@@ -17,9 +17,9 @@
         android:hint="@string/search_hints"
         android:imeOptions="actionSearch"
         android:inputType="textNoSuggestions"
-        android:textColorHint="@color/White"
-        android:textSize="15sp" >
-
+        android:textColorHint="@color/LightGrey"
+        android:textSize="15sp"
+        android:textStyle="italic">
     </EditText>
 
     <ImageButton
