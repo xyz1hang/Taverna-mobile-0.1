@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/splash_screen"
+    android:background="@color/CornflowerBlue"
     android:gravity="center"
     android:orientation="vertical" >
 
@@ -12,10 +12,12 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="10dip"
+        android:alpha="0"
         android:drawableTop="@drawable/taverna_wheel_logo"
         android:gravity="center"
         android:text="@string/SplashScreenImageDescription"
-        android:textColor="#FFFFFF"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="@color/AliceBlue"
         android:textSize="26sp"
         android:textStyle="bold|italic" >
 

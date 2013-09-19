@@ -92,6 +92,7 @@ public class WorkflowDetail extends FragmentActivity implements CallbackTask {
 		ActionBar actionBar = getActionBar();
 		actionBar.setDisplayHomeAsUpEnabled(true);
 		actionBar.setTitle("Workflow Details");
+		actionBar.setIcon(this.getResources().getDrawable(R.drawable.taverna_wheel_logo_medium));
 
 		// avatar = (ImageView) findViewById(R.id.avatarImage);
 		title = (TextView) findViewById(R.id.workflowTitle);

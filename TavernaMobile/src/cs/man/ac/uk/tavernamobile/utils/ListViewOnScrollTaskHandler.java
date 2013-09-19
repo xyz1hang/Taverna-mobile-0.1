@@ -1,5 +1,6 @@
 package cs.man.ac.uk.tavernamobile.utils;
 
+import cs.man.ac.uk.tavernamobile.MainPanelActivity;
 import android.os.Handler;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
@@ -28,10 +29,13 @@ public class ListViewOnScrollTaskHandler {
 	private ListView theList;
 	private CallbackTask loadingTask;
 	
-	public ListViewOnScrollTaskHandler(ListView list, CallbackTask task){
+	private MainPanelActivity mainPanel;
+	
+	public ListViewOnScrollTaskHandler(MainPanelActivity activity, ListView list, CallbackTask task){
 		theList = list;
 		loadingTask = task;
 		systemStatesChecker = new SystemStatesChecker(theList.getContext());
+		mainPanel = activity;
 	}
 	
 	public void setOnScrollLoading(){
@@ -64,9 +68,17 @@ public class ListViewOnScrollTaskHandler {
 
 			@Override
 			public void onScrollStateChanged(AbsListView view, int scrollState) {
-				if(scrollState == 1){
+				if(scrollState == SCROLL_STATE_TOUCH_SCROLL){
 					userScrolled = true;
-				}	
+					mainPanel.showPoweredBy();
+				}
+				else if(scrollState == SCROLL_STATE_IDLE){
+					new Handler().postDelayed(new Runnable() {
+						public void run() {
+							mainPanel.hidePoweredBy();
+						}
+					},200);
+				}
 			}
 		});
 	}

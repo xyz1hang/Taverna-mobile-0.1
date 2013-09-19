@@ -17,8 +17,8 @@ import android.widget.TextView;
 import cs.man.ac.uk.tavernamobile.R;
 import cs.man.ac.uk.tavernamobile.datamodels.WorkflowBE;
 import cs.man.ac.uk.tavernamobile.server.WorkflowRunManager;
-import cs.man.ac.uk.tavernamobile.utils.CallbackTask;
 import cs.man.ac.uk.tavernamobile.utils.BackgroundTaskHandler;
+import cs.man.ac.uk.tavernamobile.utils.CallbackTask;
 import cs.man.ac.uk.tavernamobile.utils.MessageHelper;
 import cs.man.ac.uk.tavernamobile.utils.TavernaAndroid;
 
@@ -119,7 +119,14 @@ public class RunMonitorScreen extends Activity implements CallbackTask {
 				running = false;
 				mNotificationManager.cancelAll();//.cancel(notificationId);
 
-				manager.getRunOutput(workflowEntity.getTitle(), null, 
+				Intent goToOutput = new Intent(currentActivity, OutputsTree.class);
+				Bundle extras = new Bundle();
+				extras.putSerializable("workflowEntity", workflowEntity);
+				extras.putInt("activity_starter", Activity_Starter_Code);
+				goToOutput.putExtras(extras);
+				currentActivity.startActivity(goToOutput);
+				
+				/*manager.getRunOutput(workflowEntity.getTitle(), null, 
 					new CallbackTask(){
 						@Override
 						public Object onTaskInProgress(Object... param) { return null; }
@@ -127,10 +134,12 @@ public class RunMonitorScreen extends Activity implements CallbackTask {
 						@Override
 						public Object onTaskComplete(Object... result) {
 							if(result[0] instanceof String){
-								MessageHelper.showMessageDialog(currentActivity, null, (String)result[0], null);
+								MessageHelper.showMessageDialog(
+										currentActivity, null, (String)result[0], null);
 								return null;
 							}
 							// TODO : prepare output tree view
+							ArrayList<OutputValue> outputPortsValue = (ArrayList<OutputValue>)result[0];
 							
 							Intent goToOutput = new Intent(currentActivity, OutputsList.class);
 							Bundle extras = new Bundle();
@@ -140,7 +149,7 @@ public class RunMonitorScreen extends Activity implements CallbackTask {
 							currentActivity.startActivity(goToOutput);
 							return null;
 						}	
-					});
+					});*/
 			}// end of onClick
 		});
 	}

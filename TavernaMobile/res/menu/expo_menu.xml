@@ -1,0 +1,10 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:yourapp="http://schemas.android.com/apk/res-auto" >
+
+    <item
+        android:id="@+id/refresh_expo"
+        android:icon="@drawable/refresh_menu_icon"
+        android:title="@string/refresh_expo_menu"
+        android:showAsAction="always"/>
+
+</menu>

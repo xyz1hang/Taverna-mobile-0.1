@@ -40,11 +40,13 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
 import cs.man.ac.uk.tavernamobile.dataaccess.DataProviderConstants;
+import cs.man.ac.uk.tavernamobile.datamodels.OutputValue;
 import cs.man.ac.uk.tavernamobile.datamodels.WorkflowBE;
 import cs.man.ac.uk.tavernamobile.datamodels.WorkflowRun;
 import cs.man.ac.uk.tavernamobile.utils.BackgroundTaskHandler;
 import cs.man.ac.uk.tavernamobile.utils.CallbackTask;
 import cs.man.ac.uk.tavernamobile.utils.MessageHelper;
+import cs.man.ac.uk.tavernamobile.utils.OutputTypeConstant;
 import cs.man.ac.uk.tavernamobile.utils.TavernaAndroid;
 import cs.man.ac.uk.tavernamobile.utils.WorkflowFileLoader;
 
@@ -772,19 +774,15 @@ public class WorkflowRunManager
 	private class OutputHanlder implements CallbackTask{
 
 		private HashMap<String, String> outputs = new HashMap<String, String>();
-
-		//supported output type
-		// TODO: more types support......
-		public static final String PORT_ERROR_TYPE = "application/x-error";
-		//public static final String PORT_LIST_TYPE = "application/x-list";
-		public static final String PORT_TEXT_TYPE = "text/plain";
-		public static final String PORT_IMAGE_TYPE = "image/png";
-
-		private ArrayList<Object> outputPortsValue;
+		// <PortName, outputTree> map
+		private HashMap<String, OutputValue> allOutputs;
+		
 		private int portDepth;
 		private String currentPortName;
 		// string used to build the outputs directory path
 		private String workflowTitle;
+		private String outputsSubPath;
+		private String locationToStore;
 
 		public void Execute(Object... params){
 			workflowTitle = (String) params[0];
@@ -793,12 +791,12 @@ public class WorkflowRunManager
 			}
 			outputHandlingTaskHandler = new BackgroundTaskHandler();
 			outputHandlingTaskHandler.StartBackgroundTask(
-					currentActivity, this, "Preparing outputs...", params);
+					currentActivity, this, null, params);
 		}
 
 		public Object onTaskInProgress(Object... params) {
 			String runId = (String) params[1];
-
+			// check run state first
 			Run theRun = null;
 			if(runId != null){
 				try {
@@ -820,63 +818,74 @@ public class WorkflowRunManager
 			} catch (NetworkConnectionException e) {
 				return "Connection problem reading data from server";
 			}
+			
+			reportRunStartTime();
 
-			outputPortsValue = new ArrayList<Object>();
+			allOutputs = new HashMap<String, OutputValue>();
+			// try to get all output ports
 			Map<String, OutputPort> OutputPorts;
 			try {
 				OutputPorts = theRun.getOutputPorts();
 			} catch (NetworkConnectionException e) {
 				return "Connection problem reading data from server";
 			}
+			// iterate over all output ports
 			Iterator<Entry<String, OutputPort>> it = OutputPorts.entrySet().iterator();
-			// for one output ports
 			while(it.hasNext()){
+				// for one output ports
 				Map.Entry<String, OutputPort> pair = it.next();
 				// high level determined variables
 				OutputPort outPort = pair.getValue();
 				portDepth = outPort.getDepth();
 				currentPortName = outPort.getName();
+				
+				// prepare output file path
+				outputsSubPath = "/TavernaAndroid/Outputs/" + runStartTime +"/" 
+									+ workflowTitle +"/" + currentPortName + "/";
+				locationToStore = getFileSaveLocation(outputsSubPath);
 
 				// undetermined variable
 				PortValue portValue = outPort.getValue();
 
-				Object data = null;
+				OutputValue data = null;
 				// no list, single value
 				if(portDepth == 0){
 					data = retrieveSingleDepthData(portValue);
-					outputPortsValue.add(data);
 				}
 				else if (portDepth > 0){
 					// this method should eventually return ArrayList<Object>
 					// the return type declared in its signature is for 
 					// recursively collect data
 					data = retrieveMultiDepthData(portDepth, portValue);
-					// add the collection
-					outputPortsValue.add(data);
 				}
+				// map to the portName
+				allOutputs.put(currentPortName, data);
 
 				// string representation of "outputPortsValue"
 				String textToDisplay = "";
-				textToDisplay = constructString(textToDisplay, data, 0);
-
+				textToDisplay = constructString(textToDisplay, data, 1);
 				outputs.put(pair.getKey(), textToDisplay);
 			}
 
 			// set global outputs (output of most recent run) holder
 			ta.setOutputs(outputs);
 
-			return outputs;
+			// return outputs;
+			return allOutputs;
 		}
 
-		private String retrieveSingleDepthData(PortValue portValue){
+		private OutputValue retrieveSingleDepthData(PortValue portValue){
 
+			OutputValue outputValue = new OutputValue();
 			// at this point so it should be safe to get value
 			// without throwing UnsupportedOperationException
-			byte[] data;
+			byte[] data = null;
 			try {
 				data = portValue.getData();
 			} catch (NetworkConnectionException e1) {
-				return "Connection problem reading data from server";
+				outputValue.setErrorValue("Connection problem reading data from server");
+				outputValue.setValueType(OutputTypeConstant.APPLOCATION_ERROR);
+				return outputValue;
 			}
 			while(data == null){
 				try {
@@ -886,81 +895,89 @@ public class WorkflowRunManager
 					e.printStackTrace();
 				}
 			}
-			long dataSize = portValue.getDataSize();
+			
 			// check types
 			String contentType = portValue.getContentType();
-			String outputsSubPath = "/TavernaAndroid/Outputs/" 
-					+ runStartTime +"/" + workflowTitle +"/" + currentPortName + "/";
-			
-			if(contentType.equals(PORT_TEXT_TYPE)){				
-				String locationToStore = getFileSaveLocation(outputsSubPath);
-				try {
-					FileOutputStream stream = new FileOutputStream(locationToStore+"/output.txt"); 
-					stream.write(data);
-					stream.flush();
-					stream.close();
-				}catch(IOException e){
-					e.printStackTrace();	
-				}
-				// if text is too large to fit in the screen
-				// store only
-				if (dataSize > 4096){
-					return "(Output saved in output folder)";
-				}
-				else{
-					String dataString = new String(data);
-					return dataString;
-				}
-			}
-			else if(contentType.equals(PORT_IMAGE_TYPE)){
-				// store image under the sub folder named
-				// after port name 
-				String locationToStore = getFileSaveLocation(outputsSubPath);
-				try {
-					FileOutputStream stream = new FileOutputStream(locationToStore+"/output.png"); 
-					stream.write(data);
-					stream.flush();
-					stream.close();
+			// error message
+			String outputSavingResult = null;
 
-					return "(Image saved in output folder)";
-				}catch(IOException e){
-					e.printStackTrace();	
-				}
+			if(contentType.equals(OutputTypeConstant.TEXT_TYPE)){
+				// save result on the phone
+				File outputTxtFile = new File(locationToStore+"/output.txt");
+				outputSavingResult = saveOutputToPhone(data, outputTxtFile);
+				
+				// return results for display
+				String dataString = new String(data);
+				outputValue.setStringValue(dataString);
+				outputValue.setValueType(OutputTypeConstant.TEXT_TYPE);
 			}
-			else if (contentType.equals(PORT_ERROR_TYPE)){
+			else if(contentType.equals(OutputTypeConstant.PNG_IMAGE_TYPE)){
+				// save result on the phone
+				File outputImageFile = new File(locationToStore+"/output.png");
+				outputSavingResult = saveOutputToPhone(data, outputImageFile);
+				
+				// return results for display
+				outputValue.setFileValue(outputImageFile.getAbsolutePath());
+				outputValue.setValueType(OutputTypeConstant.PNG_IMAGE_TYPE);
+			}
+			else if(contentType.equals(OutputTypeConstant.JPEG_IMAGE_TYPE)){
+				// save result on the phone
+				File outputImageFile = new File(locationToStore+"/output.jpeg");
+				outputSavingResult = saveOutputToPhone(data, outputImageFile);
+				
+				// return results for display
+				outputValue.setFileValue(outputImageFile.getAbsolutePath());
+				outputValue.setValueType(OutputTypeConstant.PNG_IMAGE_TYPE);
+			}
+			else if (contentType.equals(OutputTypeConstant.ERROR_TYPE)){
 				// if error text is too large to fit in the screen
 				// store it 
-				if (dataSize > 4096){
-					String locationToStore = getFileSaveLocation(outputsSubPath);
-					try {
-						FileOutputStream stream = new FileOutputStream(locationToStore+"/error.txt"); 
-						stream.write(data);
-						stream.flush();
-						stream.close();
-
-						return "(error message saved in output folder)";
-					}catch(IOException e){
-						e.printStackTrace();	
-					}
-				}
-				else{
-					String dataString = new String(data);
-					return dataString;
-				}
+				// save result on the phone
+				File outputTxtFile = new File(locationToStore+"/error.txt");
+				outputSavingResult = saveOutputToPhone(data, outputTxtFile);
+				
+				// return results for display
+				String dataString = new String(data);
+				outputValue.setStringValue(dataString);
+				outputValue.setValueType(OutputTypeConstant.TEXT_TYPE);
 			}
-			else{
-				return "The output data type is currently not supported";
+			else{				
+				outputValue.setStringValue("The output data type is currently not supported");
+				outputValue.setValueType(OutputTypeConstant.TEXT_TYPE);
+				// return "The output data type is currently not supported";
 			}
-
-			// should never return byte[]
+			
+			if(outputSavingResult != null){
+				outputValue.setErrorValue(outputSavingResult);
+				outputValue.setValueType(OutputTypeConstant.APPLOCATION_ERROR);
+			}
+			
+			return outputValue;
+		}
+		
+		private String saveOutputToPhone(byte[] data, File file){
+			if (file == null){
+				throw new NullPointerException("file can't be null");
+			}
+			try {
+				FileOutputStream stream = new FileOutputStream(file);
+				stream.write(data);
+				stream.flush();
+				stream.close();
+			}catch(IOException e){
+				return e.getMessage();	
+			}
 			return null;
 		}
 
-		private Object retrieveMultiDepthData(int depth, PortValue portValue){
+		private OutputValue retrieveMultiDepthData(int depth, PortValue portValue){
 
 			// prepare a list to store all elements in current level
-			ArrayList<Object> dataList = new ArrayList<Object>();
-
+			// ArrayList<Object> dataList = new ArrayList<Object>();
+			
+			OutputValue outputData = new OutputValue();
+			ArrayList<OutputValue> listdata = new ArrayList<OutputValue>();
+			
 			// if it hasn't reached the bottom
 			if(depth != 0){
 				// for every single element
@@ -972,18 +989,22 @@ public class WorkflowRunManager
 					depth--;
 					// eventually what returned below should be 
 					// single data in current level
-					Object data = retrieveMultiDepthData(depth, subPortValue);
-					dataList.add(data);
+					OutputValue data = retrieveMultiDepthData(depth, subPortValue);
+					// add value into the list of values of this port
+					listdata.add(data);
+					
+					//dataList.setListValue(listdata);;
 				}
-
+				// Retrieval of the list value of this level is completed
+				outputData.setListValue(listdata);
 				// when all elements of the list are collected
 				// return this collection for upper level to add them in
 				// upper level collection
-				return dataList;
+				return outputData;
 			}
 
 			//reached bottom
-			String data = retrieveSingleDepthData(portValue);
+			OutputValue data = retrieveSingleDepthData(portValue);
 
 			// return the single data when it reached bottom
 			// only recursive return should be done here
@@ -1003,13 +1024,11 @@ public class WorkflowRunManager
 				result = message.toString();
 			}
 			else if(object instanceof String){
-
 				result += (String)object + "\n";	
 			}
 
 			return result;
 		}
-
 
 		public Object onTaskComplete(Object... result) {
 			outputRetrievalListener.onTaskComplete(result);

@@ -98,21 +98,4 @@
         android:layout_centerInParent="true"
         android:visibility="gone" />
 
-    <TextView
-        android:id="@+id/PoweredBy"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_gravity="bottom|right"
-        android:background="#D0808080"
-        android:drawablePadding="5dp"
-        android:drawableRight="@drawable/myexperiment_logo"
-        android:gravity="center_vertical"
-        android:padding="5dp"
-        android:text="@string/powered_by"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:textColor="@android:color/white"
-        android:textStyle="bold|italic" />
-
 </RelativeLayout>

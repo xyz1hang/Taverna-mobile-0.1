@@ -145,18 +145,24 @@ public class RunsFragment extends Fragment {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 	    case R.id.delete_all_run_menu:
-	    	runManager.DeleteAllRun(new CallbackTask(){
-				@Override
-				public Object onTaskInProgress(Object... param) {return null;}
+	    	MessageHelper.showOptionsDialog(
+	    			  refreshableList.getContext(), 
+	    			  "Delete all your runs on the server ?",
+	    			  null,
+	    			  new CallbackTask(){
+						@Override
+						public Object onTaskInProgress(Object... param) {
+							runManager.DeleteAllRun(this);
+							return null;
+						}
 
-				@Override
-				public Object onTaskComplete(Object... result) {
-					// refresh the list
-					prepareListData();
-					return null;
-				}
-	    	});
-	    	break;
+						@Override
+						public Object onTaskComplete(Object... result){
+							prepareListData();
+							return null; 
+						}
+	    			  }, null);
+	    	
 	    default:
 	        break;
 		}

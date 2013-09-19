@@ -224,11 +224,13 @@ public class SlidingMenuFragment extends Fragment {
 			menuAdapter.add(menuObject);
 		}
 		
+		LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+		
 		View headerview = layoutInflater.inflate(R.layout.sliding_menu_list_header, null);
 		TextView listHeaderName = (TextView) headerview.findViewById(R.id.sliding_menu_list_name);
 		listHeaderName.setText(listTitle);
 		ListView menuList = new ListView(parentActivity);
-		menuList.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+		menuList.setLayoutParams(params);
 		
 		int sizeInPx = 10;
 		float scale = getResources().getDisplayMetrics().density;
@@ -238,7 +240,6 @@ public class SlidingMenuFragment extends Fragment {
 		
 		menuList.addHeaderView(headerview);
 		menuList.setAdapter(menuAdapter);
-		LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
 		listRoot.addView(menuList, params);
 		return menuList;
 	}

@@ -1,0 +1,11 @@
+<set xmlns:android="http://schemas.android.com/apk/res/android">
+    <objectAnimator
+        android:propertyName="alpha"
+        android:duration="2000"
+        android:valueFrom="0"
+        android:valueTo="100"/>
+    <objectAnimator
+        android:propertyName="alpha"
+        android:duration="2000"
+        android:valueTo="0"/>
+</set>

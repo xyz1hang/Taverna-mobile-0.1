@@ -296,6 +296,10 @@ public class WorkflowsListAdapter extends BaseAdapter {
 					 // cache avatar with uploader URI
 					 // imageCacheKey = uploader.getUri();
 				} catch (Exception e) {
+					// swallow - otherwise every view of the list
+					// will have to report an exception
+					// in the case of networkConnectionException
+					// user can just retry loading
 					e.printStackTrace();
 				}
 				return avatar;

@@ -55,6 +55,7 @@ public class MyExperimentLogin extends Activity implements CallbackTask {
 		ActionBar actionBar = getActionBar();
 		actionBar.setDisplayHomeAsUpEnabled(true);
 		actionBar.setDisplayShowTitleEnabled(true);
+		actionBar.setIcon(this.getResources().getDrawable(R.drawable.taverna_wheel_logo_medium));
 
 		username = (EditText) findViewById(R.id.myeloginUsernameValue);
 		password = (EditText) findViewById(R.id.myeloginPasswordValue);

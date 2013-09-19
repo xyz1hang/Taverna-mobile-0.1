@@ -14,6 +14,7 @@ public class SettingsActivity extends PreferenceActivity {
 		ActionBar actionBar = getActionBar();
 		actionBar.setDisplayHomeAsUpEnabled(true);
 		actionBar.setTitle("Settings");
+		actionBar.setIcon(this.getResources().getDrawable(R.drawable.taverna_wheel_logo_medium));
 
 		getFragmentManager().beginTransaction()
 				.replace(android.R.id.content, new SettingFragments()).commit();

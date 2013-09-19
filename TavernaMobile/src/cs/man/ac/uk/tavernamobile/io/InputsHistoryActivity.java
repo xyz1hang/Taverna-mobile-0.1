@@ -63,6 +63,7 @@ public class InputsHistoryActivity extends FragmentActivity {
 		ActionBar actionBar = getActionBar();
 		actionBar.setDisplayHomeAsUpEnabled(true);
 		actionBar.setTitle("Inputs History");
+		actionBar.setIcon(this.getResources().getDrawable(R.drawable.taverna_wheel_logo_medium));
 
 		inputsList = (ListView) findViewById(R.id.savedInputsList);
 		defaultText = (TextView) findViewById(R.id.workflow_frag_default_textview);

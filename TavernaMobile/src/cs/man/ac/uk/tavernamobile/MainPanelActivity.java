@@ -1,5 +1,7 @@
 package cs.man.ac.uk.tavernamobile;
 
+import android.animation.AnimatorInflater;
+import android.animation.AnimatorSet;
 import android.app.ActionBar;
 import android.content.Intent;
 import android.graphics.Color;
@@ -11,15 +13,19 @@ import android.support.v4.app.FragmentTransaction;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 
+import cs.man.ac.uk.tavernamobile.datamodels.User;
+import cs.man.ac.uk.tavernamobile.utils.TavernaAndroid;
+
 public class MainPanelActivity extends FragmentActivity {
 	
 	private boolean backHit;
-
 	private SlidingMenu slidingMenu;
+	private LinearLayout poweredByLayout;
 
 	public SlidingMenu getMenu() {
 		return slidingMenu;
@@ -49,14 +55,22 @@ public class MainPanelActivity extends FragmentActivity {
 		actionBar.setHomeButtonEnabled(true);
 		actionBar.setDisplayHomeAsUpEnabled(true);
 		actionBar.setDisplayShowTitleEnabled(true);
-		actionBar.setIcon(this.getResources().getDrawable(R.drawable.taverna_wheel_logo_small));
+		actionBar.setIcon(this.getResources().getDrawable(R.drawable.taverna_wheel_logo_medium));
+		
+		poweredByLayout = (LinearLayout) findViewById(R.id.poweredByLayout);
 		
 		FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
 		// ft.setCustomAnimations(R.anim.push_left_in, R.anim.push_left_out);
 		Fragment newFragment = new FragmentsContainer();
 		Bundle args = new Bundle();
 		// integer representation of fragments
-		int[] fragmentsToInstantiate = new int[] {0, 1};
+		User user = TavernaAndroid.getMyEUserLoggedin();
+		int[] fragmentsToInstantiate = null;
+		if(user != null){
+			fragmentsToInstantiate = new int[] {4, 5};
+		}else{
+			fragmentsToInstantiate = new int[] {0, 1};
+		}
 		args.putIntArray("fragmentsToInstantiate", fragmentsToInstantiate);
 		newFragment.setArguments(args);
 		ft.addToBackStack("StarterFragments");
@@ -133,5 +147,36 @@ public class MainPanelActivity extends FragmentActivity {
 	protected void onPause(){
 		super.onPause();
 		this.overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+	}
+	
+	public void demoPoweredBy(){
+		AnimatorSet set = 
+				(AnimatorSet) AnimatorInflater.loadAnimator(this, R.anim.fade_in_out);
+		set.setTarget(poweredByLayout);
+		set.start();
+		/*new Handler().postDelayed(new Runnable() {
+			public void run() {
+				poweredByLayout.setVisibility(8);
+			}
+		},6000);*/
+	}
+
+	public void hidePoweredBy(){
+		AnimatorSet set = 
+				(AnimatorSet) AnimatorInflater.loadAnimator(this, R.anim.fade_out);
+		set.setTarget(poweredByLayout);
+		set.start();
+		/*new Handler().postDelayed(new Runnable() {
+			public void run() {
+				poweredByLayout.setVisibility(8);
+			}
+		},3000);*/
+	}
+	
+	public void showPoweredBy(){
+		AnimatorSet set = 
+				(AnimatorSet) AnimatorInflater.loadAnimator(this, R.anim.fade_in);
+		set.setTarget(poweredByLayout);
+		set.start();
 	}
 }

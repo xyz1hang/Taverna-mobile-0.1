@@ -95,7 +95,8 @@ public class SearchResultFragment extends Fragment implements CallbackTask {
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(
 						R.layout.list_footer_loading, null, false);
 
-		onScrollTaskHandler = new ListViewOnScrollTaskHandler(resultList, new OnScrollLoadingTask());
+		onScrollTaskHandler = new ListViewOnScrollTaskHandler(
+				(MainPanelActivity)parentActivity, resultList, new OnScrollLoadingTask());
 		onScrollTaskHandler.setOnScrollLoading();
 
 		// setup event reaction -

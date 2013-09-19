@@ -1,12 +1,15 @@
 package cs.man.ac.uk.tavernamobile;
 
 import uk.org.taverna.server.client.NetworkConnectionException;
+import android.animation.AnimatorInflater;
+import android.animation.AnimatorSet;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.Window;
+import android.widget.TextView;
 import cs.man.ac.uk.tavernamobile.datamodels.MyExperimentSession;
 import cs.man.ac.uk.tavernamobile.datamodels.User;
 import cs.man.ac.uk.tavernamobile.myexperiment.HttpRequestHandler;
@@ -23,6 +26,7 @@ public class SplashScreenActivity extends Activity implements CallbackTask {
 													+"please login to myExperiment again.";
 	private Activity thisActivity;
 	private SplashScreenActivity thisClass;
+	private TextView slashScreenText;
 
 	private SharedPreferences loginPreferences;
 	private static HttpRequestHandler requestHandler;
@@ -35,6 +39,8 @@ public class SplashScreenActivity extends Activity implements CallbackTask {
 		//Remove title bar
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE);		
 		setContentView(R.layout.splash_screen);
+		
+		slashScreenText = (TextView)this.findViewById(R.id.SlashScreenText);
 		
 		thisActivity = this;
 		thisClass = this;
@@ -71,6 +77,15 @@ public class SplashScreenActivity extends Activity implements CallbackTask {
 		}
 	}
 
+	@Override
+	protected void onStart() {
+		super.onStart();
+		AnimatorSet set = 
+				(AnimatorSet) AnimatorInflater.loadAnimator(thisActivity, R.anim.fade_in);
+		set.setTarget(slashScreenText);
+		set.start();
+	}
+	
 	@Override
 	public Object onTaskInProgress(Object... param) {
 		// valid username and password first

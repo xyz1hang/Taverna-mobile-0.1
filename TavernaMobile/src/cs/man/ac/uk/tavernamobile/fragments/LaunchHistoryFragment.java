@@ -11,11 +11,14 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
+import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
@@ -73,6 +76,26 @@ public class LaunchHistoryFragment extends Fragment {
 		Activity_Starter_Code = 2;
 		//parentActivity = (MainActivity) getActivity();
 		parentActivity = (MainPanelActivity) getActivity();
+		
+		savedWfList.setOnScrollListener(new OnScrollListener(){
+
+			@Override
+			public void onScroll(AbsListView arg0, int arg1, int arg2, int arg3) {}
+
+			@Override
+			public void onScrollStateChanged(AbsListView view, int scrollState) {
+				if(scrollState ==  SCROLL_STATE_TOUCH_SCROLL){
+					((MainPanelActivity)parentActivity).showPoweredBy();
+				}
+				else if(scrollState ==  SCROLL_STATE_IDLE){
+					new Handler().postDelayed(new Runnable() {
+						public void run() {
+							((MainPanelActivity)parentActivity).hidePoweredBy();
+						}
+					},500);
+				}
+			}
+		});
 	}
 
 	@Override

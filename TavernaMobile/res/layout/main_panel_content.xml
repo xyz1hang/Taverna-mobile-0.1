@@ -24,41 +24,4 @@
             android:textStyle="bold|italic" >
         </android.support.v4.view.PagerTitleStrip>
     </android.support.v4.view.ViewPager>
-
-    <LinearLayout
-        android:id="@+id/poweredByLayout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|right" >
-
-        <TextView
-            android:id="@+id/PoweredBy"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="#D0808080"
-            android:drawablePadding="10dp"
-            android:drawableRight="@drawable/myexperiment_logo"
-            android:gravity="center_vertical"
-            android:padding="5dp"
-            android:text="@string/powered_by"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textColor="@android:color/white"
-            android:textStyle="bold|italic" />
-
-        <TextView
-            android:id="@+id/PoweredByCont"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="#D0808080"
-            android:drawableLeft="@drawable/taverna_wheel_logo_small"
-            android:drawablePadding="5dp"
-            android:gravity="center_vertical"
-            android:padding="5dp"
-            android:text="@string/powered_by_cont"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textColor="@android:color/white"
-            android:textStyle="bold|italic" />
-    </LinearLayout>
-
-    <requestFocus />
 </FrameLayout>

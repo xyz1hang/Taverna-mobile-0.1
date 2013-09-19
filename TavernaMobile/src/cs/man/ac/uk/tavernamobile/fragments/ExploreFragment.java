@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -17,8 +18,9 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.Spinner;
+import android.widget.TextView;
+import cs.man.ac.uk.tavernamobile.MainPanelActivity;
 import cs.man.ac.uk.tavernamobile.R;
 import cs.man.ac.uk.tavernamobile.datamodels.Workflow;
 import cs.man.ac.uk.tavernamobile.myexperiment.WorkflowsLoader;
@@ -32,9 +34,11 @@ public class ExploreFragment extends Fragment {
 	private FragmentActivity parentActivity;
 	private View footerView;
 	private ListView expoList;
-	private ProgressBar loadingProBar;
+	// private ProgressBar loadingProBar;
 	private CheckBox reverseRadioButton;
 	private Spinner sortCriteriaSpinner;
+	private Menu refreshMenu;
+	private TextView wfListDefaultTest;
 	
 	// utilities
 	private WorkflowsLoader wfListLoader;
@@ -48,10 +52,11 @@ public class ExploreFragment extends Fragment {
 			Bundle savedInstanceState) {
 		super.onCreateView(inflater, container, savedInstanceState);
 		View expoView = inflater.inflate(R.layout.main_explore, container, false);
-		loadingProBar = (ProgressBar) expoView.findViewById(R.id.wfListLoadingProgressBar);
+		// loadingProBar = (ProgressBar) expoView.findViewById(R.id.wfListLoadingProgressBar);
 		expoList = (ListView) expoView.findViewById(R.id.workflowExpoList);
 		reverseRadioButton = (CheckBox) expoView.findViewById(R.id.wfListSortOrderRadioButton);
 		sortCriteriaSpinner = (Spinner) expoView.findViewById(R.id.wfListSortSpinner);
+		wfListDefaultTest = (TextView) expoView.findViewById(R.id.wfList_default_textview);
 		setHasOptionsMenu(true);
 		return expoView;
 	}
@@ -63,10 +68,8 @@ public class ExploreFragment extends Fragment {
 		parentActivity = getActivity();
 		
 		reverseRadioButton.setOnCheckedChangeListener(new OnCheckedChangeListener(){
-
 			@Override
-			public void onCheckedChanged(CompoundButton buttonView,
-					boolean isChecked) {
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 				if(isChecked){
 					order = null;
 					refreshTheList();
@@ -75,7 +78,6 @@ public class ExploreFragment extends Fragment {
 					order = "reverse";
 					refreshTheList();
 				}
-				
 			}
 		});
 		
@@ -138,17 +140,48 @@ public class ExploreFragment extends Fragment {
 	
 	@Override
 	public void onPrepareOptionsMenu(Menu menu) {
-		super.onPrepareOptionsMenu(menu);
+		refreshMenu = menu;
 		// remove menu added by previous fragment
 		for(int i = 1; i < menu.size(); i ++){
 			menu.removeItem(menu.getItem(i).getItemId());
 		}
+		parentActivity.getMenuInflater().inflate(R.menu.expo_menu, menu);
+		super.onPrepareOptionsMenu(menu);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		int menuId = item.getItemId();
+		switch(menuId){
+			case R.id.refresh_expo:
+				refreshTheList();
+				return true;
+			default:
+				return super.onOptionsItemSelected(item);
+		}
+		
+	}
+	
+	private void setRefreshIconState(boolean refreshing){
+		MenuItem refreshItem = refreshMenu.findItem(R.id.refresh_expo);
+		View mRefreshIndeterminateProgressView = null;
+		if (refreshing) {
+            LayoutInflater inflater = (LayoutInflater)parentActivity.getSystemService(
+                            Context.LAYOUT_INFLATER_SERVICE);
+            mRefreshIndeterminateProgressView = inflater.inflate(
+                    R.layout.actionbar_progress_icon, null);
+        }
+		if(refreshItem != null){
+			refreshItem.setActionView(mRefreshIndeterminateProgressView);
+		}
 	}
 
 	private void refreshTheList() {
+		setRefreshIconState(true);
 		expoList.setVisibility(8);
+		wfListDefaultTest.setVisibility(8);
 		expoList.removeFooterView(footerView);
-		loadingProBar.setVisibility(0);
+		//loadingProBar.setVisibility(0);
 		// set up a loader for loading indexed workflows
 		wfListLoader = new WorkflowsLoader(parentActivity, new WorkflowExpoLoadingListener());
 		wfListLoader.LoadWorkflows(expoSortBy, order);
@@ -163,16 +196,30 @@ public class ExploreFragment extends Fragment {
 		@Override
 		public Object onTaskComplete(Object... result) {
 			if(result[0] instanceof String){
-				MessageHelper.showMessageDialog(parentActivity, "Attention", (String)result[0], null);
+				if(((String)result[0]).equals("No connection")){
+					if (refreshMenu != null){
+						setRefreshIconState(false);
+					}
+				}
+				else{
+					MessageHelper.showMessageDialog(
+							parentActivity, "Attention", (String)result[0], null);
+				}
+				wfListDefaultTest.setVisibility(0);
+				//loadingProBar.setVisibility(8);
 				return null;
 			}
 			
 			final ArrayList<Workflow> workflows = (ArrayList<Workflow>) result[0];
 			if(workflows == null){
+				wfListDefaultTest.setText("No workflow data found, please try again");
+				wfListDefaultTest.setVisibility(0);
+				//loadingProBar.setVisibility(8);
 				return null;
 			}
 			// hide progress bar
-			loadingProBar.setVisibility(8);
+			//loadingProBar.setVisibility(8);
+			wfListDefaultTest.setVisibility(8);
 			expoList.setVisibility(0);
 			
 			footerView = ((LayoutInflater) parentActivity
@@ -192,14 +239,18 @@ public class ExploreFragment extends Fragment {
 			    }
 			});
 			
-			onScrollTaskHandler = 
-					new ListViewOnScrollTaskHandler(expoList, new OnScrollLoadingTask());
+			onScrollTaskHandler = new ListViewOnScrollTaskHandler(
+							(MainPanelActivity)parentActivity, expoList, new OnScrollLoadingTask());
 			onScrollTaskHandler.setOnScrollLoading();
 			
 			// the initial loading is finished 
 			// now change to the "auto-load-more"
 			WorkflowExpoAutoLoader autoloader = new WorkflowExpoAutoLoader(resultListAdapter);
 			wfListLoader.registerLoadingListener(autoloader);
+			
+			if (refreshMenu != null){
+				setRefreshIconState(false);
+			}
 
 			return null;
 		}

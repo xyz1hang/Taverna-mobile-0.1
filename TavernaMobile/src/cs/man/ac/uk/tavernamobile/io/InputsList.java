@@ -66,6 +66,8 @@ public class InputsList extends Activity{
 		ActionBar actionBar = getActionBar();
 		actionBar.setDisplayHomeAsUpEnabled(true);
 		actionBar.setDisplayShowTitleEnabled(false);
+		actionBar.setIcon(this.getResources().getDrawable(R.drawable.taverna_wheel_logo_medium));
+		actionBar.setTitle("Supply Inputs");
 		
 		final Button runButton = (Button) findViewById(R.id.runButton);
 		Button cancel = (Button) findViewById(R.id.cancelButton);

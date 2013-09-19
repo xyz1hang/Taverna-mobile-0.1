@@ -86,6 +86,7 @@ public class WorkflowsLoader implements CallbackTask{
 	public void LoadWorkflows(String sort, String order){
 		// check for Internet connection
 		if (!sysStatesChecker.isNetworkConnected()){
+			loadingListener.onTaskComplete("No connection");
 			return;
 		}
 		else{

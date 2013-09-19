@@ -77,7 +77,20 @@
         android:layout_centerInParent="true"
         android:layout_gravity="center"
         android:indeterminateBehavior="repeat"
-        android:visibility="visible" />
+        android:visibility="gone" />
+    
+    <TextView
+        android:id="@+id/wfList_default_textview"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@+id/wfListToolsLayout"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:text="@string/wfList_default_message"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="@color/DarkGray"
+        android:textStyle="bold|italic"
+        android:visibility="gone" />
 
     <ImageButton
         android:id="@+id/exploreSearchButton"

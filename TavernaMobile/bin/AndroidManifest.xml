@@ -71,7 +71,7 @@
             android:name=".utils.ShowImage"
             android:noHistory="true" >
         </activity>
-        <activity
+        <activity android:name=".utils.TextViewer"></activity><activity
             android:name=".io.InputsList"
             android:configChanges="orientation|keyboardHidden"
             android:screenOrientation="portrait"
@@ -94,11 +94,14 @@
             android:finishOnTaskLaunch="true"
             android:launchMode="singleInstance"
             android:theme="@android:style/Theme.Dialog" />
-
+ 		<activity android:name=".io.OutputsTree"></activity>
+ 		
         <provider
             android:name="cs.man.ac.uk.tavernamobile.dataaccess.RunHistoryHelper"
             android:authorities="@string/authority"
             android:exported="false" />
+        
+       
     </application>
 
 </manifest>

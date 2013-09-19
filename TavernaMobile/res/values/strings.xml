@@ -16,6 +16,8 @@
     <string name="title_section0">Search</string>
     
     <!-- Main screen Explore fragments Strings -->
+    <string name="refresh_expo_menu">refresh</string>
+    <string name="wfList_default_message">Please try again</string>
     <string name="sort_text">Sort by :</string>
    	<string name="order_radio_button_text">Ascending order</string>
     <string-array name="wfList_sort_criteria">
@@ -51,7 +53,7 @@
     <string name="delete_run_menu">Delete run</string>
     <string name="view_run_menu">View the run</string>
     <!-- main panel menu titles -->
-    <string name="search_results_menu">Search again</string>
+    <string name="search_results_menu">Search</string>
     <string name="menu_settings">Settings</string>
     <string name="myExp_login_menu_title">Log in to myExperiment</string>
     
