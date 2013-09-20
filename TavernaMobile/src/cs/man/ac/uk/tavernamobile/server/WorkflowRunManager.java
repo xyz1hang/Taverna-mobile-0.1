@@ -1032,10 +1032,6 @@ public class WorkflowRunManager
 
 		public Object onTaskComplete(Object... result) {
 			outputRetrievalListener.onTaskComplete(result);
-			// delete the run
-			// the run has to be delete 
-			// since it can't be restarted once it's finished
-			new RunCleaner().Execute(null, 0);
 
 			return null;
 		}
@@ -1196,20 +1192,15 @@ public class WorkflowRunManager
 				}
 				return null;
 			}
+			
 			boolean success = (Boolean) result[0];
-
 			if(success){
 				if(runDeletionListener != null){
 					runDeletionListener.onTaskComplete(result);
 				}
-				// TODO: "log" has to be removed in release version
-				Log.i("run deletion", "Run deleted successfully");
+			} else if (!success){
+				runDeletionListener.onTaskComplete("Fail to delete the run, please try again");
 			}
-			else if (!success){
-				// TODO: "log" has to be removed in release version
-				Log.i("run deletion", "Fail to delete the run");
-			}
-
 			return null;
 		}
 	}

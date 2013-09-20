@@ -26,7 +26,6 @@
         <item>Title</item>
         <item>Name</item>
     </string-array>
-    
     <!-- expo single row strings -->
     <string name="wfList_sr_created_on">Created on:</string>
     <string name="wfList_sr_last_update">Last update:</string>
@@ -44,6 +43,7 @@
     <string name="Workflow_frag_default_message">No saved workflow</string>
     <string name="Workflow_history_default_message">No saved Inputs</string>
     <string name="input_history_screen_nav_icon">input_history_screen_nav_icon</string>
+    <string name="input_history_reLaunch_Menu_title">reLaunch</string>
     
     <!-- Main screen RunList Fragemtns -->
     <string name="runList_row_started_at">Started at:</string>

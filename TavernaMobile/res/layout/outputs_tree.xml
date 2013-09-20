@@ -13,7 +13,7 @@
         android:gravity="center"
         android:padding="10dp"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textColor="@color/Gray"
+        android:textColor="@color/DimGray"
         android:textStyle="italic"
         android:visibility="visible" />
     
@@ -21,11 +21,10 @@
         android:id="@+id/outputsTopNoticeText"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
         android:padding="5dp"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textColor="@color/Gray"
-        android:textSize="12sp"
+        android:textSize="15sp"
         android:textStyle="italic" />
 
     <android.support.v4.view.ViewPager

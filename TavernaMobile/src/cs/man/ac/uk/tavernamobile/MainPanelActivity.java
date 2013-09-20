@@ -12,7 +12,6 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -89,16 +88,6 @@ public class MainPanelActivity extends FragmentActivity {
 		getMenuInflater().inflate(R.menu.main_panel_menu, menu);
 		return true;
 	}
-	
-	@Override
-	public boolean onPreparePanel(int featureId, View view, Menu menu) {
-		// remove menu added by previous fragment
-		for(int i = 1; i < menu.size(); i++){
-			menu.removeItem(menu.getItem(i).getItemId());
-		}
-		super.onPreparePanel(featureId, view, menu);
-		return true;
-	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -113,21 +102,6 @@ public class MainPanelActivity extends FragmentActivity {
 		    default:
 		    	return super.onOptionsItemSelected(item);
 		}
-	}
-	
-	/*@Override
-	public boolean onPrepareOptionsMenu (Menu menu){
-		super.onPrepareOptionsMenu(menu);
-		for(int i = 1; i < menu.size(); i ++){
-			menu.removeItem(i);
-		}
-		// getMenuInflater().inflate(R.menu.main_panel_menu, menu);
-		return true;
-	}*/
-
-	@Override
-	protected void onStart() {
-		super.onStart();
 	}
 
 	public void onBackPressed() 

@@ -27,6 +27,7 @@ import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.Toast;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ExpandableListView;
 import android.widget.TextView;
@@ -146,23 +147,40 @@ public class RunsFragment extends Fragment {
 		switch (item.getItemId()) {
 	    case R.id.delete_all_run_menu:
 	    	MessageHelper.showOptionsDialog(
-	    			  refreshableList.getContext(), 
-	    			  "Delete all your runs on the server ?",
-	    			  null,
-	    			  new CallbackTask(){
-						@Override
-						public Object onTaskInProgress(Object... param) {
-							runManager.DeleteAllRun(this);
-							return null;
-						}
+    			  refreshableList.getContext(), 
+    			  "Delete all your runs on the server ?",
+    			  null,
+    			  new CallbackTask(){
+					@Override
+					public Object onTaskInProgress(Object... param) {
+						runManager.DeleteAllRun(new CallbackTask(){
 
-						@Override
-						public Object onTaskComplete(Object... result){
-							prepareListData();
-							return null; 
-						}
-	    			  }, null);
-	    	
+							@Override
+							public Object onTaskInProgress(Object... param) {
+								return null;
+							}
+
+							@Override
+							public Object onTaskComplete(Object... result) {
+								if(result[0] instanceof String){
+									Toast.makeText(parentActivity, 
+											(String)result[0], Toast.LENGTH_SHORT).show();
+									return null;
+								} else if((Boolean) result[0]){
+									prepareListData();
+								}
+								return null;
+							}
+						});
+						return null;
+					}
+
+					@Override
+					public Object onTaskComplete(Object... result){
+						return null; 
+					}
+    			  }, null);
+	    	return true;
 	    default:
 	        break;
 		}
@@ -505,6 +523,20 @@ public class RunsFragment extends Fragment {
 									}
 									checkboxesStates.put(runGroups[i], states);
 								}
+							}
+						}
+						
+						// if select the finished list also uncheck
+						// other check box in this list
+						if(selectedGroup == 3){
+							ArrayList<Boolean> states = checkboxesStates.get(runGroups[selectedGroup]);
+							if(states != null){
+								for(int j = 0; j < states.size(); j++){
+									if(j != childPosition){
+										states.set(j, false);
+									}
+								}
+								checkboxesStates.put(runGroups[selectedGroup], states);
 							}
 						}
 						// refresh data set

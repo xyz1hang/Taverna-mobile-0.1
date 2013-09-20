@@ -65,7 +65,6 @@ public class InputsList extends Activity{
 		// UI components
 		ActionBar actionBar = getActionBar();
 		actionBar.setDisplayHomeAsUpEnabled(true);
-		actionBar.setDisplayShowTitleEnabled(false);
 		actionBar.setIcon(this.getResources().getDrawable(R.drawable.taverna_wheel_logo_medium));
 		actionBar.setTitle("Supply Inputs");
 		

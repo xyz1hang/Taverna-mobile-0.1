@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -34,6 +35,7 @@ public class SlidingMenuFragment extends Fragment {
 	private View menuView;
 	private LinearLayout listRoot;
 	private LayoutInflater layoutInflater;
+	private Typeface font;
 	
 	private int previouslySelectedFragIndex;
 	private String previousSelectedFragTag;
@@ -52,6 +54,8 @@ public class SlidingMenuFragment extends Fragment {
 		parentActivity = this.getActivity();
 		layoutInflater = ((LayoutInflater) parentActivity
 							.getSystemService(Context.LAYOUT_INFLATER_SERVICE));
+		font = Typeface.createFromAsset(parentActivity.getAssets(), "Roboto-Light.ttf");
+		myExperimentLoginText.setTypeface(font);
 		refreshMenus();
 		
 		myExperimentLoginText.setOnClickListener(new android.view.View.OnClickListener() {
@@ -98,6 +102,7 @@ public class SlidingMenuFragment extends Fragment {
 	}
 
 	private void refreshMenus() {
+		listRoot.invalidate();
 		// Navigation Menu
 		final User userloggedIn = TavernaAndroid.getMyEUserLoggedin();
 		ListView navigationMenuList = null;
@@ -155,15 +160,10 @@ public class SlidingMenuFragment extends Fragment {
 			@Override
 			public void onItemClick(AdapterView<?> theListView, View parentView, 
 					int itemIndex, long arg3) {
+				// TODO: setup dropbox and google drive
 				if(itemIndex == 1){
-					((MainPanelActivity) parentActivity).getMenu().toggle();
-					Intent goToSetting = new Intent(parentActivity, SettingsActivity.class);
-					parentActivity.startActivity(goToSetting);
 				}
 				else if(itemIndex == 2){
-					((MainPanelActivity) parentActivity).getMenu().toggle();
-					Intent goToSetting = new Intent(parentActivity, SettingsActivity.class);
-					parentActivity.startActivity(goToSetting);
 				}
 			}
 		});
@@ -191,9 +191,9 @@ public class SlidingMenuFragment extends Fragment {
 								TavernaAndroid.setMyWorkflows(null);
 								TavernaAndroid.setFavouriteWorkflows(null);
 								parentActivity.recreate();
-								/*refreshLoginState();
-								clearLoginPreference();
-								refreshMenus();*/
+								//refreshLoginState();
+								//clearLoginPreference();
+								//refreshMenus();
 								return null;
 							}
 
@@ -228,6 +228,7 @@ public class SlidingMenuFragment extends Fragment {
 		
 		View headerview = layoutInflater.inflate(R.layout.sliding_menu_list_header, null);
 		TextView listHeaderName = (TextView) headerview.findViewById(R.id.sliding_menu_list_name);
+		listHeaderName.setTypeface(font);
 		listHeaderName.setText(listTitle);
 		ListView menuList = new ListView(parentActivity);
 		menuList.setLayoutParams(params);
@@ -340,6 +341,7 @@ public class SlidingMenuFragment extends Fragment {
 			
 			TextView title = (TextView) convertView.findViewById(R.id.row_title);
 			title.setText(getItem(position).getText());
+			title.setTypeface(font);
 			Drawable drawable = getResources().getDrawable(getItem(position).getResID());
 			title.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null);
 

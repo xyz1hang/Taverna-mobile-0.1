@@ -7,16 +7,30 @@
     android:orientation="vertical" >
 
     <TextView
+        android:id="@+id/wfHistoryWfTitle"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:padding="10dp"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="@color/DimGray"
+        android:textStyle="bold|italic" />
+    
+    <TextView
         android:id="@+id/wfHistoryStatistics"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/wfHistoryWfTitle"
         android:layout_gravity="left|center_vertical"
-        android:layout_margin="10dp"
-        android:background="@drawable/drop_shadow_container"
+        android:layout_margin="5dp"
         android:padding="10dp"
-        android:text="statistic (to be added...)"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textStyle="bold|italic" />
+        android:textColor="@color/Gray"
+        android:textSize="15sp"
+        android:textStyle="italic" />
 
     <ListView
         android:id="@+id/savedInputsList"

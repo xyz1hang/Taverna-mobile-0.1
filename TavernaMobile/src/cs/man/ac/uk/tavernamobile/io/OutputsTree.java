@@ -10,6 +10,7 @@ import java.util.Map.Entry;
 import android.app.ActionBar;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -17,6 +18,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.PagerTitleStrip;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -25,9 +27,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import cs.man.ac.uk.tavernamobile.MainPanelActivity;
 import cs.man.ac.uk.tavernamobile.R;
-import cs.man.ac.uk.tavernamobile.WorkflowDetail;
 import cs.man.ac.uk.tavernamobile.datamodels.OutputValue;
 import cs.man.ac.uk.tavernamobile.datamodels.WorkflowBE;
 import cs.man.ac.uk.tavernamobile.server.WorkflowRunManager;
@@ -40,9 +40,10 @@ public class OutputsTree extends FragmentActivity{
 
 	private static OutputsTree currentActivity;
 	
-	private int Activity_Starter_Code;
 	// variable holding all outputs data
 	private static HashMap<String, OutputValue> allOutputs;
+	
+	private static PagerTitleStrip pagerTitleStrip;
 	
 	/**
 	 * The {@link android.support.v4.view.PagerAdapter} that will provide fragments for each of the
@@ -72,13 +73,21 @@ public class OutputsTree extends FragmentActivity{
 		actionBar.setTitle("Outputs");
 		TextView topBarText = (TextView) findViewById(R.id.outputsTopBar);
 		TextView outputsTopNoticeText = (TextView) findViewById(R.id.outputsTopNoticeText);
+		pagerTitleStrip = (PagerTitleStrip) findViewById(R.id.outputTree_pager_title_strip);
+		Typeface font = Typeface.createFromAsset(this.getAssets(), "RobotoCondensed-Light.ttf");
+	    for (int counter = 0 ; counter< pagerTitleStrip.getChildCount(); counter++) {
+
+	        if (pagerTitleStrip.getChildAt(counter) instanceof TextView) {
+	            ((TextView)pagerTitleStrip.getChildAt(counter)).setTypeface(font);
+	            ((TextView)pagerTitleStrip.getChildAt(counter)).setTextSize(25);
+	        }
+	    }
 		// get data passed in
 		Bundle extras = getIntent().getExtras();
 		WorkflowBE workflowEntity = (WorkflowBE) extras.getSerializable("workflowEntity");
-		Activity_Starter_Code = extras.getInt("activity_starter");
 		
 		topBarText.setText(workflowEntity.getTitle());
-		outputsTopNoticeText.setText("Output Ports:");
+		outputsTopNoticeText.setText("Swipe to browser outputs from different Output Ports:");
 		// begin retrieving output
 		WorkflowRunManager manager = new WorkflowRunManager(this);
 		manager.getRunOutput(workflowEntity.getTitle(), null, 
@@ -139,27 +148,10 @@ public class OutputsTree extends FragmentActivity{
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 			case android.R.id.home:
-				returnToStarterActivity();
+				finish();
 				return true;
 		    default:
 		    	return super.onOptionsItemSelected(item);
-		}
-	}
-	
-	// back to the activity that started the run.
-	// go back to where it came from.
-	private void returnToStarterActivity(){
-		switch(Activity_Starter_Code){
-		case 1:
-			Intent goBackToMain = new Intent(currentActivity, WorkflowDetail.class);
-			goBackToMain.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-			startActivity(goBackToMain);
-			break;
-		case 2:
-			Intent goBackWfDetail = new Intent(currentActivity, MainPanelActivity.class);
-			//goBackWfDetail.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-			startActivity(goBackWfDetail);
-			break;
 		}
 	}
 	
@@ -188,7 +180,6 @@ public class OutputsTree extends FragmentActivity{
 			super.onCreateView(inflater, container, savedInstanceState);
 			View treeMainView = inflater.inflate(R.layout.output_tree_single, container, false);
 			treeRoot = (LinearLayout) treeMainView.findViewById(R.id.output_Tree_Root);
-			setHasOptionsMenu(true);
 			return treeMainView;
 		}
 		
@@ -217,6 +208,8 @@ public class OutputsTree extends FragmentActivity{
 		}
 
 		private void buildTree(final OutputValue onePortValues, LinearLayout root){
+			
+			
 			// Root layout of the list value which
 			// the text view of leaf value will attach to
 			// margin = indent
@@ -224,8 +217,17 @@ public class OutputsTree extends FragmentActivity{
 			final LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
 					LinearLayout.LayoutParams.WRAP_CONTENT,      
 					LinearLayout.LayoutParams.WRAP_CONTENT);
+			// add a upper level textview to indicate list
+			// add this view without margin
+			TextView listText = new TextView(currentActivity);
+			listText.setLayoutParams(params);
+			listText.setText("List");
+			listText.setPadding(pxToDp(5), pxToDp(5), pxToDp(5), pxToDp(5));
+			root.addView(listText, params);
+			// set margin hence following child view will have indent
 			params.setMargins(pxToDp(20), pxToDp(20), 0, 0);
 			subRoot.setLayoutParams(params);
+			subRoot.setOrientation(LinearLayout.VERTICAL);
 			if(onePortValues.hasStringValue()){
 				TextView text = new TextView(currentActivity);
 				text.setLayoutParams(params);

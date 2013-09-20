@@ -117,7 +117,7 @@ public class MyExperimentLogin extends Activity implements CallbackTask {
 				Intent goBackToMain = new Intent(currentActivity, MainPanelActivity.class);
 				goBackToMain.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 				startActivity(goBackToMain);
-				currentActivity.overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+				currentActivity.overridePendingTransition(R.anim.push_right_in, R.anim.push_right_out);
 			}
 		});
 		
@@ -142,6 +142,7 @@ public class MyExperimentLogin extends Activity implements CallbackTask {
 			goBackToMain.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 			startActivity(goBackToMain);
 			this.overridePendingTransition(R.anim.push_right_in, R.anim.push_right_out);
+			return true;
 		default:
 			return super.onOptionsItemSelected(item);
 		}
@@ -227,11 +228,5 @@ public class MyExperimentLogin extends Activity implements CallbackTask {
 			this.overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
 		}
 		return null;
-	}
-
-	@Override
-	public void finish() {
-		this.overridePendingTransition(R.anim.push_right_in, R.anim.push_right_out);
-		super.finish();
 	}
 }

@@ -36,11 +36,15 @@ public class MessageHelper extends AlertDialog {
 		dialogMessageTextView.setText(dialogMessage);
 		// set up button action
 		Button dialogButton = (Button) dialogView.findViewById(R.id.neutraldialog_dismiss_button);
+		// set up title view
+		View dialogTitleView = dialog.getLayoutInflater().inflate(R.layout.dialog_title_view, null);
+		TextView dialogTitleText = (TextView) dialogTitleView.findViewById(R.id.dialog_title_text);
 		if (title != null){
-			dialog.setTitle(title);
+			dialogTitleText.setText(title);
 		} else{
-			dialog.setTitle("Attention");
+			dialogTitleText.setText("Attention");
 		}
+		dialog.setCustomTitle(dialogTitleView);
 		dialog.setView(dialogView);
 		dialog.setCancelable(false);
 		dialogButton.setOnClickListener(new View.OnClickListener() {
@@ -61,11 +65,16 @@ public class MessageHelper extends AlertDialog {
 			final CallbackTask listenerPos, final CallbackTask listenerNeg){
 		//new MessageHelper(context, message).twoOptionsDialog(title, listenerPos, listenerNeg).show();
 		final MessageHelper dialog = new MessageHelper(context, message);
+		// set up title view
+		View dialogTitleView = dialog.getLayoutInflater().inflate(R.layout.dialog_title_view, null);
+		TextView dialogTitleText = (TextView) dialogTitleView.findViewById(R.id.dialog_title_text);
 		if (title != null){
-			dialog.setTitle(title);
+			dialogTitleText.setText(title);
 		} else{
-			dialog.setTitle("Attention");
+			dialogTitleText.setText("Attention");
 		}
+		dialog.setCustomTitle(dialogTitleView);
+		
 		View dialogView = dialog.getLayoutInflater().inflate(R.layout.dialog_layout_two_options, null);
 		TextView dialogMessageTextView = (TextView) dialogView.findViewById(R.id.twooptionsdialog_message);
 		dialogMessageTextView.setText(dialogMessage);

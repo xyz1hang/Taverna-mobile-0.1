@@ -2,13 +2,17 @@ package cs.man.ac.uk.tavernamobile.io;
 
 import java.util.HashMap;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -47,8 +51,6 @@ public class RunMonitorScreen extends Activity implements CallbackTask {
 	int notificationId = 0;
 	private NotificationManager mNotificationManager;
 
-	private int Activity_Starter_Code;
-
 	private boolean running = false;
 
 	@Override
@@ -57,12 +59,18 @@ public class RunMonitorScreen extends Activity implements CallbackTask {
 		setContentView(R.layout.run_monitor_screen);
 
 		currentActivity = this;
+		
+		ActionBar actionBar = getActionBar();
+		actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#D02E2E2E")));
+		actionBar.setHomeButtonEnabled(true);
+		actionBar.setDisplayHomeAsUpEnabled(true);
+		actionBar.setDisplayShowTitleEnabled(true);
+		actionBar.setIcon(this.getResources().getDrawable(R.drawable.taverna_wheel_logo_medium));
 
 		// get data passed in
 		Bundle extras = getIntent().getExtras();
 		final WorkflowBE workflowEntity = (WorkflowBE) extras.getSerializable("workflowEntity");
 		userInputs = (HashMap<String, Object>) extras.getSerializable("userInputs");
-		Activity_Starter_Code = extras.getInt("activity_starter");
 		// command which indicate to start a new run or
 		// monitoring an existing run
 		String command = extras.getString("command");
@@ -122,7 +130,6 @@ public class RunMonitorScreen extends Activity implements CallbackTask {
 				Intent goToOutput = new Intent(currentActivity, OutputsTree.class);
 				Bundle extras = new Bundle();
 				extras.putSerializable("workflowEntity", workflowEntity);
-				extras.putInt("activity_starter", Activity_Starter_Code);
 				goToOutput.putExtras(extras);
 				currentActivity.startActivity(goToOutput);
 				
@@ -152,6 +159,16 @@ public class RunMonitorScreen extends Activity implements CallbackTask {
 					});*/
 			}// end of onClick
 		});
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case android.R.id.home:
+			finish();
+		default:
+			return super.onOptionsItemSelected(item);
+		}
 	}
 
 	public Object onTaskInProgress(Object... param) {

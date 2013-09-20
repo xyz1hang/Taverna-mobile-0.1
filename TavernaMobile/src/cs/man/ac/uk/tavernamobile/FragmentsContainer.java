@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -11,10 +12,12 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.PagerTitleStrip;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import cs.man.ac.uk.tavernamobile.fragments.ExploreFragment;
 import cs.man.ac.uk.tavernamobile.fragments.FavouriteWorkflowsFragment;
 import cs.man.ac.uk.tavernamobile.fragments.LaunchHistoryFragment;
@@ -52,7 +55,6 @@ public class FragmentsContainer extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		mainView = inflater.inflate(R.layout.main_panel_content, null);
-		
 		return mainView;
 	}
 	
@@ -62,6 +64,17 @@ public class FragmentsContainer extends Fragment {
 		subFragments = new ArrayList<Fragment>();
 		fragmentTitles = new ArrayList<String>();
 		parentActivity = getActivity();
+		
+		PagerTitleStrip pagerTitleStrip = (PagerTitleStrip) mainView.findViewById(R.id.pager_title_strip);
+		Typeface font = Typeface.createFromAsset(parentActivity.getAssets(), "RobotoCondensed-LightItalic.ttf");
+	    for (int counter = 0 ; counter< pagerTitleStrip.getChildCount(); counter++) {
+
+	        if (pagerTitleStrip.getChildAt(counter) instanceof TextView) {
+	            ((TextView)pagerTitleStrip.getChildAt(counter)).setTypeface(font);
+	            ((TextView)pagerTitleStrip.getChildAt(counter)).setTextSize(25);
+	            ((TextView)pagerTitleStrip.getChildAt(counter)).setTextColor(parentActivity.getResources().getColor(R.color.Black));
+	        }
+	    }
 		
 		Bundle args = this.getArguments();
 		int[] fragmentsToInstantiate = args.getIntArray("fragmentsToInstantiate");

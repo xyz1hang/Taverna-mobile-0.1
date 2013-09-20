@@ -3,6 +3,9 @@
     android:id="@+id/output_Tree_Root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_gravity="center"
+    android:layout_margin="10dp"
+    android:background="@drawable/drop_shadow_container"
     android:orientation="vertical" >
 
 </LinearLayout>
