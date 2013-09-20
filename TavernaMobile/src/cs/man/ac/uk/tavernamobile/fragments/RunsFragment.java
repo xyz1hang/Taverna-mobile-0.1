@@ -528,7 +528,7 @@ public class RunsFragment extends Fragment {
 						
 						// if select the finished list also uncheck
 						// other check box in this list
-						if(selectedGroup == 3){
+						if(selectedGroup == 2){
 							ArrayList<Boolean> states = checkboxesStates.get(runGroups[selectedGroup]);
 							if(states != null){
 								for(int j = 0; j < states.size(); j++){
