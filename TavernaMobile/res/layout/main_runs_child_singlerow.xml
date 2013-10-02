@@ -18,7 +18,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_margin="10dp"
-        android:background="@drawable/list_selector"
+        android:background="@drawable/drop_shadow_container"
         android:baselineAligned="false"
         android:gravity="center"
         android:orientation="horizontal" >

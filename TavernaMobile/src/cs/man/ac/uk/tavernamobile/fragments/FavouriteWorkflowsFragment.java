@@ -1,5 +1,7 @@
 package cs.man.ac.uk.tavernamobile.fragments;
 
+import java.util.ArrayList;
+
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -9,8 +11,10 @@ import android.widget.ListView;
 
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 
+import cs.man.ac.uk.tavernamobile.datamodels.Workflow;
 import cs.man.ac.uk.tavernamobile.utils.CallbackTask;
 import cs.man.ac.uk.tavernamobile.utils.TavernaAndroid;
+import cs.man.ac.uk.tavernamobile.utils.WorkflowsListAdapter;
 
 public class FavouriteWorkflowsFragment extends MyWorkflowsBase {
 	
@@ -26,6 +30,13 @@ public class FavouriteWorkflowsFragment extends MyWorkflowsBase {
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		
+		// try to get from cache first
+		workflows = (ArrayList<Workflow>) mCache.get("myFavouriteWorkflow");
+		if(workflows != null){
+			resultListAdapter = new WorkflowsListAdapter(parentActivity, workflows);
+			workflowList.setAdapter(resultListAdapter);
+		}
+				
 		workflowList.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener<ListView>(){
             @Override
             public void onRefresh(PullToRefreshBase<ListView> refreshView) {
@@ -40,6 +51,7 @@ public class FavouriteWorkflowsFragment extends MyWorkflowsBase {
 						// change the data set of the listView adapter of super class
 		        		workflows.clear();
 		        		workflows.addAll(TavernaAndroid.getFavouriteWorkflows());
+		        		mCache.put("myFavouriteWorkflow", workflows);
 		        		resultListAdapter.notifyDataSetChanged();
 						return null;
 					}

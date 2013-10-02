@@ -9,23 +9,26 @@
 
     <TextView
         android:id="@+id/neutraldialog_message"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
+        android:layout_gravity="center"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
         android:layout_weight="3"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:textColor="@color/Black"/>
+        android:textColor="@color/Black" />
 
     <Button
         android:id="@+id/neutraldialog_dismiss_button"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
+        android:layout_gravity="center_horizontal"
         android:layout_margin="10dp"
         android:layout_weight="1"
         android:background="@drawable/dialog_bottom_selector"
         android:gravity="center"
-        android:minHeight="45dp"
+        android:minHeight="40dp"
+        android:minWidth="110dp"
         android:paddingLeft="35dp"
         android:paddingRight="35dp"
         android:text="@string/netrual_dialog_button_text"

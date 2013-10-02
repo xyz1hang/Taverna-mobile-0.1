@@ -26,6 +26,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import cs.man.ac.uk.tavernamobile.R;
 import cs.man.ac.uk.tavernamobile.datamodels.OutputValue;
@@ -57,6 +58,11 @@ public class OutputsTree extends FragmentActivity{
 	 * The {@link ViewPager} that will host the section contents.
 	 */
 	ViewPager mViewPager;
+	
+	static ProgressBar loadingProgressBar;
+	
+	// common font
+	static Typeface font;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -74,7 +80,7 @@ public class OutputsTree extends FragmentActivity{
 		TextView topBarText = (TextView) findViewById(R.id.outputsTopBar);
 		TextView outputsTopNoticeText = (TextView) findViewById(R.id.outputsTopNoticeText);
 		pagerTitleStrip = (PagerTitleStrip) findViewById(R.id.outputTree_pager_title_strip);
-		Typeface font = Typeface.createFromAsset(this.getAssets(), "RobotoCondensed-Light.ttf");
+		font = Typeface.createFromAsset(this.getAssets(), "RobotoCondensed-Light.ttf");
 	    for (int counter = 0 ; counter< pagerTitleStrip.getChildCount(); counter++) {
 
 	        if (pagerTitleStrip.getChildAt(counter) instanceof TextView) {
@@ -82,12 +88,14 @@ public class OutputsTree extends FragmentActivity{
 	            ((TextView)pagerTitleStrip.getChildAt(counter)).setTextSize(25);
 	        }
 	    }
+	    loadingProgressBar = (ProgressBar) findViewById(R.id.outputTreeLoadingProgressBar);
+	    
 		// get data passed in
 		Bundle extras = getIntent().getExtras();
 		WorkflowBE workflowEntity = (WorkflowBE) extras.getSerializable("workflowEntity");
 		
 		topBarText.setText(workflowEntity.getTitle());
-		outputsTopNoticeText.setText("Swipe to browser outputs from different Output Ports:");
+		outputsTopNoticeText.setText("Swipe to browser outputs from different output ports.");
 		// begin retrieving output
 		WorkflowRunManager manager = new WorkflowRunManager(this);
 		manager.getRunOutput(workflowEntity.getTitle(), null, 
@@ -136,6 +144,7 @@ public class OutputsTree extends FragmentActivity{
 				    mViewPager.setCurrentItem(0);
 				    
 				    mfragmentStatePagerAdapter.notifyDataSetChanged();
+				    mViewPager.setVisibility(0);
 				    
 					return null;
 				}	
@@ -167,7 +176,7 @@ public class OutputsTree extends FragmentActivity{
 	    return myFragment;
 	}
 
-	public static class OutputTreeFragment extends Fragment implements CallbackTask {
+	public static class OutputTreeFragment extends Fragment {
 
 		private String portName;
 		private LinearLayout treeRoot;
@@ -189,13 +198,16 @@ public class OutputsTree extends FragmentActivity{
 			Bundle extra = this.getArguments();
 			portName = extra.getString("portName");
 			final OutputValue onePortValues = allOutputs.get(portName);
-			buildTree(onePortValues, treeRoot);
-			// begin building tree
+			int listItemCount = onePortValues.hasListValue() ? onePortValues.getListValue().size() : 
+						(onePortValues.hasFileValue() || onePortValues.hasStringValue()) ? 1 : 0;
+			buildTree(onePortValues, treeRoot, listItemCount);
+			
+			// begin building tree in background
 			/*BackgroundTaskHandler handler = new BackgroundTaskHandler();
 			handler.StartBackgroundTask(currentActivity, this, null);*/
 		}
 
-		@Override
+		/*@Override
 		public Object onTaskInProgress(Object... param) {
 			final OutputValue onePortValues = allOutputs.get(portName);
 			buildTree(onePortValues, treeRoot);
@@ -205,79 +217,88 @@ public class OutputsTree extends FragmentActivity{
 		@Override
 		public Object onTaskComplete(Object... result) {
 			return null;
-		}
+		}*/
 
-		private void buildTree(final OutputValue onePortValues, LinearLayout root){
-			
-			
-			// Root layout of the list value which
-			// the text view of leaf value will attach to
-			// margin = indent
-			LinearLayout subRoot = new LinearLayout(currentActivity);
+		/**
+		 * Method to construct Tree View of the output programmatically 
+		 * 
+		 * @param onePortValues - the actual output values (Text/Image)
+		 * @param root - Root layout that the whole output list (layout) will attach to
+		 * @param listItemCount - counter for display the number of value in current depth level
+		 */
+		private void buildTree(final OutputValue onePortValues, LinearLayout root, int listItemCount){
+			// create layout parameter first
 			final LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
 					LinearLayout.LayoutParams.WRAP_CONTENT,      
 					LinearLayout.LayoutParams.WRAP_CONTENT);
-			// add a upper level textview to indicate list
-			// add this view without margin
+			// add a TextView to the upper level to indicate 
+			// that the output value is a list and add this view to root 
+			// without margin
 			TextView listText = new TextView(currentActivity);
 			listText.setLayoutParams(params);
-			listText.setText("List");
+			if(listItemCount > 1){
+				listText.setText("List with "+listItemCount+" values");
+			}else{
+				listText.setText("List with "+listItemCount+" value");
+			}
 			listText.setPadding(pxToDp(5), pxToDp(5), pxToDp(5), pxToDp(5));
+			listText.setTypeface(font);
+			listText.setTextSize(20);
 			root.addView(listText, params);
-			// set margin hence following child view will have indent
-			params.setMargins(pxToDp(20), pxToDp(20), 0, 0);
+			// set margin now hence following child view (list) will have indent
+			params.setMargins(pxToDp(20), pxToDp(10), 0, 0);
+			// create sub root layout to add values from list in deeper level
+			LinearLayout subRoot = new LinearLayout(currentActivity);
 			subRoot.setLayoutParams(params);
 			subRoot.setOrientation(LinearLayout.VERTICAL);
+			// add value according to value type
 			if(onePortValues.hasStringValue()){
-				TextView text = new TextView(currentActivity);
-				text.setLayoutParams(params);
-				text.setText("Text Value");
-				text.setPadding(pxToDp(5), pxToDp(5), pxToDp(5), pxToDp(5));
-				/*text.setBackground(currentActivity.getResources()
-						.getDrawable(R.drawable.sliding_header_login));*/
-				text.setOnClickListener(new OnClickListener(){
-					@Override
-					public void onClick(View arg0) {
-						Intent goToShowText = new Intent(currentActivity, TextViewer.class);
-						Bundle extra = new Bundle();
-						extra.putString("textToShow", onePortValues.getStringValue());
-						extra.putString("textTitle", portName);
-						goToShowText.putExtras(extra);
-						currentActivity.startActivity(goToShowText);
-					}
-				});
-				LinearLayout.LayoutParams textViewParams = new LinearLayout.LayoutParams(
-						LinearLayout.LayoutParams.WRAP_CONTENT,      
-						LinearLayout.LayoutParams.WRAP_CONTENT);
-				subRoot.addView(text, textViewParams);
+				setUpleafView(onePortValues, "Text Value", params, subRoot, 
+					new OnClickListener(){
+						@Override
+						public void onClick(View arg0) {
+							Intent goToShowText = new Intent(currentActivity, TextViewer.class);
+							Bundle extra = new Bundle();
+							extra.putString("textToShow", onePortValues.getStringValue());
+							extra.putString("textTitle", portName);
+							goToShowText.putExtras(extra);
+							currentActivity.startActivity(goToShowText);
+						}
+					});
 			}else if(onePortValues.hasFileValue()){
-				TextView text = new TextView(currentActivity);
-				text.setLayoutParams(params);
-				text.setText("Image Value");
-				text.setPadding(pxToDp(5), pxToDp(5), pxToDp(5), pxToDp(5));
-				/*text.setBackground(currentActivity.getResources()
-						.getDrawable(R.drawable.sliding_header_login));*/
-				text.setOnClickListener(new OnClickListener(){
-					@Override
-					public void onClick(View arg0) {
-						Intent goToShowText = new Intent(currentActivity, ShowImage.class);
-						Bundle extra = new Bundle();
-						extra.putString("imgFilePath", onePortValues.getFileValue());
-						extra.putString("imageTitle", portName);
-						goToShowText.putExtras(extra);
-						currentActivity.startActivity(goToShowText);
-					}
-				});
-				LinearLayout.LayoutParams textViewParams = new LinearLayout.LayoutParams(
-						LinearLayout.LayoutParams.WRAP_CONTENT,      
-						LinearLayout.LayoutParams.WRAP_CONTENT);
-				subRoot.addView(text, textViewParams);
+				setUpleafView(onePortValues, "Image Value", params, subRoot, 
+					new OnClickListener(){
+						@Override
+						public void onClick(View arg0) {
+							Intent goToShowImage = new Intent(currentActivity, ShowImage.class);
+							Bundle extra = new Bundle();
+							extra.putString("imgFilePath", onePortValues.getFileValue());
+							extra.putString("imageTitle", portName);
+							goToShowImage.putExtras(extra);
+							currentActivity.startActivity(goToShowImage);
+						}
+					});
 			}else if(onePortValues.hasListValue()){
 				for(OutputValue opVal : onePortValues.getListValue()){
-					buildTree(opVal, subRoot);
+					listItemCount = onePortValues.getListValue().size();
+					buildTree(opVal, subRoot, listItemCount);
 				}
 			}
 			root.addView(subRoot, params);
+		}
+
+		private void setUpleafView(final OutputValue onePortValues, String textToDisplay,
+				final LinearLayout.LayoutParams params, LinearLayout subRoot, 
+				OnClickListener listener) {
+			TextView text = new TextView(currentActivity);
+			text.setLayoutParams(params);
+			text.setText(textToDisplay);
+			text.setTypeface(font);
+			text.setTextSize(20);
+			text.setPadding(pxToDp(10), pxToDp(10), pxToDp(10), pxToDp(10));
+			text.setBackgroundResource(R.drawable.list_selector);
+			text.setOnClickListener(listener);
+			subRoot.addView(text, params);
 		}
 		
 		private static int pxToDp(int sizeInPx){

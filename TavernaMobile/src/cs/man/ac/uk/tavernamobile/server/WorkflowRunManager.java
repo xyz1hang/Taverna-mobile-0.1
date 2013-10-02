@@ -688,9 +688,11 @@ public class WorkflowRunManager
 					// set run started time and statue
 					reportRunState();
 					reportRunStartTime();
-				} catch (Exception e) {
-					// TODO : exception message handling
+				} catch (NetworkConnectionException e) {
 					return e.getMessage();
+				} catch (Exception e){
+					// irrelevant exception swallow
+					e.printStackTrace();
 				}
 			}
 			else{
@@ -704,7 +706,7 @@ public class WorkflowRunManager
 			if(runListener != null){
 				// inform monitor to pull run statue
 				// since run is now started
-				runListener.onTaskInProgress(result);
+				runListener.onTaskComplete(result);
 			}
 			return null;
 		}
@@ -1224,7 +1226,7 @@ public class WorkflowRunManager
 				Collection<Run> runs = server.getRuns(user);
 				// if no run found return the message
 				if(runs.size() < 1){
-					String message = "No runs found";
+					String message = "No runs found on the server";
 					return message; 
 				}
 				

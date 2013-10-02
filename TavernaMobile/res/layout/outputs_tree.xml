@@ -21,6 +21,7 @@
         android:id="@+id/outputsTopNoticeText"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="5dp"
         android:padding="5dp"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textColor="@color/Gray"
@@ -30,7 +31,8 @@
     <android.support.v4.view.ViewPager
         android:id="@+id/outputTreeViewPager"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" >
+        android:layout_height="match_parent"
+        android:visibility="gone" >
 
         <android.support.v4.view.PagerTitleStrip
             android:id="@+id/outputTree_pager_title_strip"
@@ -43,6 +45,14 @@
             android:textColor="#000000"
             android:textStyle="bold|italic" >
         </android.support.v4.view.PagerTitleStrip>
+
     </android.support.v4.view.ViewPager>
+
+    <ProgressBar
+        android:id="@+id/outputTreeLoadingProgressBar"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="center" />
 
 </LinearLayout>

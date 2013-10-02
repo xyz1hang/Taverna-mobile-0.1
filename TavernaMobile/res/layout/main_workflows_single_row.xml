@@ -26,7 +26,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_margin="5dp"
-        android:layout_weight="3.5"
+        android:layout_weight="3"
         android:orientation="vertical" >
 
         <TextView
@@ -39,17 +39,6 @@
             android:gravity="center"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="@color/Black"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/savedWfVersion"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="left"
-            android:layout_marginBottom="5dp"
-            android:gravity="center_vertical"
-            android:textColor="@color/Black"
-            android:textSize="12sp"
             android:textStyle="bold" />
 
         <LinearLayout
@@ -65,8 +54,7 @@
                 android:gravity="center_vertical"
                 android:text="@string/Last_Launch_Text"
                 android:textColor="@color/Black"
-                android:textSize="12sp"
-                android:textStyle="bold" />
+                android:textSize="12sp" />
 
             <TextView
                 android:id="@+id/savedWfLastLaunchValue"
@@ -93,8 +81,7 @@
                 android:gravity="center_vertical"
                 android:text="@string/First_Launch_Text"
                 android:textColor="@color/Black"
-                android:textSize="12sp"
-                android:textStyle="bold" />
+                android:textSize="12sp" />
 
             <TextView
                 android:id="@+id/savedWfFirstLaunchValue"
@@ -111,10 +98,9 @@
 
     <ImageView
         android:id="@+id/savedWorkflowNavArrow"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_weight="0.5"
         android:contentDescription="@string/input_history_screen_nav_icon"
         android:src="@drawable/navigation_next" />
 

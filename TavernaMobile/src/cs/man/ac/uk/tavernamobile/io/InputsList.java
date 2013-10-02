@@ -23,6 +23,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 import cs.man.ac.uk.tavernamobile.R;
 import cs.man.ac.uk.tavernamobile.datamodels.WorkflowBE;
 import cs.man.ac.uk.tavernamobile.server.WorkflowRunManager;
@@ -177,26 +178,29 @@ public class InputsList extends Activity{
 										// during the starting of workflow run
 										if(result[0] instanceof String){
 											final String message = (String) result[0];
-											
-											MessageHelper.showMessageDialog(
+											Toast.makeText(currentActivity, message, Toast.LENGTH_SHORT).show();
+											/*MessageHelper.showMessageDialog(
 												currentActivity, null, 
-												(String) result[0], new CallbackTask(){
+												(String) result[0], 
+												new CallbackTask(){
 													@Override
 													public Object onTaskInProgress(Object... param) {
 														if(message.equals("The Run has been successfully started.")){
-															currentActivity.finish();
+															
 														}
 														return null;
 													}
 
 													@Override
 													public Object onTaskComplete(Object... result) { return null; }
-												});
+												});*/
 										}
 										return null;
 									}
 								},
 								false);
+							
+							currentActivity.finish();
 							return null;
 						}
 	

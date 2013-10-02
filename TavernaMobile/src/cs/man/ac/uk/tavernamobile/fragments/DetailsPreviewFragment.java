@@ -53,8 +53,8 @@ public class DetailsPreviewFragment extends DetailsFragmentsBase implements Call
 			public void onClick(View v) {
 				Intent showImageIntent = new Intent(parentActivity, ShowImage.class);
 				showImageIntent.putExtra("imageURI" , workflow.getPreview());
+				showImageIntent.putExtra("imageTitle" , "Preview");
 				parentActivity.startActivity(showImageIntent);
-
 			}});
 	}
 

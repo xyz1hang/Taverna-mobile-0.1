@@ -221,17 +221,16 @@ public class InputsHistoryActivity extends FragmentActivity {
 							// set check box states in the state collection
 							checkboxesStates.set(fileIndex, true);
 							selectedInputs.add(file);
+							if (mActionMode == null) {
+								mActionMode = currentActivity.startActionMode(mActionModeCallback);
+							}
 						} else {
 							checkboxesStates.set(fileIndex, false);
 							selectedInputs.remove(file);
-						}
-						
-						// start the action mode when there are 
-						// selected input file
-						if (mActionMode == null) {
-							mActionMode = currentActivity.startActionMode(mActionModeCallback);
-						} else if (selectedInputs.size() < 1) {
-							mActionMode.finish();
+							if (selectedInputs.size() < 1) {
+								mActionMode.finish();
+								mActionMode = null;
+							}
 						}
 					}
 				});
@@ -382,7 +381,6 @@ public class InputsHistoryActivity extends FragmentActivity {
 
 		// Called when the user exits the action mode
 		public void onDestroyActionMode(ActionMode mode) {
-			mActionMode = null;
 			resetCheckboxesStates();
 		}
 	};

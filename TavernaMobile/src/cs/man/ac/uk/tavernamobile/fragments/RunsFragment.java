@@ -78,19 +78,15 @@ public class RunsFragment extends Fragment {
 	// for the sake of Listview inside expendableViwe
 	//private int childID;
 	
-	// index of the selected run group
+	// index of the selected run group and child
 	// help with dynamic action mode menu loading
 	private int selectedGroup;
+	private int selectedChildIndex;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		runRetrievalListener = new RunListRetrievingCompletionListener();
-		// Initialize the collection and adapters
-		childElements = new HashMap<String, HashMap<String, WorkflowRun>>();
-		selectedRunIds = new  ArrayList<String>();
-		checkboxesStates = new HashMap<String, ArrayList<Boolean>>();
-		//childListAdapters = new ArrayList<ChildListAdapter>();
 	}
 
 	@Override
@@ -109,6 +105,10 @@ public class RunsFragment extends Fragment {
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
+		// Initialize the collection and adapters
+		childElements = new HashMap<String, HashMap<String, WorkflowRun>>();
+		selectedRunIds = new  ArrayList<String>();
+		checkboxesStates = new HashMap<String, ArrayList<Boolean>>();
 		parentActivity = this.getActivity();
 		runManager = new WorkflowRunManager(parentActivity);
 		systemStateChecker = new SystemStatesChecker(parentActivity);
@@ -128,7 +128,7 @@ public class RunsFragment extends Fragment {
 		/*refreshableList.setDivider(null);
 		refreshableList.setChildDivider(getResources().getDrawable(R.color.transperent));
 		refreshableList.setDividerHeight(10);*/
-
+		
 		super.onActivityCreated(savedInstanceState);
 	}
 	
@@ -167,7 +167,8 @@ public class RunsFragment extends Fragment {
 											(String)result[0], Toast.LENGTH_SHORT).show();
 									return null;
 								} else if((Boolean) result[0]){
-									prepareListData();
+									childElements.clear();
+									mainListAdapter.notifyDataSetChanged();
 								}
 								return null;
 							}
@@ -464,11 +465,11 @@ public class RunsFragment extends Fragment {
 			}
 			
 			// get data 
-			HashMap<String, WorkflowRun> children = childElements.get(runGroups[groupPosition]);
+			final HashMap<String, WorkflowRun> children = childElements.get(runGroups[groupPosition]);
 			// (run ids)
 			final String[] mKeys = children.keySet().toArray(new String[children.size()]);
 			// WorkflowRun (workflow entity)
-			final WorkflowRun workflowEntity = (WorkflowRun) children.get(mKeys[childPosition]);
+			WorkflowRun workflowEntity = (WorkflowRun) children.get(mKeys[childPosition]);
 			
 			// UI elements
 			TextView wfTitleVersion = (TextView) convertView.findViewById(R.id.runsTitleVersion);
@@ -505,6 +506,7 @@ public class RunsFragment extends Fragment {
 						// help with loading different action mode menu
 						// and prevent selection aross different group etc.
 						selectedGroup = groupPosition;
+						selectedChildIndex = childPosition;
 						// save the check state in to the state collection
 						ArrayList<Boolean> childStates = checkboxesStates.get(runGroups[groupPosition]);
 						childStates.set(childPosition, true);
@@ -512,6 +514,10 @@ public class RunsFragment extends Fragment {
 						
 						String runid = (String) mKeys[childPosition];
 						selectedRunIds.add(runid);
+						
+						if(mActionMode == null){
+							mActionMode = parentActivity.startActionMode(mActionModeCallback);
+						}
 						
 						// uncheck (set state of) checkboxes of other group
 						for(int i = 0; i < runGroups.length; i++){
@@ -526,18 +532,12 @@ public class RunsFragment extends Fragment {
 							}
 						}
 						
-						// if select the finished list also uncheck
-						// other check box in this list
-						if(selectedGroup == 2){
-							ArrayList<Boolean> states = checkboxesStates.get(runGroups[selectedGroup]);
-							if(states != null){
-								for(int j = 0; j < states.size(); j++){
-									if(j != childPosition){
-										states.set(j, false);
-									}
-								}
-								checkboxesStates.put(runGroups[selectedGroup], states);
-							}
+						// if select the "finished" or "initialized" list 
+						// uncheck other check box in the same list
+						// TODO: can only view output or supply input 
+						// to ONE run at the moment
+						if(selectedGroup == 2 || selectedGroup == 0){
+							unCheckOthers(childPosition, mKeys);
 						}
 						// refresh data set
 						mainListAdapter.notifyDataSetChanged();
@@ -549,13 +549,23 @@ public class RunsFragment extends Fragment {
 						
 						String runid = (String) mKeys[childPosition];
 						selectedRunIds.remove(runid);
+						if(selectedRunIds.size() < 1){
+							mActionMode.finish();
+							mActionMode = null;
+						}
 					}
-					
-					// start the action mode when there are selected runs
-					if(mActionMode == null){
-						mActionMode = parentActivity.startActionMode(mActionModeCallback);
-					}else if(selectedRunIds.size() < 1){
-						mActionMode.finish();
+				}
+
+				private void unCheckOthers(final int childPosition,
+						final String[] mKeys) {
+					ArrayList<Boolean> states = checkboxesStates.get(runGroups[selectedGroup]);
+					if(states != null){
+						for(int j = 0; j < states.size(); j++){
+							if(j != childPosition){
+								states.set(j, false);
+							}
+						}
+						checkboxesStates.put(runGroups[selectedGroup], states);
 					}
 				}
 				
@@ -676,6 +686,7 @@ public class RunsFragment extends Fragment {
 							for(String runID : selectedRunIds){
 								if (runID != null) {
 									WorkflowRunManager manager = new WorkflowRunManager(parentActivity);
+									WorkflowRun workflowEntity = (WorkflowRun) children.get(mKeys[selectedChildIndex]);
 									manager.checkRunStateWithID(runID, 
 											new RunStateChecker(workflowEntity, runID));
 								}
@@ -689,7 +700,17 @@ public class RunsFragment extends Fragment {
 		
 				    // Called when the user exits the action mode
 				    public void onDestroyActionMode(ActionMode mode) {
-				    	mActionMode = null;
+				    	// reset all check box state
+				    	for(int i = 0; i < runGroups.length; i++){
+							ArrayList<Boolean> states = checkboxesStates.get(runGroups[i]);
+							if(states != null){
+								for(int j = 0; j < states.size(); j++){
+									states.set(j, false);
+								}
+								checkboxesStates.put(runGroups[i], states);
+							}
+						}
+				    	mainListAdapter.notifyDataSetChanged();
 				    }
 				}; // end of ActionMode Callback()
 			}); // end of onCheckedChangeListener()

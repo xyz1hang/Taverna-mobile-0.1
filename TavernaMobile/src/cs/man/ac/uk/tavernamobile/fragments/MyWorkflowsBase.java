@@ -1,6 +1,7 @@
 package cs.man.ac.uk.tavernamobile.fragments;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -27,6 +28,7 @@ public class MyWorkflowsBase extends Fragment {
 	protected PullToRefreshListView workflowList;
 	protected WorkflowsListAdapter resultListAdapter;
 	protected ArrayList<Workflow> workflows;
+	protected HashMap<String, Object> mCache;
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -50,6 +52,7 @@ public class MyWorkflowsBase extends Fragment {
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		parentActivity = getActivity();
+		mCache = TavernaAndroid.getmTextCache();
 	}
 	
 	protected void refreshTheList(final CallbackTask refreshListener) {

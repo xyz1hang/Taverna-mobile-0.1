@@ -397,7 +397,6 @@ public class LaunchHistoryFragment extends Fragment {
 			
 			TextView title = (TextView) convertView.findViewById(R.id.savedWorkflowTitle);
 			TextView userName = (TextView) convertView.findViewById(R.id.savedUploaderName);
-			TextView version = (TextView) convertView.findViewById(R.id.savedWfVersion);
 			TextView firstLaunch = (TextView) convertView.findViewById(R.id.savedWfFirstLaunchValue);
 			TextView lastLaunch = (TextView) convertView.findViewById(R.id.savedWfLastLaunchValue);
 			
@@ -413,8 +412,7 @@ public class LaunchHistoryFragment extends Fragment {
 			userName.setCompoundDrawablesWithIntrinsicBounds(null, avatarDrawable, null, null);
 			userName.setText(object.getUploaderName());
 			
-			title.setText(object.getTitle());
-			version.setText("version: " + object.getVersion());
+			title.setText(object.getTitle()+" (v"+object.getVersion()+")");
 			firstLaunch.setText(object.getFirstLaunched());
 			lastLaunch.setText(object.getLastLaunched());
 
