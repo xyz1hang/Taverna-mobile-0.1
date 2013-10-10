@@ -57,6 +57,8 @@ public class TavernaAndroid extends Application {
 	private static ArrayList<Workflow> myWorkflows = new ArrayList<Workflow>();
 	private static ArrayList<Workflow> favouriteWorkflows = new ArrayList<Workflow>();
 	private static CookieStore myExperimentSessionCookies;
+	
+	private static int notificationId;
 
 	/**** for testing purpose ****/
 	public TavernaAndroid() {
@@ -150,6 +152,12 @@ public class TavernaAndroid extends Application {
 	 this.uploader = uploader;
 	 }*/
 
+	public static int getNotificationId() {
+		return notificationId;
+	}
+	public static void setNotificationId(int id) {
+		notificationId = id;
+	}
 	public static ArrayList<Workflow> getMyWorkflows() {
 		return myWorkflows;
 	}

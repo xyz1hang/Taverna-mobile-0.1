@@ -47,8 +47,7 @@ public class RunMonitorScreen extends Activity implements CallbackTask {
 
 	private Activity currentActivity;
 	private HashMap<String, Object> userInputs;
-
-	int notificationId = 0;
+	
 	private NotificationManager mNotificationManager;
 
 	private boolean running = false;
@@ -218,8 +217,7 @@ public class RunMonitorScreen extends Activity implements CallbackTask {
 	}
 
 	private void startNotification(final String wftitle){
-		notificationId++;
-
+		final int notificationId = TavernaAndroid.getNotificationId();
 		// display notification
 		final NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(currentActivity)
 		.setSmallIcon(R.drawable.running)
@@ -264,5 +262,9 @@ public class RunMonitorScreen extends Activity implements CallbackTask {
 					}	
 				}
 				).start();
+		
+		// increment notification id
+		int newId = notificationId + 1;
+		TavernaAndroid.setNotificationId(newId);
 	}
 }

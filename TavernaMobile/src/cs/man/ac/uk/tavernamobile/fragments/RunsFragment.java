@@ -377,6 +377,14 @@ public class RunsFragment extends Fragment {
 			
 			//String state = retrievedRunIdsState.get(runId);
 			WorkflowRun theRun = retrievedRuns.get(runId);
+			// TODO: (Run expiry synchronization) 
+			// if the record in database is out of date
+			// i.e. the run gets deleted by the server while
+			// database still has RunID recorded ...
+			if(theRun == null){
+				// temporary solution do nothing
+				return;
+			}
 			String state = theRun.getRunState();
 			
 			HashMap<String, WorkflowRun> iniMap = null;
@@ -466,6 +474,9 @@ public class RunsFragment extends Fragment {
 			
 			// get data 
 			final HashMap<String, WorkflowRun> children = childElements.get(runGroups[groupPosition]);
+			if(children == null){
+				return convertView;
+			}
 			// (run ids)
 			final String[] mKeys = children.keySet().toArray(new String[children.size()]);
 			// WorkflowRun (workflow entity)
@@ -536,11 +547,12 @@ public class RunsFragment extends Fragment {
 						// uncheck other check box in the same list
 						// TODO: can only view output or supply input 
 						// to ONE run at the moment
-						if(selectedGroup == 2 || selectedGroup == 0){
+						/*if(selectedGroup == 2 || selectedGroup == 0){
 							unCheckOthers(childPosition, mKeys);
-						}
+						}*/
 						// refresh data set
 						mainListAdapter.notifyDataSetChanged();
+						
 					} else{
 						// remove the check state in to the state collection
 						ArrayList<Boolean> childStates = checkboxesStates.get(runGroups[groupPosition]);
@@ -556,7 +568,7 @@ public class RunsFragment extends Fragment {
 					}
 				}
 
-				private void unCheckOthers(final int childPosition,
+				/*private void unCheckOthers(final int childPosition,
 						final String[] mKeys) {
 					ArrayList<Boolean> states = checkboxesStates.get(runGroups[selectedGroup]);
 					if(states != null){
@@ -567,7 +579,7 @@ public class RunsFragment extends Fragment {
 						}
 						checkboxesStates.put(runGroups[selectedGroup], states);
 					}
-				}
+				}*/
 				
 				private ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
 
@@ -586,8 +598,15 @@ public class RunsFragment extends Fragment {
 				    	case 0: // Initialized
 				    		stopMenu.setEnabled(false);
 				    		stopMenu.setVisible(false);
-				    		/*deleteMenu.setVisible(true);
-					    	deleteMenu.setEnabled(true);*/
+				    		// can only supply input for 
+				    		// one run at a time
+				    		if(selectedRunIds.size() > 1){
+				    			startMenu.setEnabled(false);
+					    		startMenu.setVisible(false);
+				    		}else{
+				    			startMenu.setEnabled(true);
+					    		startMenu.setVisible(true);
+				    		}
 						    return true;
 				    	case 1: // Running
 				    		startMenu.setEnabled(false);
@@ -596,6 +615,15 @@ public class RunsFragment extends Fragment {
 				    	case 2: // Finished
 				    		stopMenu.setEnabled(false);
 				    		stopMenu.setVisible(false);
+				    		// can only view output of 
+				    		// one run at a time
+				    		if(selectedRunIds.size() > 1){
+				    			startMenu.setEnabled(false);
+					    		startMenu.setVisible(false);
+				    		}else{
+				    			startMenu.setEnabled(true);
+					    		startMenu.setVisible(true);
+				    		}
 				    		return true;
 				    	case 3: // Stopped
 				    		// TODO: interaction not supported
@@ -1060,7 +1088,7 @@ public class RunsFragment extends Fragment {
 			// if running or finished go to monitor to view progress or output
 			if (runState == "Running" || runState == "Finished") {
 				MessageHelper.showOptionsDialog(parentActivity, 
-					"The run is "+ runState + "\nDo you want to view it ?", 
+					"The run is "+ runState + ". Do you want to view it ?", 
 					null, 
 					new CallbackTask(){
 						@Override

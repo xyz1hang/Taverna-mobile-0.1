@@ -135,17 +135,22 @@ public class WorkflowsLoader implements CallbackTask{
 		ArrayList<Workflow> workflows = null;
 		List<Workflow> retrievedWorkflows = null;
 		try{
+			Object results = requestHandler.Get(searchUri, targetClass, null, null);
+			if(results instanceof String){
+				return results;
+			}
+			
 			if(targetClass == WorkflowSearchResults.class){
-				WorkflowSearchResults results = 
-						(WorkflowSearchResults) requestHandler.Get(searchUri, targetClass, null, null);
-
-				retrievedWorkflows = results.getWorkflows();
+				WorkflowSearchResults searchResults = (WorkflowSearchResults) results;
+				if(searchResults != null){
+					retrievedWorkflows = searchResults.getWorkflows();
+				}
 			}
 			else if(targetClass == WorkflowCollection.class){
-				WorkflowCollection results = 
-						(WorkflowCollection) requestHandler.Get(searchUri, targetClass, null, null);
-				
-				retrievedWorkflows = results.getWorkflows();
+				WorkflowCollection wfCollection = (WorkflowCollection) results;
+				if(wfCollection != null){
+					retrievedWorkflows = wfCollection.getWorkflows();
+				}
 			}
 			
 			if (retrievedWorkflows != null){
@@ -154,7 +159,9 @@ public class WorkflowsLoader implements CallbackTask{
 		} catch(NetworkConnectionException e){
 			return e.getMessage();
 		} catch(Exception e) {
-			return e.getMessage();
+			// Irrelevant exception
+			// TODO : exception encapsulation needed
+			return "An error occur, please try again";
 		}
 		
 		return workflows;

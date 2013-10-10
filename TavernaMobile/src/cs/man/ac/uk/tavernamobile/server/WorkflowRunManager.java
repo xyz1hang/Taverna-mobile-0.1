@@ -1083,8 +1083,8 @@ public class WorkflowRunManager
 	 * a "mode" parameter has to be passed into the Execute method
 	 * 
 	 * mode 0 - clean up the run (most recent) whose outputs has been retrieved
-	 * mode 1 - delete a specific/set of run. A Run object has to be passed in
-	 * 			in this mode
+	 * mode 1 - delete a specific/set of run. 
+	 * 			A Run array object has to be passed in in this mode
 	 * mode 2 - delete all Runs of current Server user
 	 * 
 	 * @author Hyde Zhang
@@ -1127,17 +1127,16 @@ public class WorkflowRunManager
 				ArrayList<String> idsOfRunsToDelete = (ArrayList<String>) params[2];
 				Run runToDelete = null;
 				String state = null;
-				if(idsOfRunsToDelete == null){
+				if(idsOfRunsToDelete == null || idsOfRunsToDelete.size() < 1){
 					throw new IllegalArgumentException(
-							"Run ID has to be passed in as the third parameter,"
-								+" when in deletion mode 1");
+							"Run ID set can not be empty, when in deletion mode 1");
 				}
 				
 				// flag indicated whether all delete has been successful
 				boolean succeed = false;
 				// Initialize the where args to be used in delete
 				// while iterating over the array list
-				String[] whereArgs = new String[idsOfRunsToDelete.size()];
+				String whereArgs = null;
 				try {
 					for(int i = 0; i<idsOfRunsToDelete.size(); i++){
 						String id = idsOfRunsToDelete.get(i);
@@ -1150,21 +1149,20 @@ public class WorkflowRunManager
 									succeed = runToDelete.delete();
 							}
 							// build the where args for database DELETE
-							whereArgs[i] = id;
+							whereArgs = "'" + id + "', ";
 						}
 					}
+					// remove the last comma
+					int lastComma = whereArgs.lastIndexOf(",");
+					whereArgs = whereArgs.substring(0, lastComma);
+					
 					// delete records from database
-					String selection = null;
-					if(whereArgs.length < 1){
-						selection = DataProviderConstants.Run_Id + " IS NOT NULL";
-						whereArgs = null;
-					} else{
-						selection = DataProviderConstants.Run_Id + "= ?";
-					}
+					String where = DataProviderConstants.Run_Id + " IN ?";
+				
 					currentActivity.getContentResolver().delete(
 							DataProviderConstants.RUN_TABLE_CONTENTURI, 
-							selection,
-							whereArgs);
+							where,
+							new String[] { whereArgs });
 				}catch (NetworkConnectionException e) {
 					succeed = false;
 					return e.getMessage();

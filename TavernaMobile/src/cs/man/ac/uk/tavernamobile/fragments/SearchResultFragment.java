@@ -10,7 +10,9 @@ import android.support.v4.app.FragmentActivity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MenuItem.OnActionExpandListener;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
@@ -123,7 +125,7 @@ public class SearchResultFragment extends Fragment implements CallbackTask {
 				handler.StartBackgroundTask(parentActivity, currentClass, "Retrieving data...", selectedwfUri);
 			}
 		});
-
+		
 		/*Spinner sortCriteriaSpinner = (Spinner) currentActivity
 				.findViewById(R.id.wfSearchSortSpinner);
 		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
@@ -184,7 +186,7 @@ public class SearchResultFragment extends Fragment implements CallbackTask {
 					}
 				});*/
 	}
-
+	
 	/*private void refreshTheList() {
 		if (searchQuery == null) {
 			return;
@@ -201,37 +203,62 @@ public class SearchResultFragment extends Fragment implements CallbackTask {
 
 	/*@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		super.onCreateOptionsMenu(menu, inflater);
+		
 		// remove menu added by previous fragment
 		for(int i = 1; i < menu.size(); i ++){
 			menu.removeItem(menu.getItem(i).getItemId());
 		}
 		inflater.inflate(R.menu.search_results_screen, menu);
-		LinearLayout searchView = (LinearLayout) menu.findItem(R.id.search_results_search).getActionView();
+		MenuItem searchMenu = menu.findItem(R.id.search_results_search);
+		LinearLayout searchView = (LinearLayout) searchMenu.getActionView();
+		final EditText searchQueryEditText = (EditText) searchView.getChildAt(0);
+		
+		// display software keyboard menu is created
+		searchMenu.setOnActionExpandListener(new OnActionExpandListener() {
+            @Override
+            public boolean onMenuItemActionExpand(MenuItem item) {
+            	searchQueryEditText.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                    	searchQueryEditText.requestFocus();
+                    	((InputMethodManager) parentActivity.getSystemService(Context.INPUT_METHOD_SERVICE))
+                    		.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, InputMethodManager.HIDE_IMPLICIT_ONLY);
+                    }
+                },300);
+                return true;
+            }
 
-		final EditText query = (EditText) searchView.getChildAt(0);
-		query.requestFocus();
-		query.setOnEditorActionListener(new EditText.OnEditorActionListener() {
+			@Override
+			public boolean onMenuItemActionCollapse(MenuItem item) {
+				return false;
+			}
+        });
+		
+		searchQueryEditText.setOnEditorActionListener(new EditText.OnEditorActionListener() {
 			@Override
 			public boolean onEditorAction(TextView v, int actionId,
 					KeyEvent event) {
 				if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-					searchQuery = query.getText().toString();
+					searchQuery = searchQueryEditText.getText().toString();
 					search(searchQuery);
 					return true;
 				}
 				return false;
 			}
 		});
+		
 		ImageButton searchButton = (ImageButton) searchView.getChildAt(1);
-
 		searchButton.setOnClickListener(new android.view.View.OnClickListener() {
 				public void onClick(android.view.View v) {
-					searchQuery = query.getText().toString();
+					searchQuery = searchQueryEditText.getText().toString();
 					search(searchQuery);
 				}
 			});
-	
-		super.onCreateOptionsMenu(menu, inflater);
+		
+		// when menu created show its action view
+		// then the keyboard should be shown.
+		searchMenu.expandActionView();
 	}*/
 
 	@Override
@@ -247,36 +274,70 @@ public class SearchResultFragment extends Fragment implements CallbackTask {
 	
 	@Override
 	public void onPrepareOptionsMenu(Menu menu) {
+		super.onPrepareOptionsMenu(menu);
 		// remove menu added by previous fragment
 		for(int i = 1; i < menu.size(); i ++){
 			menu.removeItem(menu.getItem(i).getItemId());
 		}
 		parentActivity.getMenuInflater().inflate(R.menu.search_results_screen, menu);
-		LinearLayout searchView = (LinearLayout) menu.findItem(R.id.search_results_search).getActionView();
+		MenuItem searchMenu = menu.findItem(R.id.search_results_search);
+		LinearLayout searchView = (LinearLayout) searchMenu.getActionView();
+		final EditText searchQueryEditText = (EditText) searchView.getChildAt(0);
+		
+		searchQueryEditText.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+            	searchQueryEditText.requestFocus();
+            	((InputMethodManager) parentActivity.getSystemService(Context.INPUT_METHOD_SERVICE))
+            		.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, InputMethodManager.HIDE_IMPLICIT_ONLY);
+            }
+        },200);
+		
+		/*// display software keyboard menu is created
+		searchMenu.setOnActionExpandListener(new OnActionExpandListener() {
+            @Override
+            public boolean onMenuItemActionExpand(MenuItem item) {
+            	searchQueryEditText.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                    	searchQueryEditText.requestFocus();
+                    	((InputMethodManager) parentActivity.getSystemService(Context.INPUT_METHOD_SERVICE))
+                    		.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, InputMethodManager.HIDE_IMPLICIT_ONLY);
+                    }
+                },200);
+                return true;
+            }
 
-		final EditText query = (EditText) searchView.getChildAt(0);
-		query.requestFocus();
-		query.setOnEditorActionListener(new EditText.OnEditorActionListener() {
+			@Override
+			public boolean onMenuItemActionCollapse(MenuItem item) {
+				return false;
+			}
+        });*/
+		
+		searchQueryEditText.setOnEditorActionListener(new EditText.OnEditorActionListener() {
 			@Override
 			public boolean onEditorAction(TextView v, int actionId,
 					KeyEvent event) {
 				if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-					searchQuery = query.getText().toString();
+					searchQuery = searchQueryEditText.getText().toString();
 					search(searchQuery);
 					return true;
 				}
 				return false;
 			}
 		});
+		
 		ImageButton searchButton = (ImageButton) searchView.getChildAt(1);
-
 		searchButton.setOnClickListener(new android.view.View.OnClickListener() {
 				public void onClick(android.view.View v) {
-					searchQuery = query.getText().toString();
+					searchQuery = searchQueryEditText.getText().toString();
 					search(searchQuery);
 				}
 			});
-		super.onPrepareOptionsMenu(menu);
+		
+		// when menu created show its action view
+		// then the keyboard should be shown.
+		searchMenu.expandActionView();
 	}
 
 	private void search(String query) {
@@ -354,6 +415,10 @@ public class SearchResultFragment extends Fragment implements CallbackTask {
 		}
 
 		public Object onTaskComplete(Object... result) {
+			if(result == null){
+				return null;
+			}
+			
 			if (result[0] instanceof String) {
 				// exception message
 				MessageHelper.showMessageDialog(parentActivity, null,

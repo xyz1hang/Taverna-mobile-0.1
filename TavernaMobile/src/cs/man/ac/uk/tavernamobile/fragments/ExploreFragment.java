@@ -43,6 +43,9 @@ public class ExploreFragment extends Fragment {
 	// utilities
 	private WorkflowsLoader wfListLoader;
 	private ListViewOnScrollTaskHandler onScrollTaskHandler;
+	private WorkflowsListAdapter resultListAdapter;
+	private ArrayList<Workflow> workflows;
+	private WorkflowExpoLoadingListener initialLoader;
 	
 	private String expoSortBy;
 	private String order = "reverse";
@@ -66,6 +69,9 @@ public class ExploreFragment extends Fragment {
 		super.onActivityCreated(savedInstanceState);
 		
 		parentActivity = getActivity();
+		initialLoader = new WorkflowExpoLoadingListener();
+		// set up a loader for loading indexed workflows
+		wfListLoader = new WorkflowsLoader(parentActivity, null);
 		
 		reverseRadioButton.setOnCheckedChangeListener(new OnCheckedChangeListener(){
 			@Override
@@ -140,13 +146,13 @@ public class ExploreFragment extends Fragment {
 	
 	@Override
 	public void onPrepareOptionsMenu(Menu menu) {
+		super.onPrepareOptionsMenu(menu);
 		refreshMenu = menu;
 		// remove menu added by previous fragment
 		for(int i = 1; i < menu.size(); i ++){
 			menu.removeItem(menu.getItem(i).getItemId());
 		}
 		parentActivity.getMenuInflater().inflate(R.menu.expo_menu, menu);
-		super.onPrepareOptionsMenu(menu);
 	}
 
 	@Override
@@ -181,9 +187,9 @@ public class ExploreFragment extends Fragment {
 		expoList.setVisibility(8);
 		wfListDefaultTest.setVisibility(8);
 		expoList.removeFooterView(footerView);
-		//loadingProBar.setVisibility(0);
-		// set up a loader for loading indexed workflows
-		wfListLoader = new WorkflowsLoader(parentActivity, new WorkflowExpoLoadingListener());
+		// change from auto-load-more loader to the initial loader
+		// loader for creating a new list
+		wfListLoader.registerLoadingListener(initialLoader);
 		wfListLoader.LoadWorkflows(expoSortBy, order);
 	}
 	
@@ -210,13 +216,20 @@ public class ExploreFragment extends Fragment {
 				return null;
 			}
 			
-			final ArrayList<Workflow> workflows = (ArrayList<Workflow>) result[0];
-			if(workflows == null){
+			if(workflows != null){
+				workflows.clear();
+				workflows.addAll((ArrayList<Workflow>) result[0]);
+			} else{
+				workflows = (ArrayList<Workflow>) result[0];
+			}
+			
+			if(workflows == null || workflows.size() < 1){
 				wfListDefaultTest.setText("No workflow data found, please try again");
 				wfListDefaultTest.setVisibility(0);
 				//loadingProBar.setVisibility(8);
 				return null;
 			}
+			
 			// hide progress bar
 			//loadingProBar.setVisibility(8);
 			wfListDefaultTest.setVisibility(8);
@@ -227,9 +240,15 @@ public class ExploreFragment extends Fragment {
 										.inflate(R.layout.list_footer_loading, null, false);
 			expoList.addFooterView(footerView);
 			
-			WorkflowsListAdapter resultListAdapter = 
-					new WorkflowsListAdapter(parentActivity, workflows);
-			expoList.setAdapter(resultListAdapter);
+			if(resultListAdapter != null){
+				resultListAdapter.notifyDataSetChanged();
+			}else{
+				resultListAdapter = new WorkflowsListAdapter(parentActivity, workflows);
+				expoList.setAdapter(resultListAdapter);
+				onScrollTaskHandler = new ListViewOnScrollTaskHandler(
+						(MainPanelActivity) parentActivity, expoList, new OnScrollLoadingTask());
+				onScrollTaskHandler.setOnScrollLoading();
+			}
 			
 			expoList.post(new Runnable() {
 			    public void run() {
@@ -239,10 +258,6 @@ public class ExploreFragment extends Fragment {
 			    }
 			});
 			
-			onScrollTaskHandler = new ListViewOnScrollTaskHandler(
-							(MainPanelActivity)parentActivity, expoList, new OnScrollLoadingTask());
-			onScrollTaskHandler.setOnScrollLoading();
-			
 			// the initial loading is finished 
 			// now change to the "auto-load-more"
 			WorkflowExpoAutoLoader autoloader = new WorkflowExpoAutoLoader(resultListAdapter);
@@ -251,7 +266,7 @@ public class ExploreFragment extends Fragment {
 			if (refreshMenu != null){
 				setRefreshIconState(false);
 			}
-
+			
 			return null;
 		}
 	}

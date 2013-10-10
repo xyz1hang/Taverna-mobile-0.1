@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import android.content.Context;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
@@ -14,9 +15,11 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.PagerTitleStrip;
 import android.support.v4.view.ViewPager;
+import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 import cs.man.ac.uk.tavernamobile.fragments.ExploreFragment;
 import cs.man.ac.uk.tavernamobile.fragments.FavouriteWorkflowsFragment;
@@ -118,6 +121,24 @@ public class FragmentsContainer extends Fragment {
 		mViewPager.setAdapter(mfragmentStatePagerAdapter);
 		mViewPager.setOffscreenPageLimit(1);
 	    mViewPager.setCurrentItem(0);
+	    mViewPager.setOnPageChangeListener(new OnPageChangeListener(){
+			@Override
+			public void onPageScrollStateChanged(int arg0) {}
+
+			@Override
+			public void onPageScrolled(int arg0, float arg1, int arg2) {}
+
+			@Override
+			public void onPageSelected(int arg0) {
+				// hide keyboard if shown in previous fragment
+				InputMethodManager imm = (InputMethodManager) parentActivity
+						.getSystemService(Context.INPUT_METHOD_SERVICE);
+				if(imm != null){
+				    imm.hideSoftInputFromWindow(
+				    		mViewPager.getWindowToken(), InputMethodManager.HIDE_IMPLICIT_ONLY);
+				}
+			}
+	    });
 	    
 	    mfragmentStatePagerAdapter.notifyDataSetChanged();
 	    

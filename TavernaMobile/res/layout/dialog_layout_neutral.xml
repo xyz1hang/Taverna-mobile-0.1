@@ -4,27 +4,26 @@
     android:layout_height="wrap_content"
     android:layout_gravity="center"
     android:gravity="center"
+    android:minHeight="100dip"
     android:minWidth="200dip"
     android:orientation="vertical" >
 
     <TextView
         android:id="@+id/neutraldialog_message"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_weight="3"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textColor="@color/Black" />
 
     <Button
         android:id="@+id/neutraldialog_dismiss_button"
         android:layout_width="wrap_content"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_margin="10dp"
-        android:layout_weight="1"
+        android:layout_marginTop="10dp"
         android:background="@drawable/dialog_bottom_selector"
         android:gravity="center"
         android:minHeight="40dp"
