@@ -11,7 +11,7 @@ public class LicenseType extends ElementBase {
 	 */
 	private static final long serialVersionUID = -7589369608355675772L;
 	
-	@Text
+	@Text(required = false)
 	protected String value;
 
 	public String getValue() {

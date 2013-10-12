@@ -44,6 +44,7 @@ public class WorkflowsListAdapter extends BaseAdapter {
 	
 	private android.support.v4.util.LruCache<String, Bitmap> imageCache;
 	private TextView thumbnailNotAvailableView;
+	private ViewHolder viewHolder;
 	
 	public int animationStartPosition;
 	
@@ -86,32 +87,35 @@ public class WorkflowsListAdapter extends BaseAdapter {
 		// TODO: prevent the view being recycled which will display the 
 		// TODO: view holder pattern
 		// wrong avatar image (temporary solution)
-		//if (convertView == null)
-		//{
+		viewHolder = null;
+		if (convertView == null){
 			convertView = myInflater.inflate(R.layout.workflowslist_single_row, null);
-		//}
+			
+			viewHolder = new ViewHolder();
+			viewHolder.uploaderNameView = (TextView) convertView.findViewById(R.id.wfListUploaderName);
+			viewHolder.titleView = (TextView) convertView.findViewById(R.id.wfListTitleVersion);
+			viewHolder.createdView = (TextView) convertView.findViewById(R.id.wfListCreated);
+			viewHolder.updatedView = (TextView) convertView.findViewById(R.id.wfListUpdateText);
+			viewHolder.thumbnailView = (ImageView) convertView.findViewById(R.id.wfListThumbnail);
+			viewHolder.typeView = (TextView) convertView.findViewById(R.id.wfListTypeText);
+			viewHolder.viewButton = (Button) convertView.findViewById(R.id.wfList_view_button);
+			viewHolder.downloadButton = (Button) convertView.findViewById(R.id.wfList_download_button);
+			viewHolder.creditValue = (TextView) convertView.findViewById(R.id.wfListCreditText);
+			viewHolder.creditLayout = (LinearLayout) convertView.findViewById(R.id.wfListSingleRowCreditLayout);
+			viewHolder.ratingValue = (TextView) convertView.findViewById(R.id.wfListRatingText);
+			convertView.setTag(viewHolder);
+		} else{
+			viewHolder = (ViewHolder) convertView.getTag();
+		}
 		
-		// UI elements
-		TextView uploaderNameView = (TextView) convertView.findViewById(R.id.wfListUploaderName);
-		TextView titleView = (TextView) convertView.findViewById(R.id.wfListTitleVersion);
-		TextView createdView = (TextView) convertView.findViewById(R.id.wfListCreated);
-		TextView updatedView = (TextView) convertView.findViewById(R.id.wfListUpdateText);
-		ImageView thumbnailView = (ImageView) convertView.findViewById(R.id.wfListThumbnail);
-		TextView typeView = (TextView) convertView.findViewById(R.id.wfListTypeText);
-		Button viewButton = (Button) convertView.findViewById(R.id.wfList_view_button);
-		Button downloadButton = (Button) convertView.findViewById(R.id.wfList_download_button);
-		TextView creditValue = (TextView) convertView.findViewById(R.id.wfListCreditText);
-		LinearLayout creditLayout = (LinearLayout) convertView.findViewById(R.id.wfListSingleRowCreditLayout);
-		TextView ratingValue = (TextView) convertView.findViewById(R.id.wfListRatingText);
-		
-		thumbnailNotAvailableView = 
+		viewHolder.thumbnailNotAvailableView = 
 				(TextView) convertView.findViewById(R.id.thumbnail_not_available_text);
 		
 		// get the data
 		final Workflow expo = getItem(position);
 		
 		// set up view button listener
-		viewButton.setOnClickListener(new OnClickListener(){
+		viewHolder.viewButton.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
 
@@ -122,7 +126,7 @@ public class WorkflowsListAdapter extends BaseAdapter {
 		});
 
 		// set up download button listener
-		downloadButton.setOnClickListener(new OnClickListener(){
+		viewHolder.downloadButton.setOnClickListener(new OnClickListener(){
 
 			@Override
 			public void onClick(View v) {
@@ -159,18 +163,18 @@ public class WorkflowsListAdapter extends BaseAdapter {
 		if(avatarBitmap != null){
 			Drawable avatarDrawable = new BitmapDrawable(mContext.getResources(),
 					Bitmap.createBitmap(avatarBitmap));
-			uploaderNameView.setCompoundDrawablesWithIntrinsicBounds(null, avatarDrawable, null, null);
+			viewHolder.uploaderNameView.setCompoundDrawablesWithIntrinsicBounds(null, avatarDrawable, null, null);
 		}
 		// else load from myExperiment
 		else{
 			// place the default image before loading finish
 			Drawable defaultAvatar = mContext.getResources().getDrawable(R.drawable.default_avatar_img);
-			uploaderNameView.setCompoundDrawablesWithIntrinsicBounds(null, defaultAvatar, null, null);
+			viewHolder.uploaderNameView.setCompoundDrawablesWithIntrinsicBounds(null, defaultAvatar, null, null);
 			
 			BackgroundTaskHandler handler = new BackgroundTaskHandler();
 			handler.StartBackgroundTask(
 					mContext, 
-					new UploaderDetailLoader(uploaderUri, uploaderNameView), 
+					new UploaderDetailLoader(uploaderUri, viewHolder.uploaderNameView), 
 					null);
 		}
 		
@@ -179,23 +183,24 @@ public class WorkflowsListAdapter extends BaseAdapter {
 		// load from memory cache
 		Bitmap wfBitmap = imageCache.get(thumbnailUri);
 		if(wfBitmap != null){
-			thumbnailView.setImageBitmap(wfBitmap);
+			viewHolder.thumbnailView.setImageBitmap(wfBitmap);
 		}
 		else{
 			BackgroundTaskHandler handler = new BackgroundTaskHandler();
 			handler.StartBackgroundTask(
 					mContext, 
-					new UploaderDetailLoader(thumbnailUri, thumbnailView), 
+					new UploaderDetailLoader(thumbnailUri, viewHolder.thumbnailView), 
 					null);
 		}
 		
-		uploaderNameView.setText(expo.getUploader().getValue());
-		titleView.setText(expo.getTitle()+" (v"+expo.getVersion()+")");
-		createdView.setText(expo.getCreated_at());
-		updatedView.setText(expo.getUpdated_at());
-		typeView.setText(expo.getType().getValue());
+		viewHolder.uploaderNameView.setText(expo.getUploader().getValue());
+		viewHolder.titleView.setText(expo.getTitle()+" (v"+expo.getVersion()+")");
+		viewHolder.createdView.setText(expo.getCreated_at());
+		viewHolder.updatedView.setText(expo.getUpdated_at());
+		viewHolder.typeView.setText(expo.getType().getValue());
 		
 		List<ElementBase> credits = expo.getCredits().getCreditEntity();
+		viewHolder.creditLayout.removeAllViews();
 		if(credits != null && credits.size() > 0){
 			for(ElementBase c : credits){
 				TextView creditView = new TextView(mContext);
@@ -214,11 +219,11 @@ public class WorkflowsListAdapter extends BaseAdapter {
 				creditView.setText(creditText);
 				LayoutParams params = 
 						new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-				creditLayout.addView(creditView, params);
+				viewHolder.creditLayout.addView(creditView, params);
 			}
 		}else{
-			creditValue.setVisibility(0);
-			creditValue.setText("not available");
+			viewHolder.creditValue.setVisibility(0);
+			viewHolder.creditValue.setText("not available");
 		}
 
 		List<Rating> ratings = expo.getRatings();
@@ -234,7 +239,7 @@ public class WorkflowsListAdapter extends BaseAdapter {
 			numOfRatings = ratings.size();
 		}
 		averageString = String.format(Locale.getDefault(), "%.1f", average);
-		ratingValue.setText(averageString + " / 5 ("+numOfRatings+" ratings)");
+		viewHolder.ratingValue.setText(averageString + " / 5 ("+numOfRatings+" ratings)");
 		
 		//String thumbnailUri = expo.getThumbnail();
 		//String desctiption = expo.getDescription();
@@ -325,7 +330,7 @@ public class WorkflowsListAdapter extends BaseAdapter {
 			}
 			else if(imageHolder instanceof ImageView){
 				if (result[0] instanceof Bitmap){
-					thumbnailNotAvailableView.setVisibility(8);
+					viewHolder.thumbnailNotAvailableView.setVisibility(8);
 					Bitmap bitmapImage = (Bitmap) result[0];
 					ImageView holder = (ImageView) imageHolder;
 					holder.setVisibility(0);
@@ -335,13 +340,23 @@ public class WorkflowsListAdapter extends BaseAdapter {
 					thumbnailNotAvailableView.setVisibility(0);
 				}
 			}
-			
-			// cache the avatar in memory
-			// TODO: cache in external storage in the future
-			/*if (imageCacheKey != null && imageCache.get(imageCacheKey) == null) {
-				imageCache.put(imageCacheKey, avatarBitmap);
-			}*/
+
 			return null;
 		}		
+	}
+	
+	static class ViewHolder{
+		TextView uploaderNameView;
+		TextView titleView;
+		TextView createdView;
+		TextView updatedView;
+		ImageView thumbnailView;
+		TextView typeView;
+		Button viewButton;
+		Button downloadButton;
+		TextView creditValue;
+		LinearLayout creditLayout;
+		TextView ratingValue;
+		TextView thumbnailNotAvailableView;
 	}
 }

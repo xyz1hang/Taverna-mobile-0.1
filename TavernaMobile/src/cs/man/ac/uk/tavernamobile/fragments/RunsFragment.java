@@ -27,11 +27,9 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.Toast;
-import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ExpandableListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
@@ -230,6 +228,9 @@ public class RunsFragment extends Fragment {
 				}
 				checkboxesStates.put(runGroups[i], states);
 			}
+		}
+		if(selectedRunIds != null){
+			selectedRunIds.clear();
 		}
 		mainListAdapter.notifyDataSetChanged();
 		if(mActionMode != null){
@@ -526,7 +527,7 @@ public class RunsFragment extends Fragment {
 			viewHolder.wfuploaderName.setCompoundDrawablesWithIntrinsicBounds(null, avatarDrawable, null, null);
 			viewHolder.wfuploaderName.setText(workflowEntity.getUploaderName());
 			viewHolder.runCheckbox.setChecked(checkboxesStates.get(runGroups[groupPosition]).get(childPosition));
-			viewHolder.runCheckbox.setOnCheckedChangeListener(new OnCheckedChangeListener(){
+			/*viewHolder.runCheckbox.setOnCheckedChangeListener(new OnCheckedChangeListener(){
 				@Override
 				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 					if(isChecked){
@@ -547,9 +548,9 @@ public class RunsFragment extends Fragment {
 						// uncheck other check box in the same list
 						// TODO: can only view output or supply input 
 						// to ONE run at the moment
-						/*if(selectedGroup == 2 || selectedGroup == 0){
+						if(selectedGroup == 2 || selectedGroup == 0){
 							unCheckOthers(childPosition, mKeys);
-						}*/
+						}
 						
 						// refresh the list
 						mainListAdapter.notifyDataSetChanged();
@@ -568,7 +569,7 @@ public class RunsFragment extends Fragment {
 						checkboxesStates.put(runGroups[selectedGroup], states);
 					}
 				}*/
-			}); // end of onCheckedChangeListener()
+			//}); // end of onCheckedChangeListener()
 			
 			viewHolder.runCheckbox.setOnClickListener(new OnClickListener(){
 				@Override
@@ -591,6 +592,39 @@ public class RunsFragment extends Fragment {
 						if(mActionMode == null){
 							mActionMode = parentActivity.startActionMode(mActionModeCallback);
 						}
+						
+						for(int i = 0; i < runGroups.length; i++){
+							if(i != selectedGroup){
+								HashMap<String, WorkflowRun> otherGroupRuns = childElements.get(runGroups[i]);
+								String[] runIDs = null;
+								if(otherGroupRuns != null){
+									runIDs = otherGroupRuns.keySet().toArray(new String[otherGroupRuns.size()]);
+								}
+								
+								ArrayList<Boolean> states = checkboxesStates.get(runGroups[i]);
+								if(states != null){
+									for(int j = 0; j < states.size(); j++){
+										states.set(j, false);
+										if(runIDs != null){
+											selectedRunIds.remove(runIDs[j]);
+										}
+									}
+									checkboxesStates.put(runGroups[i], states);
+								}
+							}
+						}
+						
+						// if select the "finished" or "initialized" list 
+						// uncheck other check box in the same list
+						// TODO: can only view output or supply input 
+						// to ONE run at the moment
+						/*if(selectedGroup == 2 || selectedGroup == 0){
+							unCheckOthers(childPosition, mKeys);
+						}*/
+						
+						// refresh the list
+						mainListAdapter.notifyDataSetChanged();
+						
 					} else{
 						// remove the check state in to the state collection
 						ArrayList<Boolean> childStates = checkboxesStates.get(runGroups[groupPosition]);

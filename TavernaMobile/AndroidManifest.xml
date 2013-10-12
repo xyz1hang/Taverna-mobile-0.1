@@ -96,6 +96,19 @@
             android:launchMode="singleInstance"
             android:theme="@android:style/Theme.Dialog" />
  		<activity android:name=".io.OutputsTree"></activity>
+ 		<activity
+            android:name="com.dropbox.client2.android.AuthActivity"
+            android:configChanges="orientation|keyboard"
+            android:launchMode="singleTask" >
+            <intent-filter>
+                <data android:scheme="db-d3ce89fwxc41yep" />
+
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
  		
         <provider
             android:name="cs.man.ac.uk.tavernamobile.dataaccess.RunHistoryHelper"

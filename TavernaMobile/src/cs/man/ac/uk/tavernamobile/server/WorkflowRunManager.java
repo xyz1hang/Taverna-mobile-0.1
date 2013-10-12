@@ -982,20 +982,18 @@ public class WorkflowRunManager
 			
 			// if it hasn't reached the bottom
 			if(depth != 0){
+				// go in deeper of it
+				depth--;
 				// for every single element
 				int listSize = portValue.size();
 				for(int i = 0; i < listSize; i++){
 					// pick one (every one)
 					PortValue subPortValue = portValue.get(i);
-					// go in deeper of it
-					depth--;
 					// eventually what returned below should be 
 					// single data in current level
 					OutputValue data = retrieveMultiDepthData(depth, subPortValue);
 					// add value into the list of values of this port
 					listdata.add(data);
-					
-					//dataList.setListValue(listdata);;
 				}
 				// Retrieval of the list value of this level is completed
 				outputData.setListValue(listdata);
@@ -1157,7 +1155,7 @@ public class WorkflowRunManager
 					whereArgs = whereArgs.substring(0, lastComma);
 					
 					// delete records from database
-					String where = DataProviderConstants.Run_Id + " IN ?";
+					String where = DataProviderConstants.Run_Id + " IN (?)";
 				
 					currentActivity.getContentResolver().delete(
 							DataProviderConstants.RUN_TABLE_CONTENTURI, 

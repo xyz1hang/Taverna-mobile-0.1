@@ -18,6 +18,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 import cs.man.ac.uk.tavernamobile.R;
 import cs.man.ac.uk.tavernamobile.datamodels.WorkflowBE;
 import cs.man.ac.uk.tavernamobile.server.WorkflowRunManager;
@@ -183,7 +184,7 @@ public class RunMonitorScreen extends Activity implements CallbackTask {
 
 	public Object onTaskComplete(Object... result) {
 		if(result.length > 0 && result[0] instanceof String){
-			MessageHelper.showMessageDialog(currentActivity, null, (String)result[0], null);
+			Toast.makeText(currentActivity, (String)result[0], Toast.LENGTH_SHORT).show();
 			return null;
 		}
 		running = false;

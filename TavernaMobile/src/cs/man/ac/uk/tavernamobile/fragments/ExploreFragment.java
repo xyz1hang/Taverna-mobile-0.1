@@ -190,6 +190,8 @@ public class ExploreFragment extends Fragment {
 		// change from auto-load-more loader to the initial loader
 		// loader for creating a new list
 		wfListLoader.registerLoadingListener(initialLoader);
+		// reset page number
+		wfListLoader.searchResultsPageCount = 1;
 		wfListLoader.LoadWorkflows(expoSortBy, order);
 	}
 	
@@ -216,12 +218,7 @@ public class ExploreFragment extends Fragment {
 				return null;
 			}
 			
-			if(workflows != null){
-				workflows.clear();
-				workflows.addAll((ArrayList<Workflow>) result[0]);
-			} else{
-				workflows = (ArrayList<Workflow>) result[0];
-			}
+			workflows = (ArrayList<Workflow>) result[0];
 			
 			if(workflows == null || workflows.size() < 1){
 				wfListDefaultTest.setText("No workflow data found, please try again");
@@ -242,6 +239,7 @@ public class ExploreFragment extends Fragment {
 			
 			if(resultListAdapter != null){
 				resultListAdapter.notifyDataSetChanged();
+				expoList.smoothScrollToPosition(0);
 			}else{
 				resultListAdapter = new WorkflowsListAdapter(parentActivity, workflows);
 				expoList.setAdapter(resultListAdapter);

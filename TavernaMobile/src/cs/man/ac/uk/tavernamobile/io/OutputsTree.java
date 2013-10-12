@@ -280,7 +280,8 @@ public class OutputsTree extends FragmentActivity{
 					});
 			}else if(onePortValues.hasListValue()){
 				for(OutputValue opVal : onePortValues.getListValue()){
-					listItemCount = onePortValues.getListValue().size();
+					listItemCount = opVal.hasListValue() ? opVal.getListValue().size() : 
+						(opVal.hasFileValue() || opVal.hasStringValue()) ? 1 : 0;
 					buildTree(opVal, subRoot, listItemCount);
 				}
 			}
