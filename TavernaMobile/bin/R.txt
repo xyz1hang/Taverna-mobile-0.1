@@ -332,7 +332,7 @@ int id monitorUsername 0x7f06007f
 int id monitorUsernameValue 0x7f060080
 int id monitorWfTitle 0x7f06007e
 int id myExpLoginSpinner 0x7f060028
-int id myExperimentLoginState 0x7f0600a0
+int id myExperimentLoginState 0x7f06009f
 int id myWorkflowDefaultText 0x7f060068
 int id myWorkflowList 0x7f060067
 int id myWorkflowLoadingProgressBar 0x7f060069
@@ -418,7 +418,7 @@ int id search_results_search 0x7f0600d3
 int id selectedFileName 0x7f060025
 int id selected_view 0x7f060004
 int id serverListSpinner 0x7f060038
-int id slidingMenuRoot 0x7f06009f
+int id slidingMenuRoot 0x7f0600a0
 int id slidingMenuScroll 0x7f06009e
 int id sliding_menu_fragment 0x7f0600a1
 int id sliding_menu_list_name 0x7f0600a2

@@ -7,7 +7,6 @@
     android:fillViewport="true" >
 
     <LinearLayout
-        android:id="@+id/slidingMenuRoot"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical" >
@@ -18,23 +17,36 @@
             android:background="@drawable/sliding_header"
             android:gravity="center"
             android:orientation="vertical"
-            android:padding="25dp" >
+            android:paddingBottom="10dp"
+            android:paddingLeft="15dp"
+            android:paddingTop="10dp" >
 
             <TextView
                 android:id="@+id/myExperimentLoginState"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
                 android:background="@drawable/sliding_header_login"
                 android:drawableLeft="@drawable/myexperiment_logo_small"
                 android:drawablePadding="5dp"
-                android:gravity="center"
-                android:padding="10dp"
+                android:gravity="left|center_vertical"
+                android:paddingBottom="15dp"
+                android:paddingLeft="20dp"
+                android:paddingTop="15dp"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textColor="@color/White"
                 android:textStyle="bold"
                 android:visibility="visible" />
 
         </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/slidingMenuRoot"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="10dp" />
     </LinearLayout>
 
 </ScrollView>

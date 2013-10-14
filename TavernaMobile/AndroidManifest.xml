@@ -79,7 +79,7 @@
             android:windowSoftInputMode="stateHidden|adjustPan" />
         <activity android:name=".io.InputsHistoryActivity" >
         </activity>
-        <activity android:name=".io.FilePickerActivity" >
+        <activity android:name=".io.DropboxFilePickerActivity"></activity><activity android:name=".io.FilePickerActivity" >
         </activity>
         <activity
             android:name=".io.RunMonitorScreen"
@@ -87,15 +87,8 @@
             android:noHistory="true"
             android:screenOrientation="portrait" >
         </activity>
-        <activity android:name=".io.OutputsList" >
-        </activity>
-        <activity
-            android:name="org.acra.CrashReportDialog"
-            android:excludeFromRecents="true"
-            android:finishOnTaskLaunch="true"
-            android:launchMode="singleInstance"
-            android:theme="@android:style/Theme.Dialog" />
- 		<activity android:name=".io.OutputsTree"></activity>
+        
+ 		<activity android:name=".io.OutputsTree"></activity><activity android:name="org.acra.CrashReportDialog" android:excludeFromRecents="true" android:finishOnTaskLaunch="true" android:launchMode="singleInstance" android:theme="@android:style/Theme.Dialog" />
  		<activity
             android:name="com.dropbox.client2.android.AuthActivity"
             android:configChanges="orientation|keyboard"
@@ -114,6 +107,7 @@
             android:name="cs.man.ac.uk.tavernamobile.dataaccess.RunHistoryHelper"
             android:authorities="@string/authority"
             android:exported="false" />
+        
         
        
     </application>

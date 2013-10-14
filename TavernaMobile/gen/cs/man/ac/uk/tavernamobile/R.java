@@ -567,7 +567,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int monitorUsernameValue=0x7f060080;
         public static final int monitorWfTitle=0x7f06007e;
         public static final int myExpLoginSpinner=0x7f060028;
-        public static final int myExperimentLoginState=0x7f0600a0;
+        public static final int myExperimentLoginState=0x7f06009f;
         public static final int myWorkflowDefaultText=0x7f060068;
         public static final int myWorkflowList=0x7f060067;
         public static final int myWorkflowLoadingProgressBar=0x7f060069;
@@ -653,7 +653,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int selectedFileName=0x7f060025;
         public static final int selected_view=0x7f060004;
         public static final int serverListSpinner=0x7f060038;
-        public static final int slidingMenuRoot=0x7f06009f;
+        public static final int slidingMenuRoot=0x7f0600a0;
         public static final int slidingMenuScroll=0x7f06009e;
         public static final int sliding_menu_fragment=0x7f0600a1;
         public static final int sliding_menu_list_name=0x7f0600a2;

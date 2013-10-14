@@ -23,7 +23,7 @@ import cs.man.ac.uk.tavernamobile.R;
 import cs.man.ac.uk.tavernamobile.datamodels.User;
 import cs.man.ac.uk.tavernamobile.datamodels.Workflow;
 
-@ReportsCrashes(formKey = "dFg0OHU2alo1VDZpYUFud3JwMzFsMnc6MQ", mode = ReportingInteractionMode.DIALOG,
+/*@ReportsCrashes(formKey = "dFg0OHU2alo1VDZpYUFud3JwMzFsMnc6MQ", mode = ReportingInteractionMode.DIALOG,
 // displayed as soon as the crash occurs, before collecting data which can take
 // a few seconds
 resToastText = R.string.crash_toast_text, resDialogText = R.string.crash_dialog_text,
@@ -34,7 +34,7 @@ resDialogTitle = R.string.crash_dialog_title,
 // when defined, adds a user text field input with this text resource as a label
 resDialogCommentPrompt = R.string.crash_dialog_comment_prompt,
 // displays a Toast message when the user accepts to send a report.
-resDialogOkToast = R.string.crash_dialog_ok_toast)
+resDialogOkToast = R.string.crash_dialog_ok_toast)*/
 public class TavernaAndroid extends Application {
 
 	/**** for testing purpose ****/
@@ -82,7 +82,7 @@ public class TavernaAndroid extends Application {
 
 	@Override
 	public void onCreate() {
-		ACRA.init(this);
+		//ACRA.init(this);
 		super.onCreate();
 
 		// Get max available VM memory,

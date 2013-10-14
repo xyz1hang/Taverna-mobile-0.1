@@ -14,7 +14,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,13 +27,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.dropbox.client2.DropboxAPI;
+import com.dropbox.client2.DropboxAPI.Account;
 import com.dropbox.client2.android.AndroidAuthSession;
+import com.dropbox.client2.exception.DropboxException;
 import com.dropbox.client2.session.AccessTokenPair;
 import com.dropbox.client2.session.AppKeyPair;
 import com.dropbox.client2.session.Session.AccessType;
 import com.dropbox.client2.session.TokenPair;
 
 import cs.man.ac.uk.tavernamobile.datamodels.User;
+import cs.man.ac.uk.tavernamobile.utils.BackgroundTaskHandler;
 import cs.man.ac.uk.tavernamobile.utils.CallbackTask;
 import cs.man.ac.uk.tavernamobile.utils.MessageHelper;
 import cs.man.ac.uk.tavernamobile.utils.TavernaAndroid;
@@ -62,6 +64,8 @@ public class SlidingMenuFragment extends Fragment {
     final static private String LOGIN_FLAG = "LOGGEDIN";
 	
 	DropboxAPI<AndroidAuthSession> mApi;
+	
+	private String[] dataSourceNames;
 
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		menuView = inflater.inflate(R.layout.sliding_list, null);
@@ -79,8 +83,7 @@ public class SlidingMenuFragment extends Fragment {
 							.getSystemService(Context.LAYOUT_INFLATER_SERVICE));
 		font = Typeface.createFromAsset(parentActivity.getAssets(), "Roboto-Light.ttf");
 		myExperimentLoginText.setTypeface(font);
-		refreshMenus();
-		
+		myExperimentLoginText.setTextSize(20);
 		myExperimentLoginText.setOnClickListener(new android.view.View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
@@ -121,41 +124,74 @@ public class SlidingMenuFragment extends Fragment {
         AndroidAuthSession session = buildSession();
         mApi = new DropboxAPI<AndroidAuthSession>(session);
         TavernaAndroid.setmApi(mApi);
+        if(dropboxLoggedIn()){
+        	getDropboxAccountInfo();
+        }
 	}
 	
 	@Override
 	public void onResume() {
         super.onResume();
-        AndroidAuthSession session = mApi.getSession();
-
+        // refresh login state when coming back to the fragment
+        refreshLoginState();
+        // if already loggedin we don't need to continue
+        if(dropboxLoggedIn()){
+        	// refresh Menu
+            refreshMenus();
+        	return;
+        }
         // The next part must be inserted in the onResume() method of the
         // fragment from which session.startAuthentication() was called, so
         // that Dropbox authentication completes properly.
+        AndroidAuthSession session = mApi.getSession();
         if (session.authenticationSuccessful()) {
             try {
                 // Mandatory call to complete the auth
                 session.finishAuthentication();
-
                 // Store it locally in the app for later use
                 TokenPair tokens = session.getAccessTokenPair();
                 storeKeys(tokens.key, tokens.secret);
+                // set the preference flag
                 setLoggedin(true);
+                getDropboxAccountInfo();
             } catch (IllegalStateException e) {
             	Toast.makeText(parentActivity, 
             			"Couldn't authenticate with Dropbox:", 
             			Toast.LENGTH_LONG).show();
             }
-        }
+        }// end of if authentication successful
     }
 
-	@Override
-	public void onStart() {
-		refreshLoginState();
-		super.onStart();
+	private void getDropboxAccountInfo() {
+		// try to get account information to display
+		new BackgroundTaskHandler().StartBackgroundTask(parentActivity, new CallbackTask(){
+			@Override
+			public Object onTaskInProgress(Object... param) {
+				try {
+					Account dropboxAccount = mApi.accountInfo();
+					if(dataSourceNames != null){
+						// at this stage the dataSourceNames array shouldn't be null
+						dataSourceNames[0] = dropboxAccount.displayName;	
+					}
+				} catch (DropboxException e) {
+					// Irrelevant message
+					e.printStackTrace();
+				}
+				return null;
+			}
+
+			@Override
+			public Object onTaskComplete(Object... result) {
+				// refresh Menu
+                refreshMenus();
+				return null;
+			}
+			
+		}, null);
 	}
 
 	private void refreshMenus() {
-		listRoot.invalidate();
+		listRoot.removeAllViews();
 		// Navigation Menu
 		final User userloggedIn = TavernaAndroid.getMyEUserLoggedin();
 		ListView navigationMenuList = null;
@@ -171,7 +207,9 @@ public class SlidingMenuFragment extends Fragment {
 		navigationMenuList = setupList("Navigation", navigationMenuNames, navigationMenuIcons);
 		
 		// DataSourc Menu
-		String[] dataSourceNames = new String[] {"Dropbox", "Google Drive"};
+		if(dataSourceNames == null){
+			dataSourceNames = new String[] {"Dropbox", "Google Drive"};
+		}
 		int[] dataSourceIcons = new int[] {R.drawable.dropbox_icon, R.drawable.google_drive_icon};
 		ListView dataSourceList = setupList("Data Source", dataSourceNames, dataSourceIcons);
 		
@@ -216,14 +254,14 @@ public class SlidingMenuFragment extends Fragment {
 				// TODO: setup dropbox and google drive
 				if(itemIndex == 1){
 					// log out if logged in, or vice versa
-	                if (loggedIn()) {
+	                if (dropboxLoggedIn()) {
 	                	MessageHelper.showOptionsDialog(parentActivity,
 	    						"Do you wish to unlink with current dropbox account ?", 
 	    						"Attention",
 	    						new CallbackTask() {
 	    							@Override
 	    							public Object onTaskInProgress(Object... param) {
-	    								logOut();
+	    								logOutDropbox();
 	    								return null;
 	    							}
 
@@ -338,12 +376,13 @@ public class SlidingMenuFragment extends Fragment {
 				myExperimentLoginText.setCompoundDrawablesWithIntrinsicBounds(
 						avatarDrawable, null, null, null);
 			}
-			myExperimentLoginText.setText("Logged in as: "+ userName);
+			myExperimentLoginText.setText("Logged in as:\n"+ userName);
 		}else{
 			Drawable defaultDrawable = getResources().getDrawable(R.drawable.myexperiment_logo_small);
 			myExperimentLoginText.setCompoundDrawablesWithIntrinsicBounds(
 					defaultDrawable, null, null, null);
 			myExperimentLoginText.setText("Log in to myExperiment");
+			myExperimentLoginText.setTextSize(15);
 		}
 	}
 	
@@ -492,7 +531,7 @@ public class SlidingMenuFragment extends Fragment {
     	edit.commit();
     }
     
-    private boolean loggedIn(){
+    private boolean dropboxLoggedIn(){
     	SharedPreferences prefs = parentActivity
     			.getSharedPreferences(ACCOUNT_PREFS_NAME, Context.MODE_PRIVATE);
     	boolean loggedIn = prefs.getBoolean(LOGIN_FLAG, false);
@@ -514,10 +553,15 @@ public class SlidingMenuFragment extends Fragment {
         return session;
     }
     
-    private void logOut() {
+    private void logOutDropbox() {
         // Remove credentials from the session
         mApi.getSession().unlink();
         // Clear our stored keys
         clearKeys();
+        
+        if(dataSourceNames != null){
+			dataSourceNames[0] = "Dropbox";
+			refreshMenus();
+		}
     }
 }
