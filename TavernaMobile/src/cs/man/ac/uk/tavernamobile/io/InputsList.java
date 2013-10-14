@@ -21,6 +21,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -305,7 +306,7 @@ public class InputsList extends Activity{
 				}
 			});
 
-			Button fileSelectButton = (Button) convertView.findViewById(R.id.fileSelectButton);
+			ImageButton fileSelectButton = (ImageButton) convertView.findViewById(R.id.fileSelectButton);
 			fileSelectButton.setOnClickListener(new android.view.View.OnClickListener(){
 
 				public void onClick(View v) {
@@ -313,6 +314,19 @@ public class InputsList extends Activity{
 					inputsListSelectedIndex = selectedInputIndex;
 					Intent intent = new Intent(currentActivity, FilePickerActivity.class);
 					intent.putExtra("inputPortName", currentInputName);
+					startActivityForResult(intent, REQUEST_PICK_FILE);
+				}
+			});
+			
+			ImageButton dropBoxSelectButton = (ImageButton) convertView.findViewById(R.id.dropboxFileSelButton);
+			dropBoxSelectButton.setOnClickListener(new android.view.View.OnClickListener(){
+
+				public void onClick(View v) {
+					currentInputName = inputNames.get(selectedInputIndex);
+					inputsListSelectedIndex = selectedInputIndex;
+					Intent intent = new Intent(currentActivity, FilePickerActivity.class);
+					intent.putExtra("inputPortName", currentInputName);
+					intent.putExtra("fromDropbox", true);
 					startActivityForResult(intent, REQUEST_PICK_FILE);
 				}
 			});

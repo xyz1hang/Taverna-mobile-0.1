@@ -14,6 +14,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -58,6 +59,7 @@ public class SlidingMenuFragment extends Fragment {
     final static private String ACCOUNT_PREFS_NAME = "dropBoxPreference";
     final static private String ACCESS_KEY_NAME = "ACCESS_KEY";
     final static private String ACCESS_SECRET_NAME = "ACCESS_SECRET";
+    final static private String LOGIN_FLAG = "LOGGEDIN";
 	
 	DropboxAPI<AndroidAuthSession> mApi;
 
@@ -118,7 +120,33 @@ public class SlidingMenuFragment extends Fragment {
 		// create a new AuthSession so that we can use the Dropbox API.
         AndroidAuthSession session = buildSession();
         mApi = new DropboxAPI<AndroidAuthSession>(session);
+        TavernaAndroid.setmApi(mApi);
 	}
+	
+	@Override
+	public void onResume() {
+        super.onResume();
+        AndroidAuthSession session = mApi.getSession();
+
+        // The next part must be inserted in the onResume() method of the
+        // fragment from which session.startAuthentication() was called, so
+        // that Dropbox authentication completes properly.
+        if (session.authenticationSuccessful()) {
+            try {
+                // Mandatory call to complete the auth
+                session.finishAuthentication();
+
+                // Store it locally in the app for later use
+                TokenPair tokens = session.getAccessTokenPair();
+                storeKeys(tokens.key, tokens.secret);
+                setLoggedin(true);
+            } catch (IllegalStateException e) {
+            	Toast.makeText(parentActivity, 
+            			"Couldn't authenticate with Dropbox:", 
+            			Toast.LENGTH_LONG).show();
+            }
+        }
+    }
 
 	@Override
 	public void onStart() {
@@ -187,29 +215,26 @@ public class SlidingMenuFragment extends Fragment {
 					int itemIndex, long arg3) {
 				// TODO: setup dropbox and google drive
 				if(itemIndex == 1){
-					// This logs you out if you're logged in, or vice versa
-	                if (mApi.getSession().isLinked()) {
-	                    logOut();
+					// log out if logged in, or vice versa
+	                if (loggedIn()) {
+	                	MessageHelper.showOptionsDialog(parentActivity,
+	    						"Do you wish to unlink with current dropbox account ?", 
+	    						"Attention",
+	    						new CallbackTask() {
+	    							@Override
+	    							public Object onTaskInProgress(Object... param) {
+	    								logOut();
+	    								return null;
+	    							}
+
+	    							@Override
+	    							public Object onTaskComplete(Object... result) { return null; }
+	    						}, null);
 	                } else {
 	                    // Start the remote authentication
 	                    mApi.getSession().startAuthentication(parentActivity);
-	                    AndroidAuthSession session = mApi.getSession();
 	                    
-	                    if (session.authenticationSuccessful()) {
-	                        try {
-	                            // Mandatory call to complete the auth
-	                            session.finishAuthentication();
-
-	                            // Store it locally in our app for later use
-	                            TokenPair tokens = session.getAccessTokenPair();
-	                            storeKeys(tokens.key, tokens.secret);
-	                        } catch (IllegalStateException e) {
-	                        	Toast.makeText(parentActivity, 
-	                        			"Couldn't authenticate with Dropbox:", 
-	                        			Toast.LENGTH_LONG).show();
-	                        }
-	                    }
-	                }
+	                }// end of else
 				}
 				else if(itemIndex == 2){
 				}
@@ -443,20 +468,37 @@ public class SlidingMenuFragment extends Fragment {
      */
     private void storeKeys(String key, String secret) {
         // Save the access key for later
-        SharedPreferences prefs = parentActivity.getSharedPreferences(ACCOUNT_PREFS_NAME, Context.MODE_PRIVATE);
+    	SharedPreferences prefs = parentActivity
+    			.getSharedPreferences(ACCOUNT_PREFS_NAME, Context.MODE_PRIVATE);
         Editor edit = prefs.edit();
         edit.putString(ACCESS_KEY_NAME, key);
         edit.putString(ACCESS_SECRET_NAME, secret);
         edit.commit();
     }
-    
+
     private void clearKeys() {
-        SharedPreferences prefs = parentActivity.getSharedPreferences(ACCOUNT_PREFS_NAME, Context.MODE_PRIVATE);
+    	SharedPreferences prefs = parentActivity
+    			.getSharedPreferences(ACCOUNT_PREFS_NAME, Context.MODE_PRIVATE);
         Editor edit = prefs.edit();
         edit.clear();
         edit.commit();
     }
     
+    private void setLoggedin(boolean loggedIn){
+    	SharedPreferences prefs = parentActivity
+    			.getSharedPreferences(ACCOUNT_PREFS_NAME, Context.MODE_PRIVATE);
+        Editor edit = prefs.edit();
+    	edit.putBoolean(LOGIN_FLAG, loggedIn);
+    	edit.commit();
+    }
+    
+    private boolean loggedIn(){
+    	SharedPreferences prefs = parentActivity
+    			.getSharedPreferences(ACCOUNT_PREFS_NAME, Context.MODE_PRIVATE);
+    	boolean loggedIn = prefs.getBoolean(LOGIN_FLAG, false);
+    	return loggedIn;
+    }
+
     private AndroidAuthSession buildSession() {
         AppKeyPair appKeyPair = new AppKeyPair(APP_KEY, APP_SECRET);
         AndroidAuthSession session;

@@ -70,9 +70,7 @@ public class HttpRequestHandler {
 		HttpResponse postResponse = null;
 		try {
 			postResponse = httpClient.execute(httpPost);
-
 			serverResponse = postResponse.getEntity().getContent();
-
 			// reset the cookie with every new request
 			CookieStore mCookie = ((AbstractHttpClient) httpClient).getCookieStore();
 			TavernaAndroid.setMyExperimentSessionCookies(mCookie);

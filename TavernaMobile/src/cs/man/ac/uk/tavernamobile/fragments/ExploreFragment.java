@@ -44,7 +44,6 @@ public class ExploreFragment extends Fragment {
 	private WorkflowsLoader wfListLoader;
 	private ListViewOnScrollTaskHandler onScrollTaskHandler;
 	private WorkflowsListAdapter resultListAdapter;
-	private ArrayList<Workflow> workflows;
 	private WorkflowExpoLoadingListener initialLoader;
 	
 	private String expoSortBy;
@@ -218,7 +217,7 @@ public class ExploreFragment extends Fragment {
 				return null;
 			}
 			
-			workflows = (ArrayList<Workflow>) result[0];
+			final ArrayList<Workflow> workflows = (ArrayList<Workflow>) result[0];
 			
 			if(workflows == null || workflows.size() < 1){
 				wfListDefaultTest.setText("No workflow data found, please try again");
@@ -238,6 +237,7 @@ public class ExploreFragment extends Fragment {
 			expoList.addFooterView(footerView);
 			
 			if(resultListAdapter != null){
+				resultListAdapter.ChangeDataSource(workflows);
 				resultListAdapter.notifyDataSetChanged();
 				expoList.smoothScrollToPosition(0);
 			}else{

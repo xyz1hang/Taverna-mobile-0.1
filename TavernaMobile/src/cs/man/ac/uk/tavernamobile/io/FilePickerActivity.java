@@ -7,7 +7,14 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import com.dropbox.client2.DropboxAPI;
+import com.dropbox.client2.android.AndroidAuthSession;
+import com.dropbox.client2.exception.DropboxException;
+
 import cs.man.ac.uk.tavernamobile.R;
+import cs.man.ac.uk.tavernamobile.utils.BackgroundTaskHandler;
+import cs.man.ac.uk.tavernamobile.utils.CallbackTask;
+import cs.man.ac.uk.tavernamobile.utils.TavernaAndroid;
 
 import android.app.ActionBar;
 import android.app.ListActivity;
@@ -23,8 +30,9 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
-public class FilePickerActivity extends ListActivity {
+public class FilePickerActivity extends ListActivity implements CallbackTask{
 	
 	public final static String FILE_PATH = "file_path";
 	public final static String SELECTED_FILE_NAME = "selectedFileName";
@@ -34,16 +42,20 @@ public class FilePickerActivity extends ListActivity {
 	protected ArrayList<File> mFiles;
 	protected FilePickerListAdapter mAdapter;
 	protected String[] acceptedFileExtensions;
+
+	private DropboxAPI<AndroidAuthSession> mApi;
+	private BackgroundTaskHandler handler;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+		// get data passed in
 		String inputPortName = (String) getIntent().getStringExtra("inputPortName");
+		boolean fromDropbox = (Boolean) getIntent().getBooleanExtra("fromDropbox", false);
+		// set up title
 		if(inputPortName == null){
 			inputPortName = "input port";
 		}
-		
 		// UI components
 		ActionBar actionBar = getActionBar();
 		actionBar.setDisplayHomeAsUpEnabled(true);
@@ -56,15 +68,22 @@ public class FilePickerActivity extends ListActivity {
 		((ViewGroup)getListView().getParent()).addView(emptyView);
 		getListView().setEmptyView(emptyView);
 		
-		// Initialise initial directory and file List
-		INITIAL_DIRECTORY = Environment.getExternalStorageDirectory().getPath();
-		mDirectory = new File(INITIAL_DIRECTORY);		
-		mFiles = new ArrayList<File>();
-		mAdapter = new FilePickerListAdapter(this, mFiles);
-		setListAdapter(mAdapter);
-		
-		// accept all file extensions
-		acceptedFileExtensions = new String[] {};
+		if(fromDropbox){
+			mApi = TavernaAndroid.getmApi();
+			handler = new BackgroundTaskHandler();
+			handler.StartBackgroundTask(this, this, "Loading Dropbox files...");
+			
+		}else{
+			// Initialise initial directory and file List
+			INITIAL_DIRECTORY = Environment.getExternalStorageDirectory().getPath();
+			mDirectory = new File(INITIAL_DIRECTORY);		
+			mFiles = new ArrayList<File>();
+			mAdapter = new FilePickerListAdapter(this, mFiles);
+			setListAdapter(mAdapter);
+			
+			// accept all file extensions
+			acceptedFileExtensions = new String[] {};
+		}
 	}
 	
 	@Override
@@ -151,6 +170,10 @@ public class FilePickerActivity extends ListActivity {
 	}
 	
 	protected void refreshFilesList() {
+		if(mFiles == null){
+			return;
+		}
+		
 		mFiles.clear();
 		// Set the file extension filter
 		ExtensionFilenameFilter filter = new ExtensionFilenameFilter(acceptedFileExtensions);
@@ -211,5 +234,47 @@ public class FilePickerActivity extends ListActivity {
 			// No extensions has been set. Accept all file extensions.
 			return true;
 		}
+	}
+
+	@Override
+	public Object onTaskInProgress(Object... param) {
+		com.dropbox.client2.DropboxAPI.Entry existingEntries = null;
+		try {
+			existingEntries = mApi.metadata("/", 0, null, true, null);
+		} catch (DropboxException e) {
+			return "Can not access dropbox files";
+		}
+		
+		/*mFiles = new ArrayList<File>();
+		for (com.dropbox.client2.DropboxAPI.Entry e : existingEntries.contents) {
+		    if (!e.isDeleted) {
+		    	File f = new File(e.);
+		    	
+		        Log.i("Is Folder",String.valueOf(e.isDir));
+		        Log.i("Item Name",e.fileName);
+		    }
+		}
+		
+		existingEntry*/
+		
+		INITIAL_DIRECTORY = existingEntries.path;
+		return null;
+	}
+
+	@Override
+	public Object onTaskComplete(Object... result) {
+		if(result[0] instanceof String){
+			Toast.makeText(this, (String)result[0], Toast.LENGTH_LONG).show();
+			finish();
+			return null;
+		}
+		mDirectory = new File(INITIAL_DIRECTORY);		
+		mFiles = new ArrayList<File>();
+		mAdapter = new FilePickerListAdapter(this, mFiles);
+		setListAdapter(mAdapter);
+		
+		// accept all file extensions
+		acceptedFileExtensions = new String[] {};
+		return null;
 	}
 }

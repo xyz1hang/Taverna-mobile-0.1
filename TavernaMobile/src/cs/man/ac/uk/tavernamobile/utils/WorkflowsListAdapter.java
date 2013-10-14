@@ -127,7 +127,6 @@ public class WorkflowsListAdapter extends BaseAdapter {
 
 		// set up download button listener
 		viewHolder.downloadButton.setOnClickListener(new OnClickListener(){
-
 			@Override
 			public void onClick(View v) {
 				boolean canDownload = false;
@@ -337,7 +336,7 @@ public class WorkflowsListAdapter extends BaseAdapter {
 					holder.setImageBitmap(bitmapImage);
 				}else{
 					imageHolder.setVisibility(8);
-					thumbnailNotAvailableView.setVisibility(0);
+					viewHolder.thumbnailNotAvailableView.setVisibility(0);
 				}
 			}
 
