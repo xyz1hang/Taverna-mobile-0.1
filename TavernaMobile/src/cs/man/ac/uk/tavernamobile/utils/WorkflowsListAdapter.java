@@ -322,17 +322,15 @@ public class WorkflowsListAdapter extends BaseAdapter {
 					return null;
 				}
 				Bitmap bitmapImage = (Bitmap) result[0];
-				TextView holder = (TextView) imageHolder;
 				Drawable avatarDrawable = new BitmapDrawable(mContext.getResources(), bitmapImage);
-				holder.setCompoundDrawablesWithIntrinsicBounds(null, avatarDrawable, null, null);
+				((TextView) imageHolder).setCompoundDrawablesWithIntrinsicBounds(null, avatarDrawable, null, null);
 			}
 			else if(imageHolder instanceof ImageView){
 				if (result[0] instanceof Bitmap){
 					viewHolder.thumbnailNotAvailableView.setVisibility(8);
 					Bitmap bitmapImage = (Bitmap) result[0];
-					ImageView holder = (ImageView) imageHolder;
-					holder.setVisibility(0);
-					holder.setImageBitmap(bitmapImage);
+					((ImageView) imageHolder).setVisibility(0);
+					((ImageView) imageHolder).setImageBitmap(bitmapImage);
 				}else{
 					imageHolder.setVisibility(8);
 					viewHolder.thumbnailNotAvailableView.setVisibility(0);

@@ -236,7 +236,7 @@ public class InputsList extends Activity{
 					startTheRun();
 					return null;
 				}
-		}, "Loading dropbox files...");
+		}, "Loading inputs...");
 	}
 	
 	private void startTheRun() {

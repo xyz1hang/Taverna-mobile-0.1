@@ -64,6 +64,7 @@ public class SlidingMenuFragment extends Fragment {
     final static private String LOGIN_FLAG = "LOGGEDIN";
 	
 	DropboxAPI<AndroidAuthSession> mApi;
+	private boolean authenticating;
 	
 	private String[] dataSourceNames;
 
@@ -127,6 +128,7 @@ public class SlidingMenuFragment extends Fragment {
         if(dropboxLoggedIn()){
         	getDropboxAccountInfo();
         }
+        authenticating = false;
 	}
 	
 	@Override
@@ -135,31 +137,32 @@ public class SlidingMenuFragment extends Fragment {
         // refresh login state when coming back to the fragment
         refreshLoginState();
         // if already loggedin we don't need to continue
-        if(dropboxLoggedIn()){
+        if(authenticating){
+        	// The next part must be inserted in the onResume() method of the
+            // fragment from which session.startAuthentication() was called, so
+            // that Dropbox authentication completes properly.
+            AndroidAuthSession session = mApi.getSession();
+            if (session.authenticationSuccessful()) {
+            	authenticating = false;
+                try {
+                    // Mandatory call to complete the auth
+                    session.finishAuthentication();
+                    // Store it locally in the app for later use
+                    TokenPair tokens = session.getAccessTokenPair();
+                    storeKeys(tokens.key, tokens.secret);
+                    // set the preference flag
+                    setLoggedin(true);
+                    getDropboxAccountInfo();
+                } catch (IllegalStateException e) {
+                	Toast.makeText(parentActivity, 
+                			"Couldn't authenticate with Dropbox:", 
+                			Toast.LENGTH_LONG).show();
+                }
+            }// end of if authentication successful
+        }else{
         	// refresh Menu
             refreshMenus();
-        	return;
         }
-        // The next part must be inserted in the onResume() method of the
-        // fragment from which session.startAuthentication() was called, so
-        // that Dropbox authentication completes properly.
-        AndroidAuthSession session = mApi.getSession();
-        if (session.authenticationSuccessful()) {
-            try {
-                // Mandatory call to complete the auth
-                session.finishAuthentication();
-                // Store it locally in the app for later use
-                TokenPair tokens = session.getAccessTokenPair();
-                storeKeys(tokens.key, tokens.secret);
-                // set the preference flag
-                setLoggedin(true);
-                getDropboxAccountInfo();
-            } catch (IllegalStateException e) {
-            	Toast.makeText(parentActivity, 
-            			"Couldn't authenticate with Dropbox:", 
-            			Toast.LENGTH_LONG).show();
-            }
-        }// end of if authentication successful
     }
 
 	private void getDropboxAccountInfo() {
@@ -270,6 +273,7 @@ public class SlidingMenuFragment extends Fragment {
 	    						}, null);
 	                } else {
 	                    // Start the remote authentication
+	                	authenticating = true;
 	                    mApi.getSession().startAuthentication(parentActivity);
 	                    
 	                }// end of else
@@ -563,5 +567,6 @@ public class SlidingMenuFragment extends Fragment {
 			dataSourceNames[0] = "Dropbox";
 			refreshMenus();
 		}
+        authenticating = false;
     }
 }

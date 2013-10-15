@@ -353,9 +353,9 @@ public class WorkflowRunManager
 		args.put(DataProviderConstants.Run_Id, runID);
 		
 		String subQuery = "SELECT WF_ID FROM launchHistory "+
-				  "WHERE Workflow_Title = '"+workflowEntity.getTitle()+ "' AND "+
+				  "WHERE Workflow_Title = '"+workflowEntity.getTitle().replace("'", "''")+ "' AND "+
 					    "Version = '"+workflowEntity.getVersion()+"' AND "+
-					    "Uploader_Name = '"+workflowEntity.getUploaderName()+"'";
+					    "Uploader_Name = '"+workflowEntity.getUploaderName().replace("'", "''")+"'";
 		args.put(DataProviderConstants.WF_ID, subQuery);
 		
 		/** INSERT **/

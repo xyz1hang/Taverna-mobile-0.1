@@ -100,7 +100,7 @@ public class WorkflowLaunchHelper {
 		String selection = DataProviderConstants.WorkflowTitle + " = ? AND "
 						 + DataProviderConstants.Version + " = ? AND "
 						 + DataProviderConstants.UploaderName + " = ?";
-		String[] selectionArgs = new String[] { workflowEntity.getTitle(), 
+		String[] selectionArgs = new String[] { workflowEntity.getTitle().replace("'", "''"), 
 												workflowEntity.getVersion(), 
 												workflowEntity.getUploaderName() };
 
@@ -274,9 +274,9 @@ public class WorkflowLaunchHelper {
 	private void recordWorkflow() {
 		ContentValues valuesToInsert = new ContentValues();
 
-		valuesToInsert.put(DataProviderConstants.WorkflowTitle, workflowEntity.getTitle());
+		valuesToInsert.put(DataProviderConstants.WorkflowTitle, workflowEntity.getTitle().replace("'", "''"));
 		valuesToInsert.put(DataProviderConstants.Version, workflowEntity.getVersion());
-		valuesToInsert.put(DataProviderConstants.UploaderName, workflowEntity.getUploaderName());
+		valuesToInsert.put(DataProviderConstants.UploaderName, workflowEntity.getUploaderName().replace("'", "''"));
 		valuesToInsert.put(DataProviderConstants.WorkflowFilePath, workflowEntity.getFilePath());
 		byte[] avatarData = bitmapToByteArray(workflowEntity.getAvatar());
 		valuesToInsert.put(DataProviderConstants.Avatar, avatarData);
@@ -294,9 +294,9 @@ public class WorkflowLaunchHelper {
 						   DataProviderConstants.Version + " = ? AND " +
 						   DataProviderConstants.UploaderName + " = ?";
 		String[] selectionArgs = 
-				new String[] { workflowEntity.getTitle(), 
+				new String[] { workflowEntity.getTitle().replace("'", "''"), 
 							   workflowEntity.getVersion(), 
-							   workflowEntity.getUploaderName()};
+							   workflowEntity.getUploaderName().replace("'", "''")};
 		this.currentActivity.getContentResolver().update(
 				DataProviderConstants.WF_TABLE_CONTENTURI, valuesToUpdate, selection, selectionArgs);
 	}
@@ -387,9 +387,9 @@ public class WorkflowLaunchHelper {
 				 + DataProviderConstants.Version + " = ? AND "
 				 + DataProviderConstants.UploaderName + " = ?";
 		String[] selectionArgs = new String[] {
-				workflowEntity.getTitle(), 
+				workflowEntity.getTitle().replace("'", "''"), 
 				workflowEntity.getVersion(), 
-				workflowEntity.getUploaderName()};
+				workflowEntity.getUploaderName().replace("'", "''")};
 		
 		currentActivity.getContentResolver().update(
 				DataProviderConstants.WF_TABLE_CONTENTURI, 
