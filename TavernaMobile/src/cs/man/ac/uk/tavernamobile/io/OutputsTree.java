@@ -246,7 +246,7 @@ public class OutputsTree extends FragmentActivity{
 			listText.setTextSize(20);
 			root.addView(listText, params);
 			// set margin now hence following child view (list) will have indent
-			params.setMargins(pxToDp(20), pxToDp(10), 0, 0);
+			params.setMargins(pxToDp(20), pxToDp(5), 0, 0);
 			// create sub root layout to add values from list in deeper level
 			LinearLayout subRoot = new LinearLayout(currentActivity);
 			subRoot.setLayoutParams(params);
@@ -296,7 +296,7 @@ public class OutputsTree extends FragmentActivity{
 			text.setText(textToDisplay);
 			text.setTypeface(font);
 			text.setTextSize(20);
-			text.setPadding(pxToDp(10), pxToDp(10), pxToDp(10), pxToDp(10));
+			text.setPadding(pxToDp(5), pxToDp(5), pxToDp(5), pxToDp(5));
 			text.setBackgroundResource(R.drawable.list_selector);
 			text.setOnClickListener(listener);
 			subRoot.addView(text, params);
