@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -12,6 +13,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -596,6 +599,8 @@ public class WorkflowRunManager
 	private class RunInitiator implements CallbackTask{
 
 		private Run newlyCreatedRun = ta.getWorkflowRunLaunched();
+		private int limit = Integer.parseInt(PreferenceManager
+				.getDefaultSharedPreferences(currentActivity).getString("launcHistoryLimit", "20"));
 
 		public void Execute(Object... params){
 			runInitiationTaskHandler = new BackgroundTaskHandler();
@@ -674,6 +679,7 @@ public class WorkflowRunManager
 							e.printStackTrace();	
 						}
 					}// end of iterating over inputs
+					checkLimit(inputsSubPath);
 				}// end of if there are input
 			}
 
@@ -690,6 +696,8 @@ public class WorkflowRunManager
 					reportRunStartTime();
 				} catch (NetworkConnectionException e) {
 					return e.getMessage();
+				} catch (AccessForbiddenException e){
+					return "There was an error uploading file to the server";
 				} catch (Exception e){
 					// irrelevant exception swallow
 					e.printStackTrace();
@@ -701,7 +709,7 @@ public class WorkflowRunManager
 			}
 			return "The Run has been successfully started.";
 		}
-
+		
 		public Object onTaskComplete(Object... result) {
 			if(runListener != null){
 				// inform monitor to pull run statue
@@ -710,6 +718,77 @@ public class WorkflowRunManager
 			}
 			return null;
 		}
+
+		private void checkLimit(String inputsSubPath) {
+			// read input files and delete the oldest one 
+			// if the limit has been exceed
+			ExtensionFilenameFilter filter = new ExtensionFilenameFilter(new String[] { ".tai" });
+			File root = android.os.Environment.getExternalStorageDirectory();
+			String INITIAL_DIRECTORY = root.getAbsolutePath() + inputsSubPath;
+			File mDirectory = new File(INITIAL_DIRECTORY);
+			// Get the files in the directory
+			File[] files = mDirectory.listFiles(filter);
+			ArrayList<File> mFiles = new ArrayList<File>();
+			if (files != null && files.length > 0) {
+				for (File f : files) {
+					mFiles.add(f);
+				}
+			}
+			Collections.sort(mFiles, new FileComparator());
+			// remove the last one i.e. the oldest one
+			if(mFiles.size() > limit){
+				mFiles.get(mFiles.size() - 1).delete();
+			}
+		}
+		
+		private class FileComparator implements Comparator<File> {
+			public int compare(File f1, File f2) {
+				String f1time = f1.getName();
+				String f2time = f2.getName();
+				SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy HH:mm:ss", Locale.getDefault());
+				Date f1date = null; 
+				Date f2date = null;
+				try {
+					f1date = sdf.parse(f1time);
+					f2date = sdf.parse(f2time);
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
+				if (f1date.before(f2date)) {
+					return 1;
+				}
+				if (f2date.before(f1date)){
+					return -1;
+				}
+				// Sort the directories alphabetically
+				return f1.getName().compareToIgnoreCase(f2.getName());
+			}
+		}
+
+		private class ExtensionFilenameFilter implements FilenameFilter {
+			private String[] mExtensions;
+
+			public ExtensionFilenameFilter(String[] extensions) {
+				super();
+				mExtensions = extensions;
+			}
+
+			public boolean accept(File dir, String filename) {
+				if (new File(dir, filename).isDirectory()) {
+					return true;
+				}
+				if (mExtensions != null && mExtensions.length > 0) {
+					for (int i = 0; i < mExtensions.length; i++) {
+						if (filename.endsWith(mExtensions[i])) {
+							// The filename ends with the extension
+							return true;
+						}
+					}
+					return false;
+				}
+				return true;
+			}
+		}// end of ExtensionFilenameFilter
 	}
 
 	/**

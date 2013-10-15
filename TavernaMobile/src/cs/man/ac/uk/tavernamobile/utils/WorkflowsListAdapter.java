@@ -43,7 +43,6 @@ public class WorkflowsListAdapter extends BaseAdapter {
 	private Activity mContext;
 	
 	private android.support.v4.util.LruCache<String, Bitmap> imageCache;
-	private TextView thumbnailNotAvailableView;
 	private ViewHolder viewHolder;
 	
 	public int animationStartPosition;

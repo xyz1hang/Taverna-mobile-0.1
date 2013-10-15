@@ -199,12 +199,14 @@ public class InputsList extends Activity{
 							FileOutputStream outputStream = null;
 							DropboxInputFile dbfile = (DropboxInputFile) pair.getValue();
 							try {
-							    File file = new File(locationToStore);
+								String[] segments = dbfile.getPath().split("/");
+								String fileName = segments[segments.length - 1];
+							    File file = new File(locationToStore+"/"+fileName);
 							    if(!file.exists()){
 							    	file.createNewFile();
 							    }
 							    outputStream = new FileOutputStream(file);
-							    mApi.getFile(dbfile.path, null, outputStream, null);
+							    mApi.getFile(dbfile.getPath(), null, outputStream, null);
 							    // after this line the file should have actual content
 							    userInputs.put(pair.getKey(), file);
 							} catch (Exception e) {

@@ -197,7 +197,7 @@ public class LaunchHistoryFragment extends Fragment {
 		Bundle loaderArgs = new Bundle();
 		loaderArgs.putStringArray("projection", projection);
 		loaderArgs.putString("tableURI", DataProviderConstants.WF_TABLE_CONTENTURI.toString());
-		loaderArgs.putString("orderBy", DataProviderConstants.LastLaunch);
+		loaderArgs.putString("orderBy", DataProviderConstants.LastLaunch + " DESC");
 
 		// create CursorLoader
 		getLoaderManager().restartLoader(

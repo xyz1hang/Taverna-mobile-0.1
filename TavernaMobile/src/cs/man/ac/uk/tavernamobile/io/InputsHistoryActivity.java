@@ -225,7 +225,9 @@ public class InputsHistoryActivity extends FragmentActivity {
 								mActionMode = currentActivity.startActionMode(mActionModeCallback);
 							}
 						} else {
-							checkboxesStates.set(fileIndex, false);
+							if(fileIndex > -1){
+								checkboxesStates.set(fileIndex, false);
+							}
 							selectedInputs.remove(file);
 							if (selectedInputs.size() < 1) {
 								mActionMode.finish();

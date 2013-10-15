@@ -134,8 +134,7 @@ public class FragmentsContainer extends Fragment {
 				InputMethodManager imm = (InputMethodManager) parentActivity
 						.getSystemService(Context.INPUT_METHOD_SERVICE);
 				if(imm != null){
-				    imm.hideSoftInputFromWindow(
-				    		mViewPager.getWindowToken(), InputMethodManager.HIDE_IMPLICIT_ONLY);
+				    imm.hideSoftInputFromWindow(mViewPager.getWindowToken(), 0);
 				}
 			}
 	    });

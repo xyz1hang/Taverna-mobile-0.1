@@ -245,7 +245,8 @@ public class RunsFragment extends Fragment {
 			return;
 		}
 		// Initialize the collection and adapters
-		childElements = new HashMap<String, HashMap<String, WorkflowRun>>();
+		childElements.clear();
+		checkboxesStates.clear();
 		//childListAdapters = new ArrayList<ChildListAdapter>();
 		// Do work to refresh the list here.
     	runManager.getRuns(runRetrievalListener);
